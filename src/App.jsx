@@ -5,11 +5,31 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 const FONT_URL = "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Cinzel:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap";
 
 // ── Themes ────────────────────────────────────────────────────────────────────
-const THEMES = {
-  nature:    { id:"nature",    name:"Nature",      emoji:"🌿", tagline:"Grow your savings like a garden",      bg:"#f0f7ec", card:"#ffffff", grad:"linear-gradient(160deg,#dff0d8,#f0f7ec 60%)", c:{p:"#4a7c59",pl:"#e2f0db",acc:"#f9c74f",danger:"#d95f0e",text:"#2d4a3e",muted:"#7a9e82",border:"#c5e0b8",nav:"#3a6347",navT:"#ffffff",overlay:"rgba(42,74,56,0.65)"}, font:'"Nunito",sans-serif',       w:{home:"My Grove",    txn:"Gatherings",   budget:"Garden Limit", inc:"Harvest", over:"Over your garden limit 🌱"},  npc:"🦔",npcName:"Hedgie",  chat:["Oh! A rustling in the leaves... 🍃","A new friend has arrived at the grove!","The forest remembers every acorn you spend.","Shall I help you track yours?"],          avatars:["🐸","🦔","🐰","🦋","🐿️","🦉"] },
-  adventure: { id:"adventure", name:"Adventure",   emoji:"⚔️", tagline:"Track your gold, conquer your quests", bg:"#fdf6e3", card:"#fffdf5", grad:"linear-gradient(160deg,#fdebd0,#fdf6e3 60%)", c:{p:"#8b5e3c",pl:"#fdebd0",acc:"#d4a017",danger:"#c0392b",text:"#3d1c02",muted:"#a07040",border:"#e8d5b0",nav:"#5c3418",navT:"#ffeeba",overlay:"rgba(60,28,2,0.65)"},   font:'"Cinzel",Georgia,serif',    w:{home:"Map Room",    txn:"Journey Log",  budget:"War Chest",    inc:"Loot",    over:"War chest depleted! ⚔️"},          npc:"🧙",npcName:"Merlin",  chat:["Halt, brave traveler! ⚔️","Many heroes have lost their gold to careless spending.","A wise adventurer tracks every coin.","Are you ready to begin?"],               avatars:["🦊","🐺","🦁","🐉","🧙","🏹"] },
-  princess:  { id:"princess",  name:"Princess",    emoji:"👸", tagline:"Rule your royal treasury with grace",  bg:"#fff5f9", card:"#ffffff", grad:"linear-gradient(160deg,#fce4f0,#fff5f9 60%)", c:{p:"#b5478a",pl:"#fce4f0",acc:"#ffd700",danger:"#e74c6d",text:"#5c1f3b",muted:"#9c6080",border:"#f0c0d8",nav:"#8f2a68",navT:"#fff0f8",overlay:"rgba(92,31,59,0.65)"},  font:'"Playfair Display",Georgia,serif', w:{home:"Royal Court",  txn:"Royal Ledger", budget:"Royal Decree", inc:"Tribute", over:"Exceeding royal decree! 👑"},        npc:"🧚",npcName:"Fae",     chat:["Oh my stars! A new arrival! ✨","Welcome to your royal treasury, darling! 👑","Every gem spent and coin saved matters.","Shall we begin your reign?"],            avatars:["👸","🧚","🦄","🌸","🎀","💎"] },
-  finance:   { id:"finance",   name:"Finance Pro", emoji:"📊", tagline:"Clean data. Clear decisions.",         bg:"#f8fafc", card:"#ffffff", grad:"#f8fafc",                                      c:{p:"#2563eb",pl:"#dbeafe",acc:"#10b981",danger:"#ef4444",text:"#0f172a",muted:"#64748b",border:"#e2e8f0",nav:"#1e40af",navT:"#ffffff",overlay:"rgba(15,23,42,0.65)"},   font:'"Inter",system-ui,sans-serif',  w:{home:"Overview",    txn:"Transactions", budget:"Allocation",   inc:"Revenue", over:"Budget exceeded ⚠️"},            npc:"🤖",npcName:"Fin",     chat:["Welcome to your finance dashboard.","Your data stays 100% on this device.","Track spending, set budgets, plan ahead.","Let's get started."],                          avatars:["🐻","🦅","🐬","🦉","🐆","🤖"] },
+const THEMES_TR = {
+  nature: {
+    en: { name:"Nature", tagline:"Grow your savings like a garden",
+      chat:["Oh! A rustling in the leaves... 🍃","A new friend has arrived at the grove!","The forest remembers every acorn you spend.","Shall I help you track yours?"] },
+    es: { name:"Naturaleza", tagline:"Haz crecer tus ahorros como un jardín",
+      chat:["¡Oh! Un susurro entre las hojas... 🍃","¡Un nuevo amigo ha llegado al jardín!","El bosque recuerda cada bellota que gastas.","¿Te ayudo a llevar la cuenta?"] }
+  },
+  adventure: {
+    en: { name:"Adventure", tagline:"Track your gold, conquer your quests",
+      chat:["Halt, brave traveler! ⚔️","Many heroes have lost their gold to careless spending.","A wise adventurer tracks every coin.","Are you ready to begin?"] },
+    es: { name:"Aventura", tagline:"Controla tu oro, conquista tus misiones",
+      chat:["¡Alto, valiente viajero! ⚔️","Muchos héroes perdieron su oro por gastar sin control.","Un aventurero sabio lleva cuenta de cada moneda.","¿Estás listo para empezar?"] }
+  },
+  princess: {
+    en: { name:"Princess", tagline:"Rule your royal treasury with grace",
+      chat:["Oh my stars! A new arrival! ✨","Welcome to your royal treasury, darling! 👑","Every gem spent and coin saved matters.","Shall we begin your reign?"] },
+    es: { name:"Princesa", tagline:"Gobierna tu tesoro real con elegancia",
+      chat:["¡Cielos! ¡Una nueva llegada! ✨","Bienvenida a tu tesoro real, querida! 👑","Cada gema gastada y moneda ahorrada importa.","¿Comenzamos tu reinado?"] }
+  },
+  finance: {
+    en: { name:"Finance Pro", tagline:"Clean data. Clear decisions.",
+      chat:["Welcome to your finance dashboard.","Your data stays 100% on this device.","Track spending, set budgets, plan ahead.","Let's get started."] },
+    es: { name:"Finanzas Pro", tagline:"Datos claros. Decisiones claras.",
+      chat:["Bienvenida a tu panel financiero.","Tus datos se quedan 100% en este dispositivo.","Controla gastos, fija presupuestos, planifica.","Empecemos."] }
+  }
 };
 const GOALS = [{id:"save",e:"💰",label:"Save for something",sub:"I have a goal in mind"},{id:"cut",e:"✂️",label:"Cut my spending",sub:"I want to spend less"},{id:"know",e:"🔍",label:"Understand my money",sub:"See where it all goes"},{id:"chill",e:"✨",label:"Just exploring",sub:"Curious about finances"}];
 const GOALS_TR = {
@@ -92,6 +112,13 @@ const T = {
     thisIsYou:"This is you!",perfect:"Perfect! →",
     whyHere:"Why are you here?",noWrongAnswers:"No wrong answers",
     startJourney:"Start my journey 🚀",pickOption:"Pick an option above",
+    customise:"Customise",customDone:"Done",
+    dragReorder:"Drag widgets to reorder, or hide ones you don't need:",
+    visible:"Visible",hidden:"Hidden",
+    wSummary:"📊 Summary cards",wInsights:"💡 Insights",wBudget:"🎯 Budget",
+    wPayments:"💳 Upcoming charges",wSpending:"📊 Spending by category",
+    wJournal:"📄 Journal",wIncome:"💰 Income transactions",
+    wSubscriptions:"📦 Subscriptions & Recurring",
   },
   es:{
     home:"Inicio",budgets:"Presupuestos",reminders:"Recordatorios",autoPay:"Pagos fijos",data:"Datos",
@@ -166,6 +193,13 @@ const T = {
     thisIsYou:"¡Este eres tú!",perfect:"¡Perfecto! →",
     whyHere:"¿Por qué estás aquí?",noWrongAnswers:"No hay respuestas incorrectas",
     startJourney:"¡A por ello! 🚀",pickOption:"Elige una opción arriba",
+    customise:"Personalizar",customDone:"Hecho",
+    dragReorder:"Arrastra los módulos para reordenar u oculta los que no necesitas:",
+    visible:"Visible",hidden:"Oculto",
+    wSummary:"📊 Resumen",wInsights:"💡 Estadísticas",wBudget:"🎯 Presupuesto",
+    wPayments:"💳 Próximos cobros",wSpending:"📊 Gasto por categoría",
+    wJournal:"📄 Movimientos",wIncome:"💰 Ingresos",
+    wSubscriptions:"📦 Suscripciones y pagos fijos",
   }
 };
 
@@ -1137,6 +1171,8 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
   const {c,font:f,w}=theme;
   const tr=T[lang]||T.en;
   const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
+  const WIDGET_LABEL_KEY={summary:"wSummary",insights:"wInsights",budget:"wBudget",payments:"wPayments",spending:"wSpending",journal:"wJournal",income:"wIncome",subscriptions:"wSubscriptions"};
+  const widgetLabel=id=>tr[WIDGET_LABEL_KEY[id]]||id;
   const isMobile=useIsMobile();
   const [catFilter,setCatFilter]=useState("All");
   const [editMode,setEditMode]=useState(false);
@@ -1202,21 +1238,21 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     <div style={{display:"flex",justifyContent:"flex-end"}}>
       <button onClick={()=>setEditMode(m=>!m)}
         style={{padding:"6px 14px",borderRadius:"12px",border:`1.5px solid ${editMode?c.p:c.border}`,background:editMode?c.p:"white",color:editMode?"white":c.muted,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f,display:"flex",alignItems:"center",gap:"5px"}}>
-        ✏️ {editMode?"Done":"Customise"}
+        ✏️ {editMode?tr.customDone:tr.customise}
       </button>
     </div>
     {editMode&&<div style={{background:c.card,borderRadius:"14px",padding:"16px 20px",border:`1.5px solid ${c.p}30`}}>
-      <div style={{fontSize:"12px",fontWeight:700,color:c.text,marginBottom:12}}>Drag widgets to reorder, or hide ones you don't need:</div>
+      <div style={{fontSize:"12px",fontWeight:700,color:c.text,marginBottom:12}}>{tr.dragReorder}</div>
       {widgets.map((wid,idx)=>(
         <div key={wid.id} style={{display:"flex",alignItems:"center",gap:"10px",padding:"8px 12px",borderRadius:"10px",marginBottom:6,background:wid.visible?"#f9fafb":"#f0f0f0",border:`1.5px solid ${wid.visible?c.border:"#d1d5db"}`}}>
           <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
             <button onClick={()=>moveWidget(wid.id,-1)} disabled={idx===0} style={{padding:"1px 5px",border:"none",background:"transparent",cursor:idx===0?"default":"pointer",color:idx===0?"#d1d5db":c.muted,fontSize:"10px",lineHeight:1}}>▲</button>
             <button onClick={()=>moveWidget(wid.id,1)} disabled={idx===widgets.length-1} style={{padding:"1px 5px",border:"none",background:"transparent",cursor:idx===widgets.length-1?"default":"pointer",color:idx===widgets.length-1?"#d1d5db":c.muted,fontSize:"10px",lineHeight:1}}>▼</button>
           </div>
-          <span style={{flex:1,fontSize:"13px",fontWeight:600,color:wid.visible?c.text:"#9ca3af"}}>{wid.label}</span>
+          <span style={{flex:1,fontSize:"13px",fontWeight:600,color:wid.visible?c.text:"#9ca3af"}}>{widgetLabel(wid.id)}</span>
           <button onClick={()=>toggleWidget(wid.id)}
             style={{padding:"4px 12px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f,background:wid.visible?c.p:"#e5e7eb",color:wid.visible?"white":"#6b7280"}}>
-            {wid.visible?"Visible":"Hidden"}
+            {wid.visible?tr.visible:tr.hidden}
           </button>
         </div>
       ))}
@@ -1261,11 +1297,7 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     {isVisible("payments")&&<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"16px"}}>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>💳 {tr.upcomingCharges}</div>
-        {paymentsWithCountdown.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>
-          :paymentsWithCountdown.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}>
-            <div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{tr.inDays} {p.days} {p.days!==1?tr.days:tr.day}</div></div>
-            <div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div>
-          </div>)}
+        {(()=>{const monthly=paymentsWithCountdown.filter(p=>p.frequency!=="yearly");return monthly.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>:monthly.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}><div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{tr.inDays} {p.days} {p.days!==1?tr.days:tr.day}</div></div><div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div></div>);})()}
       </div>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📋 {tr.remindersTitle}</div>
@@ -1754,7 +1786,7 @@ function Onboarding({onDone}) {
     <div style={{textAlign:"center",marginBottom:28,animation:"fadeUp 0.4s ease"}}><div style={{fontSize:"44px",marginBottom:10}}>💸</div><h1 style={{fontSize:"30px",fontWeight:800,color:"#111",marginBottom:6}}>{tl.welcomeTitle}</h1><p style={{color:"#888",fontSize:"15px"}}>{tl.pickWorld}</p></div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",maxWidth:"580px",width:"100%",padding:isMobile?"0 4px":0}}>
       {Object.values(THEMES).map(t=><div key={t.id} onClick={()=>setU({...u,themeId:t.id})} style={{background:u.themeId===t.id?t.c.pl:"white",borderRadius:"20px",padding:isMobile?"16px 12px":"24px",border:`3px solid ${u.themeId===t.id?t.c.p:"#e5e7eb"}`,cursor:"pointer",transition:"all 0.18s",transform:u.themeId===t.id?"scale(1.03)":"scale(1)",boxShadow:u.themeId===t.id?`0 8px 24px ${t.c.p}35`:"0 2px 8px rgba(0,0,0,0.05)",fontFamily:t.font}}>
-        <div style={{fontSize:isMobile?"26px":"32px",marginBottom:8}}>{t.emoji}</div><div style={{fontWeight:700,fontSize:isMobile?"14px":"17px",color:t.c.text}}>{t.name}</div><div style={{fontSize:"11px",color:t.c.muted,marginTop:4,lineHeight:1.4}}>{t.tagline}</div>
+        <div style={{fontSize:isMobile?"26px":"32px",marginBottom:8}}>{t.emoji}</div><div style={{fontWeight:700,fontSize:isMobile?"14px":"17px",color:t.c.text}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).name||t.name}</div><div style={{fontSize:"11px",color:t.c.muted,marginTop:4,lineHeight:1.4}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).tagline||t.tagline}</div>
         {u.themeId===t.id&&<div style={{fontSize:"11px",color:t.c.p,fontWeight:700,marginTop:6}}>{tl.selected}</div>}
       </div>)}
     </div>
@@ -1768,8 +1800,8 @@ function Onboarding({onDone}) {
     return <div style={{minHeight:"100vh",background:t.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:qf,padding:"20px"}}>
       <div style={card()}>
         <div style={{fontSize:"48px",marginBottom:6}}>{t.emoji}</div>
-        <div style={{fontSize:"16px",fontWeight:800,color:qc.p,marginBottom:2,fontFamily:qf}}>{t.name}</div>
-        <div style={{fontSize:"12px",color:qc.muted,marginBottom:24}}>{t.tagline}</div>
+        <div style={{fontSize:"16px",fontWeight:800,color:qc.p,marginBottom:2,fontFamily:qf}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).name||t.name}</div>
+        <div style={{fontSize:"12px",color:qc.muted,marginBottom:24}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).tagline||t.tagline}</div>
         <h2 style={{fontSize:"24px",color:qc.text,marginBottom:8,fontWeight:800,fontFamily:qf}}>{tl.whatsYourName}</h2>
         <p style={{color:qc.muted,fontSize:"13px",marginBottom:20}}>{tl.nameForDashboard}</p>
         <input value={u.name} onChange={e=>setU({...u,name:e.target.value})}
@@ -1789,9 +1821,9 @@ function Onboarding({onDone}) {
       <div style={{fontSize:"80px",animation:"bob 2s ease-in-out infinite",marginBottom:20}}>{theme.npc}</div>
       <div style={{fontSize:"13px",color:c.muted,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Personal Finance</div>
       <div style={{fontSize:"44px",fontWeight:800,color:c.p,lineHeight:1.1}}>Moneda 💸</div>
-      <div style={{fontSize:"16px",color:c.muted,marginTop:12}}>{theme.tagline}</div>
+      <div style={{fontSize:"16px",color:c.muted,marginTop:12}}>{(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).tagline||theme.tagline}</div>
     </div>
-    <Dialog theme={theme} lines={theme.chat} onDone={()=>setStage("name")}/>
+    <Dialog theme={theme} lines={(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).chat||theme.chat} onDone={()=>setStage("name")}/>
   </div>;
   if(stage==="name"){const tl=T[u.lang]||T.es;return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:f,padding:"20px"}}>
     <div style={card()}>
