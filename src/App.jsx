@@ -1613,9 +1613,34 @@ function Onboarding({onDone}) {
         <div style={{fontSize:"30px",marginBottom:8}}>{g.e}</div><div style={{fontWeight:700,fontSize:"13px",color:c.text}}>{g.label}</div><div style={{fontSize:"11px",color:c.muted,marginTop:4}}>{g.sub}</div>
       </div>)}
     </div>
-    <button onClick={()=>u.goal&&onDone(u)} style={{padding:"14px 56px",borderRadius:"14px",border:"none",background:u.goal?c.p:"#ddd",color:"white",fontSize:"16px",fontWeight:700,cursor:u.goal?"pointer":"default",fontFamily:f,boxShadow:u.goal?`0 4px 16px ${c.p}50`:"none"}}>
-      {u.goal?"Start my journey! 🚀":"Pick an option above"}
+    <button onClick={()=>u.goal&&setStage("tutorial")} style={{padding:"14px 56px",borderRadius:"14px",border:"none",background:u.goal?c.p:"#ddd",color:"white",fontSize:"16px",fontWeight:700,cursor:u.goal?"pointer":"default",fontFamily:f,boxShadow:u.goal?`0 4px 16px ${c.p}50`:"none"}}>
+      {u.goal?"Start my journey 🚀":"Pick an option above"}
     </button>
+  </div>;
+  if(stage==="tutorial")return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:f,padding:"20px"}}>
+    <div style={{background:"white",borderRadius:"24px",padding:isMobile?"24px 18px":"36px 40px",maxWidth:"520px",width:"100%",boxShadow:"0 12px 48px rgba(0,0,0,0.09)",animation:"pop 0.3s cubic-bezier(.34,1.56,.64,1)",overflowY:"auto",maxHeight:"90vh"}}>
+      <div style={{fontSize:"13px",color:c.muted,textAlign:"center",marginBottom:20}}>Quick guide — how Moneda works</div>
+      <div style={{display:"flex",flexDirection:"column",gap:"14px"}}>
+        {[
+          {n:1,title:"Download your bank export 🏦",sub:"Log into your bank's website or app, go to your transaction history and download it as an Excel file (.xlsx or .csv). Works with Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell and more.",highlight:false},
+          {n:2,title:"Upload it to Moneda 📂",sub:"Go to the Data tab and drop your file. Moneda reads it instantly — nothing is sent anywhere, everything stays on your device.",highlight:false},
+          {n:3,title:"Classify & customise 🗂️",sub:"We auto-categorise most transactions. You can correct any, set monthly budgets, add reminders and track subscriptions.",highlight:false},
+          {n:4,title:"💾 Save your session before you leave",sub:"Any categories, budgets, notes and reminders you create exist only in this browser tab. Before closing, go to the Data tab and tap Download .xlsx — next time upload that file and Moneda will restore everything exactly where you left off.",highlight:true},
+        ].map(({n,title,sub,highlight})=>(
+          <div key={n} style={{display:"flex",gap:"14px",alignItems:"flex-start",background:highlight?"#fffbeb":"transparent",border:highlight?"1.5px solid #fde68a":"none",borderRadius:highlight?"12px":"0",padding:highlight?"14px":"0"}}>
+            <div style={{width:32,height:32,borderRadius:"50%",background:highlight?"#f59e0b":c.p,color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:"14px",flexShrink:0}}>{n}</div>
+            <div>
+              <div style={{fontWeight:700,fontSize:"13px",color:c.text,marginBottom:3}}>{title}</div>
+              <div style={{fontSize:"12px",color:c.muted,lineHeight:1.7}}>{sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{display:"flex",gap:"10px",marginTop:"24px"}}>
+        <button onClick={()=>setStage("goal")} style={{flex:1,padding:"12px",borderRadius:"12px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.text,fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:f}}>← Back</button>
+        <button onClick={()=>onDone(u)} style={{flex:2,padding:"12px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:800,cursor:"pointer",fontFamily:f,boxShadow:`0 4px 16px ${c.p}40`}}>Got it — let's go! 🚀</button>
+      </div>
+    </div>
   </div>;
   return null;
 }
@@ -1633,7 +1658,7 @@ export default function App() {
   const [budgets,setBudgets]           = useState({});
   const [catGroups,setCatGroups]       = useState([]);
   const [customCats,setCustomCats]     = useState([]);
-  const [reminders,setReminders]       = useState([{id:1,text:"Take out €200 cash",done:false,repeat:"weekly"},{id:2,text:"Review subscriptions",done:false,repeat:"monthly"}]);
+  const [reminders,setReminders]       = useState([]);
   const [autoPayments,setAutoPayments] = useState([]);
   const [toast,setToast]               = useState(null);
   const [reimbursed,setReimbursed]     = useState({});
@@ -1778,7 +1803,13 @@ export default function App() {
   const handleExport=useCallback(()=>doExport(transactions,comments,{autoPayments,reminders,budgets,customCats,widgetConfig}),[transactions,comments,autoPayments,reminders,budgets,customCats,widgetConfig]);
   const isMobile=useIsMobile();
 
-  if(!onboarded)return <Onboarding onDone={u=>{setUser(u);setOnboarded(true);}}/>;
+  if(!onboarded)return <Onboarding onDone={u=>{
+    setUser(u);
+    setOnboarded(true);
+    const goalLabels={save:"🎯 Goal: Save for something",cut:"🎯 Goal: Cut my spending",know:"🎯 Goal: Understand my money",chill:"🎯 Goal: Just exploring"};
+    const today=new Date().toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"});
+    setReminders([{id:Date.now(),text:`${goalLabels[u.goal]||"🎯 Goal set"} — set on ${today}`,done:false,repeat:"once"}]);
+  }}/>;
 
   const theme=THEMES[user?.themeId]||THEMES.nature;const{c,font:f,w}=theme;
   const uncategorizedCount=transactions.filter(t=>t.amount<0&&!t.cat).length;
