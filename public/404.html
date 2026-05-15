@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Moneda 💸</title>
+  <script>
+    // GitHub Pages SPA redirect
+    // Any deep path (e.g. /moneda/budgets) → /moneda/#/budgets
+    // so the app boots and can read the hash if needed.
+    var base = '/moneda/';
+    var path = window.location.pathname.replace(base, '') || '';
+    var search = window.location.search || '';
+    window.location.replace(base + '#/' + path + search);
+  </script>
+</head>
+<body></body>
+</html>
