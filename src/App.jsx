@@ -12,6 +12,155 @@ const THEMES = {
   finance:   { id:"finance",   name:"Finance Pro", emoji:"📊", tagline:"Clean data. Clear decisions.",         bg:"#f8fafc", card:"#ffffff", grad:"#f8fafc",                                      c:{p:"#2563eb",pl:"#dbeafe",acc:"#10b981",danger:"#ef4444",text:"#0f172a",muted:"#64748b",border:"#e2e8f0",nav:"#1e40af",navT:"#ffffff",overlay:"rgba(15,23,42,0.65)"},   font:'"Inter",system-ui,sans-serif',  w:{home:"Overview",    txn:"Transactions", budget:"Allocation",   inc:"Revenue", over:"Budget exceeded ⚠️"},            npc:"🤖",npcName:"Fin",     chat:["Welcome to your finance dashboard.","Your data stays 100% on this device.","Track spending, set budgets, plan ahead.","Let's get started."],                          avatars:["🐻","🦅","🐬","🦉","🐆","🤖"] },
 };
 const GOALS = [{id:"save",e:"💰",label:"Save for something",sub:"I have a goal in mind"},{id:"cut",e:"✂️",label:"Cut my spending",sub:"I want to spend less"},{id:"know",e:"🔍",label:"Understand my money",sub:"See where it all goes"},{id:"chill",e:"✨",label:"Just exploring",sub:"Curious about finances"}];
+
+// ── Translations ──────────────────────────────────────────────────────────────
+const T = {
+  en:{
+    home:"Overview",budgets:"Budgets",reminders:"Reminders",autoPay:"Auto Pay",data:"Data",
+    income:"Income",expenses:"Expenses",net:"Net",biggestExpense:"Biggest expense",
+    allTime:"All Time",thisWeek:"This Week",lastWeek:"Last Week",thisMonth:"This Month",lastMonth:"Last Month",
+    custom:"Custom",compare:"Compare",
+    noData:"No data yet",noDataSub:"Go to the Data tab and upload your bank export.",
+    insights:"Insights",topSpend:"Top spend",mostVisited:"Most visited",avgDay:"Avg/day",
+    upcomingCharges:"Upcoming charges",noPayments:"No auto payments set",
+    inDays:"in",days:"days",day:"day",
+    export:"Export Excel",exportBtn:"Download .xlsx",
+    journal:"Transactions",noTxns:"No transactions this month",
+    spent:"spent",transactions:"transactions",expenses2:"expenses",
+    editCat:"Click to edit category",
+    addComment:"Add a note…",saveComment:"Save",cancel:"Cancel",
+    addReminder:"Reminder",markReimbursed:"Mark reimbursed",
+    reimbursedLabel:"Reimbursed",removeReimb:"Remove",
+    reason:"Reason (e.g. Maria paid me back half)",
+    linkTo:"Link to transaction",searchTxn:"Search for the matching transaction…",
+    budgetTitle:"Budget Limits",budgetSub:"Monthly limits per category. Groups let you bundle categories.",
+    noLimit:"No limit set",setLimit:"Set limit",edit:"Edit",
+    exceeded:"Budget exceeded ⚠️",month:"Month",week:"Week",
+    individualLimits:"Individual Limits",weeklyNote:"monthly ÷ 4",
+    remindersTitle:"Reminders",remindersSub:"To-dos, one-offs, and recurring nudges",
+    newReminder:"+ New reminder",placeholder:"e.g. Take out €200 cash",
+    once:"once",weekly:"weekly",monthly:"monthly",addReminderBtn:"Add reminder",
+    autoPayTitle:"Auto Payments",autoPaySub:"Recurring charges — know what's coming",
+    monthlyCommitments:"Monthly commitments",charges:"charges",
+    everyMonth:"every month",everyYear:"every year",
+    remove:"remove",addPayment:"Add payment",
+    name:"Name (e.g. Spotify)",amount:"€ Amount",dayOfMonth:"Day",
+    dataTitle:"Your Data",dataSub:"Upload your bank export",supportedBanks:"Supported banks",
+    dropHere:"Drop your bank export here",dropIt:"Drop it!",chooseFile:"Choose file",
+    privacyTitle:"100% Private",privacyBody:"Everything parsed in your browser. Nothing sent anywhere. Ever.",
+    saveSession:"Save your session",saveSessionBody:"Download your data with all categories and notes. Next time re-upload this file — your classifications will be remembered.",
+    dataLoaded:"Data loaded",viewLedger:"View full",
+    memoryActive:"Merchant memory active",memoryBody:"merchants remembered — next upload auto-classifies these",
+    clearMemory:"Clear",viewMemory:"View",hideMemory:"Hide",rememberedMerchants:"Remembered merchants",
+    helpBanks:"Help us support more banks",helpBanksSub:"Is your bank not working? Share an anonymised export sample.",
+    warning:"⚠️ Before uploading: open your export in Excel, delete ALL rows with real transactions, and keep ONLY the first header row (column names). Never share real financial data.",
+    shareBtn:"📋 Share a sample export →",
+    feedbackLink:"💬 Found a bug or have a suggestion? → Open an issue on GitHub",
+    subsDetected:"Subscriptions detected",subsSub:"Tick yours & set frequency — some are billed yearly, not monthly.",
+    billing:"Billing:",billingMonthly:"🗓 Monthly",billingYearly:"📅 Yearly",
+    perMonth:"per month",perYear:"per year",renewsDay:"renews day",detected:"Detected:",
+    confirmAutoPay:"Confirm & add to Auto Pay ✓",
+    classifyTitle:"Classify merchants",classifyInstruction:"Tap card → tap category",
+    classifyDrop:"Drop on a category ↓",createCategory:"+ Create new category (e.g. Pets)",
+    add:"Add",categories:"Categories",removeUnneeded:"(✕ to remove unneeded)",assigned:"Assigned ✓",
+    doneBtn:"Done — save all ✓",leftToClassify:"merchants left to classify",
+    budgetWizardTitle:"Set your budgets",budgetWizardSub:"What's your approximate monthly income? We'll suggest smart limits.",
+    skipManual:"Skip — set manually →",suggestLimits:"Suggest my limits →",
+    adjustTitle:"✏️ Adjust monthly limits",adjustSub:"Based on your income. Change anything that doesn't fit.",
+    back:"← Back",saveBudgets:"Save budgets 🎯",
+    tutorialTitle:"Quick guide — how Moneda works",
+    step1Title:"Download your bank export 🏦",step1Sub:"Log into your bank's website, go to transaction history and download as Excel (.xlsx or .csv). Works with Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell and more.",
+    step2Title:"Upload it to Moneda 📂",step2Sub:"Go to the Data tab and drop your file. Moneda reads it instantly — nothing is sent anywhere, everything stays on your device.",
+    step3Title:"Classify & customise 🗂️",step3Sub:"We auto-categorise most transactions. You can correct any, set monthly budgets, add reminders and track subscriptions.",
+    step4Title:"💾 Save your session before you leave",step4Sub:"Any categories, budgets and reminders you create exist only in this tab. Before closing, go to Data and tap Download .xlsx — next time upload that file to restore everything.",
+    gotIt:"Got it — let's go! 🚀",
+    spendingTitle:"Spending by category",totalSpentIn:"Total spent in",byMerchant:"By merchant",
+    insightsLabel:"Insights",
+    categoryGroups:"Category Groups",createGroup:"+ Create category group (e.g. Food = Groceries + Restaurants)",
+    newGroup:"New group",groupName:"Group name (e.g. Food)",selectCategories:"Select categories:",
+    createGroupBtn:"Create group",removeGroup:"remove group",
+  },
+  es:{
+    home:"Inicio",budgets:"Presupuestos",reminders:"Recordatorios",autoPay:"Pagos fijos",data:"Datos",
+    income:"Ingresos",expenses:"Gastos",net:"Balance",biggestExpense:"Mayor gasto",
+    allTime:"Todo el tiempo",thisWeek:"Esta semana",lastWeek:"Semana pasada",thisMonth:"Este mes",lastMonth:"Mes pasado",
+    custom:"Personalizado",compare:"Comparar",
+    noData:"Sin datos aún",noDataSub:"Ve a la pestaña Datos y sube el extracto de tu banco.",
+    insights:"Resumen",topSpend:"Mayor gasto",mostVisited:"Sitio más frecuente",avgDay:"Media/día",
+    upcomingCharges:"Próximos cobros",noPayments:"No hay pagos automáticos",
+    inDays:"en",days:"días",day:"día",
+    export:"Exportar Excel",exportBtn:"Descargar .xlsx",
+    journal:"Movimientos",noTxns:"No hay movimientos este mes",
+    spent:"gastado",transactions:"movimientos",expenses2:"gastos",
+    editCat:"Clic para editar categoría",
+    addComment:"Añade una nota…",saveComment:"Guardar",cancel:"Cancelar",
+    addReminder:"Recordatorio",markReimbursed:"Marcar como reembolsado",
+    reimbursedLabel:"Reembolsado",removeReimb:"Eliminar",
+    reason:"Motivo (ej: María me devolvió la mitad)",
+    linkTo:"Vincular con movimiento",searchTxn:"Busca el movimiento correspondiente…",
+    budgetTitle:"Límites de presupuesto",budgetSub:"Límites mensuales por categoría. Los grupos permiten agrupar categorías.",
+    noLimit:"Sin límite",setLimit:"Poner límite",edit:"Editar",
+    exceeded:"Presupuesto superado ⚠️",month:"Mes",week:"Semana",
+    individualLimits:"Límites individuales",weeklyNote:"mensual ÷ 4",
+    remindersTitle:"Recordatorios",remindersSub:"Tareas, avisos puntuales y recordatorios recurrentes",
+    newReminder:"+ Nuevo recordatorio",placeholder:"ej: Sacar €200 en efectivo",
+    once:"una vez",weekly:"semanal",monthly:"mensual",addReminderBtn:"Añadir recordatorio",
+    autoPayTitle:"Pagos automáticos",autoPaySub:"Cargos recurrentes — sabe siempre lo que viene",
+    monthlyCommitments:"Compromisos mensuales",charges:"cargos",
+    everyMonth:"cada mes",everyYear:"cada año",
+    remove:"eliminar",addPayment:"Añadir pago",
+    name:"Nombre (ej: Spotify)",amount:"€ Importe",dayOfMonth:"Día",
+    dataTitle:"Tus datos",dataSub:"Sube el extracto de tu banco",supportedBanks:"Bancos compatibles",
+    dropHere:"Arrastra aquí el extracto de tu banco",dropIt:"¡Suéltalo!",chooseFile:"Elegir archivo",
+    privacyTitle:"100% Privado",privacyBody:"Todo se procesa en tu navegador. Nada se envía a ningún servidor. Nunca.",
+    saveSession:"Guarda tu sesión",saveSessionBody:"Descarga tus datos con todas las categorías y notas. La próxima vez sube este archivo y Moneda lo recuperará todo.",
+    dataLoaded:"Datos cargados",viewLedger:"Ver todos los",
+    memoryActive:"Memoria de comercios activa",memoryBody:"comercios guardados — la próxima subida los clasifica automáticamente",
+    clearMemory:"Limpiar",viewMemory:"Ver",hideMemory:"Ocultar",rememberedMerchants:"Comercios recordados",
+    helpBanks:"Ayúdanos a añadir más bancos",helpBanksSub:"¿Tu banco no funciona? Comparte una muestra anonimizada.",
+    warning:"⚠️ Antes de subir: abre tu extracto en Excel, borra TODAS las filas con movimientos reales y deja SOLO la primera fila con los nombres de las columnas. Nunca compartas datos financieros reales.",
+    shareBtn:"📋 Compartir muestra →",
+    feedbackLink:"💬 ¿Encontraste un error o tienes una sugerencia? → Abrir issue en GitHub",
+    subsDetected:"Suscripciones detectadas",subsSub:"Marca las tuyas y elige la frecuencia — algunas se cobran anualmente.",
+    billing:"Facturación:",billingMonthly:"🗓 Mensual",billingYearly:"📅 Anual",
+    perMonth:"al mes",perYear:"al año",renewsDay:"se renueva el día",detected:"Detectado:",
+    confirmAutoPay:"Confirmar y añadir a Pagos fijos ✓",
+    classifyTitle:"Clasificar comercios",classifyInstruction:"Toca una tarjeta → toca una categoría",
+    classifyDrop:"Suelta en una categoría ↓",createCategory:"+ Crear nueva categoría (ej: Mascotas)",
+    add:"Añadir",categories:"Categorías",removeUnneeded:"(✕ para eliminar las que no necesitas)",assigned:"Asignados ✓",
+    doneBtn:"Listo — guardar todo ✓",leftToClassify:"comercios sin clasificar",
+    budgetWizardTitle:"Configura tus presupuestos",budgetWizardSub:"¿Cuáles son tus ingresos mensuales aproximados? Te sugeriremos límites.",
+    skipManual:"Saltar — lo hago manualmente →",suggestLimits:"Sugerir límites →",
+    adjustTitle:"✏️ Ajusta los límites mensuales",adjustSub:"Basados en tus ingresos. Cambia lo que no se ajuste a ti.",
+    back:"← Atrás",saveBudgets:"Guardar presupuestos 🎯",
+    tutorialTitle:"Guía rápida — cómo funciona Moneda",
+    step1Title:"Descarga el extracto de tu banco 🏦",step1Sub:"Entra en la web o app de tu banco, ve al historial de movimientos y descárgalo como Excel (.xlsx o .csv). Compatible con Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell y más.",
+    step2Title:"Súbelo a Moneda 📂",step2Sub:"Ve a la pestaña Datos y arrastra tu archivo. Moneda lo lee al instante — nada se envía a ningún servidor, todo queda en tu dispositivo.",
+    step3Title:"Clasifica y personaliza 🗂️",step3Sub:"Categorizamos la mayoría de movimientos automáticamente. Puedes corregir cualquiera, poner límites de presupuesto, añadir recordatorios y controlar suscripciones.",
+    step4Title:"💾 Guarda tu sesión antes de salir",step4Sub:"Las categorías, presupuestos y recordatorios que crees solo existen en esta pestaña. Antes de cerrar, ve a Datos y pulsa Descargar .xlsx — la próxima vez sube ese archivo y Moneda recuperará todo.",
+    gotIt:"¡Entendido — vamos! 🚀",
+    spendingTitle:"Gasto por categoría",totalSpentIn:"Total gastado en",byMerchant:"Por comercio",
+    insightsLabel:"Resumen",
+    categoryGroups:"Grupos de categorías",createGroup:"+ Crear grupo (ej: Alimentación = Supermercado + Restaurantes)",
+    newGroup:"Nuevo grupo",groupName:"Nombre del grupo (ej: Alimentación)",selectCategories:"Selecciona categorías:",
+    createGroupBtn:"Crear grupo",removeGroup:"eliminar grupo",
+  }
+};
+
+// ── Category label translations ───────────────────────────────────────────────
+const CAT_LABELS = {
+  en:{Groceries:"Groceries",Restaurants:"Restaurants",Transport:"Transport",Shopping:"Shopping",Subscriptions:"Subscriptions",Health:"Health",Housing:"Housing",Income:"Income","ATM / Cash":"ATM / Cash",Transfers:"Transfers",Entertainment:"Entertainment",Utilities:"Utilities",Education:"Education",Other:"Other"},
+  es:{Groceries:"Supermercado",Restaurants:"Restaurantes",Transport:"Transporte",Shopping:"Compras",Subscriptions:"Suscripciones",Health:"Salud",Housing:"Vivienda",Income:"Ingresos","ATM / Cash":"Efectivo / Cajero",Transfers:"Transferencias",Entertainment:"Ocio",Utilities:"Suministros",Education:"Educación",Other:"Otros"}
+};
+
+// ── Spanish theme vocabulary ──────────────────────────────────────────────────
+const THEME_W_ES = {
+  nature:    {home:"Mi Jardín",   txn:"Movimientos",   budget:"Límite del jardín",inc:"Cosecha", over:"Superaste el límite del jardín 🌱"},
+  adventure: {home:"Sala del Mapa",txn:"Diario de viaje",budget:"Cofre de guerra",inc:"Botín",   over:"¡Cofre de guerra agotado! ⚔️"},
+  princess:  {home:"Corte Real",  txn:"Libro de cuentas",budget:"Decreto Real",  inc:"Tributo", over:"¡Superando el decreto real! 👑"},
+  finance:   {home:"Resumen",     txn:"Transacciones", budget:"Asignación",       inc:"Ingresos",over:"Presupuesto superado ⚠️"},
+};
+
 const CC = {Groceries:"#4caf50",Restaurants:"#ff9800",Transport:"#2196f3",Shopping:"#e91e63",Subscriptions:"#9c27b0",Health:"#f44336",Housing:"#795548",Income:"#00bcd4","ATM / Cash":"#607d8b",Transfers:"#ff5722",Entertainment:"#3f51b5",Utilities:"#009688",Education:"#8bc34a",Other:"#9e9e9e"};
 let ALL_CATS = Object.keys(CC).filter(k=>k!=="Income");
 const RULES = {
@@ -347,8 +496,9 @@ function Dialog({theme,lines,onDone}) {
 }
 
 // ── Subscription Verify ───────────────────────────────────────────────────────
-function SubscriptionVerify({theme,subs,steps,stepIndex,onDone}) {
+function SubscriptionVerify({theme,subs,steps,stepIndex,onDone,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
   const isMobile=useIsMobile();
   const [items,setItems]=useState(subs.map(s=>({...s,checked:true,frequency:"monthly"})));
   const toggle=key=>setItems(is=>is.map(i=>i.key===key?{...i,checked:!i.checked}:i));
@@ -356,9 +506,9 @@ function SubscriptionVerify({theme,subs,steps,stepIndex,onDone}) {
   return <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:isMobile?"flex-end":"center",justifyContent:"center",padding:isMobile?0:"20px",background:"rgba(0,0,0,0.75)"}}>
     <div style={{background:"#ffffff",borderRadius:isMobile?"24px 24px 0 0":"20px",padding:isMobile?"24px 20px":"28px 32px",maxWidth:"540px",width:"100%",maxHeight:isMobile?"95vh":"88vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 60px rgba(0,0,0,0.5)",border:`2px solid ${c.border}`,animation:isMobile?"slideUp 0.3s ease":"none"}}>
       <StepProgress steps={steps} current={stepIndex} theme={theme}/>
-      <div style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:6,fontFamily:f}}>📦 Subscriptions detected</div>
+      <div style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:6,fontFamily:f}}>📦 {tr.subsDetected}</div>
       <div style={{fontSize:"13px",color:"#374151",fontWeight:500,marginBottom:16,background:"#f3f4f6",borderRadius:"10px",padding:"10px 14px"}}>
-        Tick yours &amp; set frequency — some are billed <strong>yearly</strong>, not monthly.
+        {tr.subsSub}
       </div>
       <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:"10px"}}>
         {items.map(s=>(
@@ -369,16 +519,16 @@ function SubscriptionVerify({theme,subs,steps,stepIndex,onDone}) {
               </div>
               <div style={{flex:1}}>
                 <div style={{fontWeight:800,fontSize:"15px",color:"#111827",fontFamily:f}}>{s.name}</div>
-                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?"🔄 Recurring pattern":"📦 Subscription"} · detected {fmtD(s.date)} · day {s.day}</div>
+                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?"🔄 Recurring pattern":"📦 Subscription"} · {tr.detected} {fmtD(s.date)} · {tr.renewsDay} {s.day}</div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
                 <div style={{fontWeight:700,fontSize:"15px",color:c.danger}}>-{fmt(s.amount)}</div>
-                <div style={{fontSize:"11px",color:"#6b7280"}}>{s.frequency==="yearly"?"per year":"per month"}</div>
+                <div style={{fontSize:"11px",color:"#6b7280"}}>{s.frequency==="yearly"?tr.perYear:tr.perMonth}</div>
               </div>
             </div>
             <div style={{display:"flex",gap:"6px",alignItems:"center",padding:"0 16px 12px"}}>
-              <span style={{fontSize:"11px",color:"#374151",fontWeight:700,marginRight:4}}>Billing:</span>
-              {[["monthly","🗓 Monthly"],["yearly","📅 Yearly"]].map(([freq,label])=>(
+              <span style={{fontSize:"11px",color:"#374151",fontWeight:700,marginRight:4}}>{tr.billing}</span>
+              {[["monthly",tr.billingMonthly],["yearly",tr.billingYearly]].map(([freq,label])=>(
                 <button key={freq} onClick={e=>{e.stopPropagation();setFreq(s.key,freq);}}
                   style={{padding:"5px 14px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f,
                     background:s.frequency===freq?c.p:"#ffffff",
@@ -394,15 +544,17 @@ function SubscriptionVerify({theme,subs,steps,stepIndex,onDone}) {
       </div>
       <button onClick={()=>onDone(items.filter(i=>i.checked))}
         style={{marginTop:18,padding:"14px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:700,cursor:"pointer",fontFamily:f,boxShadow:`0 4px 14px ${c.p}40`}}>
-        Confirm & add to Auto Pay ✓
+        {tr.confirmAutoPay}
       </button>
     </div>
   </div>;
 }
 
 // ── Category Review — Drag + Click to Classify ────────────────────────────────
-function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
+function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const isMobile=useIsMobile();
   const isTouch=typeof window!=="undefined"&&window.matchMedia("(hover: none)").matches;
   const groups=Object.entries(
@@ -452,7 +604,7 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
       <StepProgress steps={steps} current={stepIndex} theme={theme}/>
 
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-        <div style={{fontSize:"20px",fontWeight:800,color:c.text,fontFamily:f}}>🤔 Classify merchants</div>
+        <div style={{fontSize:"20px",fontWeight:800,color:c.text,fontFamily:f}}>🤔 {tr.classifyTitle}</div>
         <div style={{fontSize:"12px",color:c.muted,fontWeight:600}}>{progress}/{groups.length} done</div>
       </div>
       <div style={{height:"7px",borderRadius:"7px",background:c.pl,marginBottom:14,overflow:"hidden"}}>
@@ -465,9 +617,9 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
 
       {/* Add new category */}
       <div style={{display:"flex",gap:"8px",marginBottom:12}}>
-        <input value={newCat} onChange={e=>setNewCat(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCat()} placeholder="+ Create new category (e.g. Pets)"
+        <input value={newCat} onChange={e=>setNewCat(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCat()} placeholder={tr.createCategory}
           style={{flex:1,padding:"8px 12px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
-        <button onClick={addCat} style={{padding:"8px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>Add</button>
+        <button onClick={addCat} style={{padding:"8px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>{tr.add}</button>
       </div>
 
       <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:"12px"}}>
@@ -475,7 +627,7 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
         {unassignedGroups.length>0&&<div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
             <div style={{fontSize:"11px",color:c.muted,fontWeight:700,letterSpacing:1,textTransform:"uppercase"}}>
-              {dragging||selected?"Drop on a category ↓":"Tap card → tap category"}
+              {dragging||selected?tr.classifyDrop:tr.classifyInstruction}
             </div>
             {totalPages>1&&<div style={{fontSize:"11px",color:c.muted,fontWeight:600}}>Group {safePage+1}/{totalPages}</div>}
           </div>
@@ -513,7 +665,7 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
         {/* Category drop targets — solid backgrounds, deletable */}
         <div>
           <div style={{fontSize:"11px",color:"#6b7280",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>
-            Categories {(dragging||selected)?"↑ drop here":""} <span style={{fontWeight:400,fontSize:"10px",color:"#9ca3af"}}>(✕ to remove unneeded)</span>
+            {tr.categories} <span style={{fontWeight:400,fontSize:"10px",color:"#9ca3af"}}>{tr.removeUnneeded}</span>
           </div>
           <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(3,1fr)",gap:"8px"}}>
             {localCats.map(cat=>{
@@ -532,7 +684,7 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
                 onClick={()=>{if(selected)assign(selected,cat);}}>
                 <div style={{padding:"10px 8px",textAlign:"center",fontSize:"12px",fontWeight:700,fontFamily:f,color:tileColor}}>
                   <div style={{width:10,height:10,borderRadius:"50%",background:CC[cat]||c.p,margin:"0 auto 5px"}}/>
-                  <div style={{lineHeight:1.3}}>{cat}</div>
+                  <div style={{lineHeight:1.3}}>{catLabel(cat)}</div>
                 </div>
                 {/* Delete button — top-right corner */}
                 <button onClick={e=>{e.stopPropagation();setLocalCats(cs=>cs.filter(x=>x!==cat));if(selected===cat)setSelected(null);}}
@@ -547,13 +699,13 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
 
         {/* Assigned summary — compact tags */}
         {Object.keys(assignments).length>0&&<div>
-          <div style={{fontSize:"11px",color:c.muted,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>Assigned ✓</div>
+          <div style={{fontSize:"11px",color:c.muted,fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>{tr.assigned}</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
             {Object.entries(assignments).map(([merchant,cat])=>(
               <div key={merchant} style={{display:"flex",alignItems:"center",gap:"5px",padding:"4px 10px 4px 8px",borderRadius:"20px",background:"white",border:`1.5px solid ${CC[cat]||c.p}60`}}>
                 <div style={{width:7,height:7,borderRadius:"50%",background:CC[cat]||c.p,flexShrink:0}}/>
                 <span style={{fontSize:"11px",fontWeight:600,color:c.text,maxWidth:"100px",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{merchant}</span>
-                <span style={{fontSize:"10px",color:CC[cat]||c.p,fontWeight:700}}>→ {cat}</span>
+                <span style={{fontSize:"10px",color:CC[cat]||c.p,fontWeight:700}}>→ {catLabel(cat)}</span>
                 <span onClick={()=>unassign(merchant)} style={{cursor:"pointer",color:c.muted,fontSize:"12px",marginLeft:2,lineHeight:1}}>✕</span>
               </div>
             ))}
@@ -564,15 +716,17 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone}) {
       <button onClick={()=>onDone(buildResult(),localCats.filter(x=>!ALL_CATS.includes(x)))}
         disabled={!done}
         style={{marginTop:16,padding:"14px",borderRadius:"12px",border:"none",background:done?c.p:"#d1d5db",color:done?"white":"#9ca3af",fontSize:"15px",fontWeight:700,cursor:done?"pointer":"default",fontFamily:f,transition:"all 0.2s",boxShadow:done?`0 4px 14px ${c.p}40`:"none"}}>
-        {done?"Done — save all ✓":`${unassignedGroups.length} merchant${unassignedGroups.length!==1?"s":""} left to classify`}
+        {done?tr.doneBtn:`${unassignedGroups.length} ${tr.leftToClassify}`}
       </button>
     </div>
   </div>;
 }
 
 // ── Budget Wizard ─────────────────────────────────────────────────────────────
-function BudgetWizard({theme,steps,stepIndex,onDone}) {
+function BudgetWizard({theme,steps,stepIndex,onDone,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const isMobile=useIsMobile();
   const [step,setStep]=useState(1),[income,setIncome]=useState("");
   const [limits,setLimits]=useState({Groceries:150,Restaurants:120,Transport:80,Shopping:200,Subscriptions:50,Health:60,Entertainment:50});
@@ -582,23 +736,23 @@ function BudgetWizard({theme,steps,stepIndex,onDone}) {
       <StepProgress steps={steps} current={stepIndex} theme={theme}/>
       {step===1&&<>
         <div style={{fontSize:"40px",marginBottom:12,textAlign:"center"}}>🎯</div>
-        <h2 style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:8,textAlign:"center",fontFamily:f}}>Set your budgets</h2>
-        <p style={{color:c.muted,fontSize:"13px",textAlign:"center",marginBottom:24}}>What's your approximate monthly income? We'll suggest smart limits based on it.</p>
+        <h2 style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:8,textAlign:"center",fontFamily:f}}>{tr.budgetWizardTitle}</h2>
+        <p style={{color:c.muted,fontSize:"13px",textAlign:"center",marginBottom:24}}>{tr.budgetWizardSub}</p>
         <input value={income} onChange={e=>setIncome(e.target.value)} type="number" placeholder="e.g. 1800"
           style={{width:"100%",padding:"14px",borderRadius:"12px",border:`2px solid ${income?c.p:c.border}`,fontSize:"18px",outline:"none",textAlign:"center",fontFamily:f,color:c.text,marginBottom:16,background:"white"}}/>
         <button onClick={()=>{suggest(income);setStep(2);}}
           style={{width:"100%",padding:"14px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"16px",fontWeight:700,cursor:"pointer",fontFamily:f}}>
-          {income?"Suggest my limits →":"Skip — set manually →"}
+          {income?tr.suggestLimits:tr.skipManual}
         </button>
       </>}
       {step===2&&<>
-        <h2 style={{fontSize:"20px",fontWeight:800,color:c.text,marginBottom:4,fontFamily:f}}>✏️ Adjust monthly limits</h2>
-        <p style={{color:c.muted,fontSize:"13px",marginBottom:18}}>Based on your income. Change anything that doesn't fit your life.</p>
+        <h2 style={{fontSize:"20px",fontWeight:800,color:c.text,marginBottom:4,fontFamily:f}}>{tr.adjustTitle}</h2>
+        <p style={{color:c.muted,fontSize:"13px",marginBottom:18}}>{tr.adjustSub}</p>
         <div style={{display:"flex",flexDirection:"column",gap:"10px",maxHeight:"340px",overflowY:"auto",marginBottom:20}}>
           {Object.entries(limits).map(([cat,val])=>(
             <div key={cat} style={{display:"flex",alignItems:"center",gap:"12px"}}>
               <div style={{width:10,height:10,borderRadius:"50%",background:CC[cat]||c.p,flexShrink:0}}/>
-              <span style={{flex:1,fontWeight:600,fontSize:"14px",color:c.text,fontFamily:f}}>{cat}</span>
+              <span style={{flex:1,fontWeight:600,fontSize:"14px",color:c.text,fontFamily:f}}>{catLabel(cat)}</span>
               <span style={{fontSize:"13px",color:c.muted}}>€</span>
               <input type="number" value={val} onChange={e=>setLimits(l=>({...l,[cat]:+e.target.value}))}
                 style={{width:"80px",padding:"6px 10px",borderRadius:"8px",border:`1.5px solid ${c.border}`,fontSize:"14px",outline:"none",fontFamily:f,color:c.text,textAlign:"right",background:"white"}}/>
@@ -606,8 +760,8 @@ function BudgetWizard({theme,steps,stepIndex,onDone}) {
           ))}
         </div>
         <div style={{display:"flex",gap:"10px"}}>
-          <button onClick={()=>setStep(1)} style={{flex:1,padding:"12px",borderRadius:"12px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.muted,fontSize:"14px",cursor:"pointer",fontFamily:f}}>← Back</button>
-          <button onClick={()=>onDone(limits)} style={{flex:2,padding:"12px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:700,cursor:"pointer",fontFamily:f}}>Save budgets 🎯</button>
+          <button onClick={()=>setStep(1)} style={{flex:1,padding:"12px",borderRadius:"12px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.muted,fontSize:"14px",cursor:"pointer",fontFamily:f}}>{tr.back}</button>
+          <button onClick={()=>onDone(limits)} style={{flex:2,padding:"12px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:700,cursor:"pointer",fontFamily:f}}>{tr.saveBudgets}</button>
         </div>
       </>}
     </div>
@@ -674,8 +828,10 @@ function ReimPanel({t,theme,reimbursed,onMarkReimbursed,setShowReim,allTransacti
 }
 
 // ── Transaction Row ───────────────────────────────────────────────────────────
-function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,allCats,reimbursed,onMarkReimbursed,allTransactions}) {
+function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,allCats,reimbursed,onMarkReimbursed,allTransactions,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const isMobile=useIsMobile();
   const [editCat,setEditCat]=useState(false),[showCom,setShowCom]=useState(false),[showRem,setShowRem]=useState(false),[showReim,setShowReim]=useState(false);
   const [cText,setCText]=useState(comment||""),[rText,setRText]=useState(extractMerchant(t.desc)),[rRepeat,setRRepeat]=useState("once");
@@ -686,10 +842,10 @@ function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,allCats
   const catBadge=editCat
     ?<select autoFocus value={t.cat} onBlur={()=>setEditCat(false)} onChange={e=>{onCatChange(t.id,e.target.value);setEditCat(false);}}
         style={{padding:"3px 7px",borderRadius:"8px",border:`1.5px solid ${c.p}`,fontSize:"11px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
-        {allCats.map(cat=><option key={cat} value={cat}>{cat}</option>)}
+        {allCats.map(cat=><option key={cat} value={cat}>{catLabel(cat)}</option>)}
       </select>
-    :<span onClick={()=>setEditCat(true)} title="Click to edit" style={{padding:"3px 9px",borderRadius:"20px",fontSize:"11px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px",background:`${CC[t.cat]||c.p}22`,color:CC[t.cat]||c.p}}>
-        {t.cat}<span style={{opacity:0.5,fontSize:"9px"}}>✏️</span>
+    :<span onClick={()=>setEditCat(true)} title={tr.editCat} style={{padding:"3px 9px",borderRadius:"20px",fontSize:"11px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px",background:`${CC[t.cat]||c.p}22`,color:CC[t.cat]||c.p}}>
+        {catLabel(t.cat)}<span style={{opacity:0.5,fontSize:"9px"}}>✏️</span>
       </span>;
 
   const actionBtns=(mobile)=><>
@@ -699,19 +855,19 @@ function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,allCats
   </>;
 
   const commentPanel=<div style={{display:"flex",gap:"8px",alignItems:"flex-start"}}>
-    <textarea value={cText} onChange={e=>setCText(e.target.value)} placeholder="Add a note…"
+    <textarea value={cText} onChange={e=>setCText(e.target.value)} placeholder={tr.addComment}
       style={{flex:1,padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",resize:"none",height:"48px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
     <div style={{display:"flex",flexDirection:"column",gap:"4px"}}>
-      <button onClick={()=>{onCommentSave(t.id,cText);setShowCom(false);}} style={{padding:"5px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>Save</button>
+      <button onClick={()=>{onCommentSave(t.id,cText);setShowCom(false);}} style={{padding:"5px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>{tr.saveComment}</button>
       <button onClick={()=>setShowCom(false)} style={{padding:"5px 10px",borderRadius:"8px",border:`1px solid ${c.border}`,background:"white",color:c.muted,cursor:"pointer",fontSize:"12px"}}>✕</button>
     </div>
   </div>;
 
   const reminderPanel=<div style={{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}}>
-    <span style={{fontSize:"12px",color:c.muted,fontWeight:600,flexShrink:0}}>🔔 Reminder:</span>
+    <span style={{fontSize:"12px",color:c.muted,fontWeight:600,flexShrink:0}}>🔔 {tr.addReminder}:</span>
     <input value={rText} onChange={e=>setRText(e.target.value)} style={{flex:1,minWidth:"140px",padding:"6px 10px",borderRadius:"8px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,background:"white"}}/>
-    {["once","weekly","monthly"].map(r=><button key={r} onClick={()=>setRRepeat(r)} style={{padding:"4px 10px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"11px",fontWeight:600,background:rRepeat===r?c.p:"transparent",color:rRepeat===r?"white":c.muted,outline:`1px solid ${rRepeat===r?c.p:c.border}`}}>{r}</button>)}
-    <button onClick={()=>{onAddReminder({id:Date.now(),text:`${rText} (${fmt(t.amount)})`,done:false,repeat:rRepeat});setShowRem(false);}} style={{padding:"6px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>Add ✓</button>
+    {["once","weekly","monthly"].map(r=><button key={r} onClick={()=>setRRepeat(r)} style={{padding:"4px 10px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"11px",fontWeight:600,background:rRepeat===r?c.p:"transparent",color:rRepeat===r?"white":c.muted,outline:`1px solid ${rRepeat===r?c.p:c.border}`}}>{r==="once"?tr.once:r==="weekly"?tr.weekly:tr.monthly}</button>)}
+    <button onClick={()=>{onAddReminder({id:Date.now(),text:`${rText} (${fmt(t.amount)})`,done:false,repeat:rRepeat});setShowRem(false);}} style={{padding:"6px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>{tr.add} ✓</button>
     <button onClick={()=>setShowRem(false)} style={{padding:"6px 8px",borderRadius:"8px",border:`1px solid ${c.border}`,background:"white",color:c.muted,cursor:"pointer",fontSize:"12px"}}>✕</button>
   </div>;
 
@@ -772,15 +928,16 @@ function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,allCats
 }
 
 // ── Merchant Breakdown ────────────────────────────────────────────────────────
-function MerchantBreakdown({theme,txns,cat}) {
+function MerchantBreakdown({theme,txns,cat,lang="es"}) {
   const {c}=theme;
+  const tr=T[lang]||T.en;
   const [hoveredName,setHoveredName]=useState(null);
   const data=Object.entries(txns.filter(t=>t.cat===cat&&t.amount<0).reduce((acc,t)=>{const m=extractMerchant(t.desc);if(!acc[m])acc[m]={total:0,count:0};acc[m].total+=Math.abs(t.amount);acc[m].count++;return acc;},{}))
     .map(([name,{total,count}])=>({name,total:+total.toFixed(2),count})).sort((a,b)=>b.total-a.total).slice(0,15);
   if(!data.length)return null;
   const max=data[0]?.total||1;
   return <div style={{marginTop:18,paddingTop:14,borderTop:`1px solid ${c.border}`}}>
-    <div style={{fontWeight:700,color:c.text,marginBottom:10,fontSize:"13px"}}>📍 By merchant</div>
+    <div style={{fontWeight:700,color:c.text,marginBottom:10,fontSize:"13px"}}>📍 {tr.byMerchant}</div>
     {data.map(({name,total,count})=>(
       <div key={name} style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:7,position:"relative"}}
         onMouseEnter={()=>setHoveredName(name)} onMouseLeave={()=>setHoveredName(null)}>
@@ -803,8 +960,9 @@ function MerchantBreakdown({theme,txns,cat}) {
 }
 
 // ── Compare Panel ─────────────────────────────────────────────────────────────
-function ComparePanel({theme,label1,label2,txns1,txns2}) {
+function ComparePanel({theme,label1,label2,txns1,txns2,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
   const st=tx=>({inc:tx.filter(t=>t.amount>0).reduce((s,t)=>s+t.amount,0),exp:tx.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0),net:tx.reduce((s,t)=>s+t.amount,0)});
   const s1=st(txns1),s2=st(txns2);
   const Row=({label,v1,v2,isExp})=>{const d=isExp?Math.abs(v2)-Math.abs(v1):v2-v1;const pct=v1?Math.round(Math.abs(d/v1)*100):0;const better=isExp?d<0:d>0;
@@ -822,9 +980,9 @@ function ComparePanel({theme,label1,label2,txns1,txns2}) {
       <div/><div style={{textAlign:"center",fontSize:"11px",fontWeight:700,color:c.muted,textTransform:"uppercase",letterSpacing:1}}>{label1}</div>
       <div style={{textAlign:"right",fontSize:"11px",fontWeight:700,color:c.p,textTransform:"uppercase",letterSpacing:1}}>{label2}</div>
     </div>
-    <Row label="Income" v1={s1.inc} v2={s2.inc} isExp={false}/>
-    <Row label="Expenses" v1={s1.exp} v2={s2.exp} isExp={true}/>
-    <Row label="Net" v1={s1.net} v2={s2.net} isExp={false}/>
+    <Row label={tr.income} v1={s1.inc} v2={s2.inc} isExp={false}/>
+    <Row label={tr.expenses} v1={s1.exp} v2={s2.exp} isExp={true}/>
+    <Row label={tr.net} v1={s1.net} v2={s2.net} isExp={false}/>
   </div>;
 }
 
@@ -853,8 +1011,10 @@ function DuplicateWarning({theme,duplicates,onSkip,onInclude}) {
 }
 
 // ── Full Ledger (used in Data page) ──────────────────────────────────────────
-function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onExport}) {
+function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onExport,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const isMobile=useIsMobile();
   const [search,setSearch]=useState(""),[catF,setCatF]=useState("All"),[limit,setLimit]=useState(50);
   const visible=transactions.filter(t=>{
@@ -869,14 +1029,14 @@ function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAdd
         style={{flex:1,minWidth:"180px",padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
       <select value={catF} onChange={e=>setCatF(e.target.value)}
         style={{padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
-        {cats.map(cat=><option key={cat} value={cat}>{cat}</option>)}
+        {cats.map(cat=><option key={cat} value={cat}>{catLabel(cat)}</option>)}
       </select>
       <button onClick={onExport} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>📥 Export</button>
     </div>
-    <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>{visible.length} transaction{visible.length!==1?"s":""}</div>
+    <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>{visible.length} {tr.transactions}</div>
     {isMobile
       ?<div style={{borderRadius:"14px",border:`1.5px solid ${c.border}`,background:c.card,overflow:"hidden"}}>
-          {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed}/>)}
+          {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} lang={lang}/>)}
         </div>
       :<div style={{overflowX:"auto",borderRadius:"14px",border:`1.5px solid ${c.border}`,background:c.card}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
@@ -884,7 +1044,7 @@ function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAdd
               {["Date","Description","Category","Amount",""].map(h=><th key={h} style={{padding:"9px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed}/>)}
+              {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} lang={lang}/>)}
             </tbody>
           </table>
         </div>}
@@ -895,8 +1055,10 @@ function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAdd
 }
 
 // ── Budget Widget (standalone, own period toggle) ─────────────────────────────
-function BudgetWidget({theme,budgets,allTransactions,w}) {
+function BudgetWidget({theme,budgets,allTransactions,w,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const [period,setPeriod]=useState("month");
   const now=new Date();
   const day=now.getDay(),mo=day===0?-6:1-day;
@@ -925,7 +1087,7 @@ function BudgetWidget({theme,budgets,allTransactions,w}) {
         <div style={{fontSize:"11px",color:c.muted,marginTop:2,textTransform:"capitalize"}}>{period==="month"?monthLabel:wkLabel}</div>
       </div>
       <div style={{display:"flex",gap:"5px"}}>
-        {[["month","📅 Month"],["week","🗓 Week"]].map(([p,lbl])=>(
+        {[["month",`📅 ${tr.month}`],["week",`🗓 ${tr.week}`]].map(([p,lbl])=>(
           <button key={p} onClick={()=>setPeriod(p)}
             style={{padding:"5px 12px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f,
               background:period===p?c.p:"white",color:period===p?"white":c.muted,
@@ -938,7 +1100,7 @@ function BudgetWidget({theme,budgets,allTransactions,w}) {
     {budgetRows.map(({cat,limit,spent,pct,over})=>(
       <div key={cat} style={{marginBottom:14}}>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
-          <div style={{display:"flex",alignItems:"center",gap:"7px"}}><div style={{width:8,height:8,borderRadius:"50%",background:CC[cat]||c.p}}/><span style={{fontSize:"13px",fontWeight:600,color:c.text}}>{cat}</span></div>
+          <div style={{display:"flex",alignItems:"center",gap:"7px"}}><div style={{width:8,height:8,borderRadius:"50%",background:CC[cat]||c.p}}/><span style={{fontSize:"13px",fontWeight:600,color:c.text}}>{catLabel(cat)}</span></div>
           <span style={{fontSize:"12px",color:over?c.danger:pct>=80?"#f59e0b":c.muted}}>{fmt(spent)} / {fmt(limit)} {over?"🔴":pct>=80?"🟡":"🟢"}</span>
         </div>
         <div style={{height:"8px",borderRadius:"8px",background:c.pl,overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,borderRadius:"8px",background:over?c.danger:pct>=80?"#f59e0b":CC[cat]||c.p,transition:"width 0.6s"}}/></div>
@@ -949,8 +1111,10 @@ function BudgetWidget({theme,budgets,allTransactions,w}) {
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────────────
-function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,customRange,setCustomRange,filtered,compFiltered,totalInc,totalExp,net,biggestExp,catData,budgetWarnings,paymentsWithCountdown,reminders,setReminders,transactions,comments,onCommentSave,onCatChange,hasData,onAddReminder,allCats,reimbursed,onMarkReimbursed,budgets,widgetConfig,setWidgetConfig,onExport}) {
+function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,customRange,setCustomRange,filtered,compFiltered,totalInc,totalExp,net,biggestExp,catData,budgetWarnings,paymentsWithCountdown,reminders,setReminders,transactions,comments,onCommentSave,onCatChange,hasData,onAddReminder,allCats,reimbursed,onMarkReimbursed,budgets,widgetConfig,setWidgetConfig,onExport,lang="es"}) {
   const {c,font:f,w}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const isMobile=useIsMobile();
   const [catFilter,setCatFilter]=useState("All");
   const [editMode,setEditMode]=useState(false);
@@ -996,7 +1160,7 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
   const compKey=compFilterKey(timeFilter);
 
   // Period label for "Total spent in X — [period]"
-  const periodLabels={"week":"This Week","lastWeek":"Last Week","month":"This Month","lastMonth":"Last Month","all":"All Time","custom":"Custom period"};
+  const periodLabels={"week":tr.thisWeek,"lastWeek":tr.lastWeek,"month":tr.thisMonth,"lastMonth":tr.lastMonth,"all":tr.allTime,"custom":tr.custom};
   const periodLabel=periodLabels[timeFilter]||"";
 
   // Insights
@@ -1037,11 +1201,11 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     </div>}
     {/* Time filters */}
     <div style={{display:"flex",gap:"7px",flexWrap:"wrap",alignItems:"center",overflowX:isMobile?"auto":"visible"}}>
-      {[["week","This Week"],["lastWeek","Last Week"],["month","This Month"],["lastMonth","Last Month"],["all","All Time"]].map(([id,lbl])=>(
+      {[["week",tr.thisWeek],["lastWeek",tr.lastWeek],["month",tr.thisMonth],["lastMonth",tr.lastMonth],["all",tr.allTime]].map(([id,lbl])=>(
         <button key={id} onClick={()=>{setTimeFilter(id);setCompareMode(false);}} style={{padding:"8px 14px",borderRadius:"20px",border:"none",cursor:"pointer",fontFamily:f,fontWeight:600,fontSize:"13px",transition:"all 0.18s",background:timeFilter===id?c.p:c.card,color:timeFilter===id?"white":c.text,boxShadow:timeFilter===id?`0 3px 10px ${c.p}50`:"0 1px 4px rgba(0,0,0,0.07)",whiteSpace:"nowrap",minHeight:"44px"}}>{lbl}</button>
       ))}
-      <button onClick={()=>setTimeFilter("custom")} style={{padding:"8px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontFamily:f,fontWeight:600,fontSize:"13px",background:timeFilter==="custom"?c.p:c.card,color:timeFilter==="custom"?"white":c.text,boxShadow:timeFilter==="custom"?`0 3px 10px ${c.p}50`:"0 1px 4px rgba(0,0,0,0.07)",whiteSpace:"nowrap",minHeight:"44px"}}>📅 Custom</button>
-      {(timeFilter==="week"||timeFilter==="month")&&<button onClick={()=>setCompareMode(m=>!m)} style={{padding:"8px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontFamily:f,fontWeight:600,fontSize:"13px",background:compareMode?"#f59e0b":c.card,color:compareMode?"white":c.text,boxShadow:compareMode?"0 3px 10px rgba(245,158,11,0.5)":"0 1px 4px rgba(0,0,0,0.07)",whiteSpace:"nowrap",minHeight:"44px"}}>⚖️ Compare</button>}
+      <button onClick={()=>setTimeFilter("custom")} style={{padding:"8px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontFamily:f,fontWeight:600,fontSize:"13px",background:timeFilter==="custom"?c.p:c.card,color:timeFilter==="custom"?"white":c.text,boxShadow:timeFilter==="custom"?`0 3px 10px ${c.p}50`:"0 1px 4px rgba(0,0,0,0.07)",whiteSpace:"nowrap",minHeight:"44px"}}>📅 {tr.custom}</button>
+      {(timeFilter==="week"||timeFilter==="month")&&<button onClick={()=>setCompareMode(m=>!m)} style={{padding:"8px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontFamily:f,fontWeight:600,fontSize:"13px",background:compareMode?"#f59e0b":c.card,color:compareMode?"white":c.text,boxShadow:compareMode?"0 3px 10px rgba(245,158,11,0.5)":"0 1px 4px rgba(0,0,0,0.07)",whiteSpace:"nowrap",minHeight:"44px"}}>⚖️ {tr.compare}</button>}
     </div>
     {timeFilter==="custom"&&<div style={{background:c.card,borderRadius:"14px",padding:"16px 20px",border:`1.5px solid ${c.border}`,display:"flex",gap:"12px",alignItems:"center",flexWrap:"wrap"}}>
       <span style={{fontSize:"13px",fontWeight:600,color:c.text}}>📅 From</span>
@@ -1051,38 +1215,38 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     </div>}
     {!hasData&&<div style={{background:c.card,borderRadius:"16px",padding:"32px",textAlign:"center",border:`2px dashed ${c.border}`}}>
       <div style={{fontSize:"42px",marginBottom:10}}>📂</div>
-      <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:6}}>No data yet</div>
-      <div style={{color:c.muted,fontSize:"13px"}}>Go to the <strong>Data</strong> tab and upload your bank Excel.</div>
+      <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:6}}>{tr.noData}</div>
+      <div style={{color:c.muted,fontSize:"13px"}}>{tr.noDataSub}</div>
     </div>}
-    {compareMode&&compFiltered&&compKey&&<ComparePanel theme={theme} label1={timeFilter==="week"?"This Week":"This Month"} label2={compKey==="lastWeek"?"Last Week":"Last Month"} txns1={filtered} txns2={compFiltered}/>}
+    {compareMode&&compFiltered&&compKey&&<ComparePanel theme={theme} label1={timeFilter==="week"?tr.thisWeek:tr.thisMonth} label2={compKey==="lastWeek"?tr.lastWeek:tr.lastMonth} txns1={filtered} txns2={compFiltered} lang={lang}/>}
     {/* Summary cards */}
     {isVisible("summary")&&<div style={{display:"flex",gap:"12px",flexWrap:isMobile?"nowrap":"wrap",overflowX:isMobile?"auto":"visible",paddingBottom:isMobile?"4px":0}}>
-      <SCard label={w.inc} value={`+${fmt(totalInc)}`} sub={`${filtered.filter(t=>t.amount>0).length} transactions`} color="#10b981"/>
-      <SCard label="Expenses" value={`-${fmt(Math.abs(totalExp))}`} sub={`${filtered.filter(t=>t.amount<0).length} transactions`} color={c.danger}/>
-      <SCard label="Net" value={`${net>=0?"+":""}${fmt(net)}`} sub={net>=0?"Great work! 🎉":"More out than in"} color={net>=0?"#10b981":c.danger}/>
-      {biggestExp&&<SCard label="Biggest expense" value={`-${fmt(Math.abs(biggestExp.amount))}`} sub={biggestExp.desc.slice(0,28)+"…"} color={c.danger}/>}
+      <SCard label={w.inc} value={`+${fmt(totalInc)}`} sub={`${filtered.filter(t=>t.amount>0).length} ${tr.transactions}`} color="#10b981"/>
+      <SCard label={tr.expenses} value={`-${fmt(Math.abs(totalExp))}`} sub={`${filtered.filter(t=>t.amount<0).length} ${tr.transactions}`} color={c.danger}/>
+      <SCard label={tr.net} value={`${net>=0?"+":""}${fmt(net)}`} sub={net>=0?"Great work! 🎉":"More out than in"} color={net>=0?"#10b981":c.danger}/>
+      {biggestExp&&<SCard label={tr.biggestExpense} value={`-${fmt(Math.abs(biggestExp.amount))}`} sub={biggestExp.desc.slice(0,28)+"…"} color={c.danger}/>}
     </div>}
     {/* Insights strip */}
     {isVisible("insights")&&hasData&&(topCat||topMerchant)&&<div style={{background:c.card,borderRadius:"14px",padding:"14px 20px",border:`1.5px solid ${c.border}`,display:"flex",gap:"20px",flexWrap:"wrap"}}>
-      <span style={{fontSize:"11px",fontWeight:700,color:c.muted,alignSelf:"center",textTransform:"uppercase",letterSpacing:1}}>💡 Insights</span>
-      {topCat&&<div style={{display:"flex",alignItems:"center",gap:"7px"}}><div style={{width:9,height:9,borderRadius:"50%",background:CC[topCat.name]||c.p}}/><span style={{fontSize:"12px",color:c.text,fontWeight:600}}>Top spend: <strong>{topCat.name}</strong> ({fmt(topCat.value)})</span></div>}
-      {topMerchant&&<div style={{fontSize:"12px",color:c.text,fontWeight:600}}>🛒 Most visited: <strong>{topMerchant[0]}</strong> ({topMerchant[1]}×)</div>}
-      {avgDaily>0&&<div style={{fontSize:"12px",color:c.text,fontWeight:600}}>📅 Avg/day: <strong>{fmt(avgDaily)}</strong></div>}
+      <span style={{fontSize:"11px",fontWeight:700,color:c.muted,alignSelf:"center",textTransform:"uppercase",letterSpacing:1}}>💡 {tr.insightsLabel}</span>
+      {topCat&&<div style={{display:"flex",alignItems:"center",gap:"7px"}}><div style={{width:9,height:9,borderRadius:"50%",background:CC[topCat.name]||c.p}}/><span style={{fontSize:"12px",color:c.text,fontWeight:600}}>{tr.topSpend}: <strong>{catLabel(topCat.name)}</strong> ({fmt(topCat.value)})</span></div>}
+      {topMerchant&&<div style={{fontSize:"12px",color:c.text,fontWeight:600}}>🛒 {tr.mostVisited}: <strong>{topMerchant[0]}</strong> ({topMerchant[1]}×)</div>}
+      {avgDaily>0&&<div style={{fontSize:"12px",color:c.text,fontWeight:600}}>📅 {tr.avgDay}: <strong>{fmt(avgDaily)}</strong></div>}
     </div>}
     {/* Budget widget — independent period toggle */}
-    {isVisible("budget")&&timeFilter!=="all"&&<BudgetWidget theme={theme} budgets={budgets} allTransactions={transactions} w={w}/>}
+    {isVisible("budget")&&timeFilter!=="all"&&<BudgetWidget theme={theme} budgets={budgets} allTransactions={transactions} w={w} lang={lang}/>}
     {/* Payments + Reminders */}
     {isVisible("payments")&&<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"16px"}}>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
-        <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>💳 Upcoming charges</div>
-        {paymentsWithCountdown.length===0?<div style={{color:c.muted,fontSize:"13px"}}>No auto payments set</div>
+        <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>💳 {tr.upcomingCharges}</div>
+        {paymentsWithCountdown.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>
           :paymentsWithCountdown.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}>
-            <div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>in {p.days} day{p.days!==1?"s":""}</div></div>
+            <div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{tr.inDays} {p.days} {p.days!==1?tr.days:tr.day}</div></div>
             <div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div>
           </div>)}
       </div>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
-        <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📋 Reminders</div>
+        <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📋 {tr.remindersTitle}</div>
         {reminders.map(r=><div key={r.id} onClick={()=>setReminders(rs=>rs.map(x=>x.id===r.id?{...x,done:!x.done}:x))}
           style={{display:"flex",alignItems:"center",gap:"10px",padding:"9px 10px",borderRadius:"10px",cursor:"pointer",marginBottom:6,opacity:r.done?0.5:1}}>
           <div style={{width:22,height:22,borderRadius:"50%",flexShrink:0,border:`2px solid ${r.done?c.p:c.border}`,background:r.done?c.p:"white",display:"flex",alignItems:"center",justifyContent:"center"}}>{r.done&&<span style={{color:"white",fontSize:"11px"}}>✓</span>}</div>
@@ -1092,9 +1256,9 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     </div>}
     {/* Spending by category */}
     {isVisible("spending")&&catData.length>0&&<div style={{background:c.card,borderRadius:"16px",padding:"22px 24px",border:`1.5px solid ${c.border}`}}>
-      <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📊 Spending by category</div>
+      <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📊 {tr.spendingTitle}</div>
       <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:16}}>
-        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat}</button>)}
+        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat==="All"?cat:catLabel(cat)}</button>)}
       </div>
       {catFilter==="All"
         ? <ResponsiveContainer width="100%" height={200}>
@@ -1110,14 +1274,14 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
             <div style={{background:c.pl,borderRadius:"14px",padding:"18px 22px",marginBottom:4,display:"flex",alignItems:"center",gap:"14px",border:`1.5px solid ${CC[catFilter]||c.p}40`}}>
               <div style={{width:16,height:16,borderRadius:"50%",background:CC[catFilter]||c.p,flexShrink:0}}/>
               <div>
-                <div style={{fontSize:"12px",color:c.muted,marginBottom:2,fontFamily:f}}>Total spent in <strong>{catFilter}</strong> — {periodLabel}</div>
+                <div style={{fontSize:"12px",color:c.muted,marginBottom:2,fontFamily:f}}>{tr.totalSpentIn} <strong>{catLabel(catFilter)}</strong> — {periodLabel}</div>
                 <div style={{fontSize:"28px",fontWeight:800,color:CC[catFilter]||c.p,fontFamily:f}}>
                   {fmt(filtered.filter(t=>t.cat===catFilter&&t.amount<0).reduce((s,t)=>s+Math.abs(t.amount),0))}
                 </div>
-                <div style={{fontSize:"11px",color:c.muted,marginTop:2}}>{filtered.filter(t=>t.cat===catFilter&&t.amount<0).length} transactions</div>
+                <div style={{fontSize:"11px",color:c.muted,marginTop:2}}>{filtered.filter(t=>t.cat===catFilter&&t.amount<0).length} {tr.transactions}</div>
               </div>
             </div>
-            <MerchantBreakdown theme={theme} txns={filtered} cat={catFilter}/>
+            <MerchantBreakdown theme={theme} txns={filtered} cat={catFilter} lang={lang}/>
           </>
       }
     </div>}
@@ -1133,16 +1297,16 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
         </div>
       </div>
       {journalTxns.length===0
-        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>No transactions in {journalLabel} — use ← to go back</div>
+        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{tr.noTxns} — {lang==="es"?"usa ← para volver":"use ← to go back"}</div>
         :<div style={{overflowX:"auto"}}>
-          <div style={{fontSize:"12px",color:c.muted,marginBottom:8}}>{journalTxns.length} transactions · {journalTxns.filter(t=>t.amount<0).length} expenses · {fmt(Math.abs(journalTxns.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0)))} spent</div>
+          <div style={{fontSize:"12px",color:c.muted,marginBottom:8}}>{journalTxns.length} {tr.transactions} · {journalTxns.filter(t=>t.amount<0).length} {tr.expenses2} · {fmt(Math.abs(journalTxns.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0)))} {tr.spent}</div>
           {isMobile
             ?<div style={{borderRadius:"12px",border:`1px solid ${c.border}`,overflow:"hidden"}}>
-                {journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions}/>)}
+                {journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang}/>)}
               </div>
             :<table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
                 <thead><tr style={{borderBottom:`2px solid ${c.border}`}}>{["Date","Description","Category","Amount",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}</tr></thead>
-                <tbody>{journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions}/>)}</tbody>
+                <tbody>{journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang}/>)}</tbody>
               </table>}
         </div>}
     </div>}
@@ -1150,10 +1314,10 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
     {isVisible("income")&&hasData&&<div style={{background:c.card,borderRadius:"16px",padding:"22px 24px",border:`1.5px solid ${c.border}`}}>
       <div style={{fontWeight:700,color:c.text,fontSize:"15px",marginBottom:14}}>💰 {w.inc} — {periodLabel}</div>
       {filtered.filter(t=>t.amount>0).length===0
-        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>No income in this period</div>
+        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{lang==="es"?"Sin ingresos en este período":"No income in this period"}</div>
         :<>
           <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>
-            {filtered.filter(t=>t.amount>0).length} transaction{filtered.filter(t=>t.amount>0).length!==1?"s":""} · <span style={{color:"#10b981",fontWeight:700}}>+{fmt(totalInc)} total</span>
+            {filtered.filter(t=>t.amount>0).length} {tr.transactions} · <span style={{color:"#10b981",fontWeight:700}}>+{fmt(totalInc)} total</span>
           </div>
           <div style={{overflowX:"auto",borderRadius:"12px",border:`1.5px solid ${c.border}`}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
@@ -1209,8 +1373,10 @@ function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompareMode,cu
 }
 
 // ── Budgets Page ──────────────────────────────────────────────────────────────
-function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransactions,allCats}) {
+function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransactions,allCats,lang="es"}) {
   const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
   const [editing,setEditing]=useState(null),[val,setVal]=useState("");
   const [showNewGroup,setShowNewGroup]=useState(false),[groupName,setGroupName]=useState(""),[groupCats,setGroupCats]=useState([]);
   const [period,setPeriod]=useState("month"); // "month" or "week"
@@ -1235,16 +1401,16 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
   return <div style={{maxWidth:"640px",fontFamily:f}}>
     <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>🎯 {theme.w.budget}</h2>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:24,flexWrap:"wrap",gap:"8px"}}>
-      <p style={{color:c.muted,fontSize:"14px"}}>Limits vs actual spending — compared to <strong>{periodLabel}</strong></p>
+      <p style={{color:c.muted,fontSize:"14px"}}>{tr.budgetSub||"Limits vs actual spending"} — <strong>{periodLabel}</strong></p>
       <div style={{display:"flex",gap:"6px"}}>
-        {[["month","📅 Monthly"],["week","🗓 Weekly"]].map(([p,lbl])=>(
+        {[["month",`📅 ${tr.month}`],["week",`🗓 ${tr.week}`]].map(([p,lbl])=>(
           <button key={p} onClick={()=>setPeriod(p)} style={{padding:"5px 13px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f,background:period===p?c.p:"white",color:period===p?"white":c.muted,boxShadow:period===p?`0 2px 8px ${c.p}40`:`inset 0 0 0 1.5px ${c.border}`}}>{lbl}</button>
         ))}
       </div>
     </div>
     {/* Category groups */}
     {catGroups.length>0&&<div style={{marginBottom:20}}>
-      <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:10,textTransform:"uppercase",letterSpacing:1}}>🗂 Category Groups</div>
+      <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:10,textTransform:"uppercase",letterSpacing:1}}>🗂 {tr.categoryGroups}</div>
       {catGroups.map(g=>{
         const total=g.cats.reduce((s,cat)=>s+(periodSpent[cat]||0),0);
         const limit=g.cats.reduce((s,cat)=>s+(budgets[cat]||0),0);
@@ -1254,7 +1420,7 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
             <div><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{g.name}</div><div style={{fontSize:"11px",color:c.muted,marginTop:2}}>{g.cats.join(" + ")}</div></div>
             <div style={{textAlign:"right"}}>
               <div style={{fontWeight:700,fontSize:"14px",color:c.text}}>{fmt(total)}{limit?` / ${fmt(limit)}`:""}</div>
-              <button onClick={()=>setCatGroups(gs=>gs.filter(x=>x.id!==g.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>remove group</button>
+              <button onClick={()=>setCatGroups(gs=>gs.filter(x=>x.id!==g.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>{tr.removeGroup}</button>
             </div>
           </div>
           {limit>0&&<div style={{height:"7px",borderRadius:"7px",background:c.pl,overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,borderRadius:"7px",background:pct>=100?c.danger:pct>=80?"#f59e0b":c.p,transition:"width 0.5s"}}/></div>}
@@ -1263,24 +1429,24 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
     </div>}
     {/* New group form */}
     <div style={{background:c.card,borderRadius:"14px",padding:"18px 20px",marginBottom:20,border:`1.5px dashed ${c.border}`}}>
-      {!showNewGroup?<button onClick={()=>setShowNewGroup(true)} style={{background:"transparent",border:"none",color:c.p,cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>+ Create category group (e.g. "Food" = Groceries + Restaurants)</button>
+      {!showNewGroup?<button onClick={()=>setShowNewGroup(true)} style={{background:"transparent",border:"none",color:c.p,cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>{tr.createGroup}</button>
         :<div>
-          <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:10}}>New group</div>
-          <input value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder="Group name (e.g. Food)" style={{width:"100%",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white",marginBottom:10}}/>
-          <div style={{fontSize:"12px",color:c.muted,marginBottom:8}}>Select categories:</div>
+          <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:10}}>{tr.newGroup}</div>
+          <input value={groupName} onChange={e=>setGroupName(e.target.value)} placeholder={tr.groupName} style={{width:"100%",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white",marginBottom:10}}/>
+          <div style={{fontSize:"12px",color:c.muted,marginBottom:8}}>{tr.selectCategories}</div>
           <div style={{display:"flex",flexWrap:"wrap",gap:"6px",marginBottom:12}}>
             {ALL_CATS.map(cat=><button key={cat} onClick={()=>setGroupCats(cs=>cs.includes(cat)?cs.filter(x=>x!==cat):[...cs,cat])}
-              style={{padding:"4px 11px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,background:groupCats.includes(cat)?(CC[cat]||c.p):"transparent",color:groupCats.includes(cat)?"white":c.muted,outline:`1.5px solid ${groupCats.includes(cat)?(CC[cat]||c.p):c.border}`}}>{cat}</button>)}
+              style={{padding:"4px 11px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,background:groupCats.includes(cat)?(CC[cat]||c.p):"transparent",color:groupCats.includes(cat)?"white":c.muted,outline:`1.5px solid ${groupCats.includes(cat)?(CC[cat]||c.p):c.border}`}}>{catLabel(cat)}</button>)}
           </div>
           <div style={{display:"flex",gap:"8px"}}>
-            <button onClick={()=>{if(groupName.trim()&&groupCats.length>0){setCatGroups(gs=>[...gs,{id:Date.now(),name:groupName.trim(),cats:groupCats}]);setGroupName("");setGroupCats([]);setShowNewGroup(false);}}} style={{padding:"8px 16px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"13px",fontWeight:700,fontFamily:f}}>Create group</button>
-            <button onClick={()=>{setShowNewGroup(false);setGroupName("");setGroupCats([]);}} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.muted,cursor:"pointer",fontSize:"13px",fontFamily:f}}>Cancel</button>
+            <button onClick={()=>{if(groupName.trim()&&groupCats.length>0){setCatGroups(gs=>[...gs,{id:Date.now(),name:groupName.trim(),cats:groupCats}]);setGroupName("");setGroupCats([]);setShowNewGroup(false);}}} style={{padding:"8px 16px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"13px",fontWeight:700,fontFamily:f}}>{tr.createGroupBtn}</button>
+            <button onClick={()=>{setShowNewGroup(false);setGroupName("");setGroupCats([]);}} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.muted,cursor:"pointer",fontSize:"13px",fontFamily:f}}>{tr.cancel}</button>
           </div>
         </div>}
     </div>
     {/* Individual budgets — only categories with a limit set */}
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-      <div style={{fontSize:"13px",fontWeight:700,color:c.text,textTransform:"uppercase",letterSpacing:1}}>Individual Limits {period==="week"&&<span style={{fontWeight:400,color:c.muted,fontSize:"11px",textTransform:"none"}}>(monthly ÷ 4)</span>}</div>
+      <div style={{fontSize:"13px",fontWeight:700,color:c.text,textTransform:"uppercase",letterSpacing:1}}>{tr.individualLimits} {period==="week"&&<span style={{fontWeight:400,color:c.muted,fontSize:"11px",textTransform:"none"}}>({tr.weeklyNote})</span>}</div>
       <button onClick={()=>{const u=allCats.filter(cat=>!(budgets[cat]>0));setAddCat(u[0]||"");setShowAdd(s=>!s);}}
         style={{padding:"5px 12px",borderRadius:"16px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>+ Add</button>
     </div>
@@ -1303,7 +1469,7 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
       const pct=limit?+(Math.min(spent/limit*100,100)).toFixed(0):0;
       return <div key={cat} style={{background:c.card,borderRadius:"14px",padding:"18px 22px",marginBottom:10,border:`1.5px solid ${c.border}`}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-          <div style={{display:"flex",alignItems:"center",gap:"10px"}}><div style={{width:10,height:10,borderRadius:"50%",background:CC[cat]||c.p}}/><span style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{cat}</span></div>
+          <div style={{display:"flex",alignItems:"center",gap:"10px"}}><div style={{width:10,height:10,borderRadius:"50%",background:CC[cat]||c.p}}/><span style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{catLabel(cat)}</span></div>
           {editing===cat?<div style={{display:"flex",gap:"6px"}}>
             <input value={val} onChange={e=>setVal(e.target.value)} type="number" autoFocus onKeyDown={e=>{if(e.key==="Enter"){setBudgets(b=>({...b,[cat]:+val}));setEditing(null);}}} style={{width:"80px",padding:"6px 8px",borderRadius:"8px",border:`2px solid ${c.p}`,fontSize:"14px",outline:"none",fontFamily:f,background:"white"}}/>
             <span style={{fontSize:"11px",color:c.muted,alignSelf:"center"}}>/mo</span>
@@ -1312,7 +1478,7 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
           </div>:<div style={{display:"flex",alignItems:"center",gap:"8px"}}>
             <span style={{color:c.muted,fontSize:"12px"}}>{fmt(spent)} / {fmt(limit)}{period==="week"?" /wk":" /mo"}</span>
             {period==="week"&&<span style={{fontSize:"10px",color:c.muted}}>(€{monthlyLimit}/mo)</span>}
-            <button onClick={()=>{setEditing(cat);setVal(monthlyLimit);}} style={{padding:"4px 10px",borderRadius:"8px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>Edit</button>
+            <button onClick={()=>{setEditing(cat);setVal(monthlyLimit);}} style={{padding:"4px 10px",borderRadius:"8px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>{tr.edit}</button>
             <button onClick={()=>setBudgets(b=>{const n={...b};delete n[cat];return n;})} title="Remove budget" style={{padding:"4px 8px",borderRadius:"8px",border:"none",background:"transparent",color:c.muted,cursor:"pointer",fontSize:"14px",lineHeight:1}}>✕</button>
           </div>}
         </div>
@@ -1324,16 +1490,18 @@ function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,allTransac
 }
 
 // ── Reminders Page ────────────────────────────────────────────────────────────
-function RemindersPage({theme,reminders,setReminders}) {
-  const {c,font:f}=theme;const[text,setText]=useState(""),[repeat,setRepeat]=useState("once");
+function RemindersPage({theme,reminders,setReminders,lang="es"}) {
+  const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const[text,setText]=useState(""),[repeat,setRepeat]=useState("once");
   const add=()=>{if(!text.trim())return;setReminders(rs=>[...rs,{id:Date.now(),text:text.trim(),done:false,repeat}]);setText("");};
   return <div style={{maxWidth:"520px",fontFamily:f}}>
-    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>📋 Reminders</h2>
-    <p style={{color:c.muted,fontSize:"14px",marginBottom:22}}>To-dos, one-offs, and recurring nudges</p>
+    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>📋 {tr.remindersTitle}</h2>
+    <p style={{color:c.muted,fontSize:"14px",marginBottom:22}}>{tr.remindersSub}</p>
     <div style={{background:c.card,borderRadius:"16px",padding:"20px",marginBottom:18,border:`1.5px solid ${c.border}`}}>
-      <input value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder="e.g. Take out €200 cash" style={{width:"100%",padding:"10px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"14px",outline:"none",fontFamily:f,color:c.text,marginBottom:10,background:"white"}}/>
-      <div style={{display:"flex",gap:"7px",marginBottom:12}}>{["once","weekly","monthly"].map(r=><button key={r} onClick={()=>setRepeat(r)} style={{padding:"5px 14px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,background:repeat===r?c.p:"transparent",color:repeat===r?"white":c.muted,outline:`1.5px solid ${repeat===r?c.p:c.border}`}}>{r}</button>)}</div>
-      <button onClick={add} style={{padding:"9px 20px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>Add reminder</button>
+      <input value={text} onChange={e=>setText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&add()} placeholder={tr.placeholder} style={{width:"100%",padding:"10px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"14px",outline:"none",fontFamily:f,color:c.text,marginBottom:10,background:"white"}}/>
+      <div style={{display:"flex",gap:"7px",marginBottom:12}}>{["once","weekly","monthly"].map(r=><button key={r} onClick={()=>setRepeat(r)} style={{padding:"5px 14px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,background:repeat===r?c.p:"transparent",color:repeat===r?"white":c.muted,outline:`1.5px solid ${repeat===r?c.p:c.border}`}}>{r==="once"?tr.once:r==="weekly"?tr.weekly:tr.monthly}</button>)}</div>
+      <button onClick={add} style={{padding:"9px 20px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>{tr.addReminderBtn}</button>
     </div>
     {reminders.map(r=><div key={r.id} style={{background:c.card,borderRadius:"12px",padding:"14px 18px",marginBottom:8,border:`1.5px solid ${r.done?c.pl:c.border}`,display:"flex",alignItems:"center",gap:"12px",opacity:r.done?0.55:1}}>
       <div onClick={()=>setReminders(rs=>rs.map(x=>x.id===r.id?{...x,done:!x.done}:x))} style={{width:24,height:24,borderRadius:"50%",flexShrink:0,cursor:"pointer",border:`2px solid ${r.done?c.p:c.border}`,background:r.done?c.p:"white",display:"flex",alignItems:"center",justifyContent:"center"}}>{r.done&&<span style={{color:"white",fontSize:"13px"}}>✓</span>}</div>
@@ -1344,8 +1512,10 @@ function RemindersPage({theme,reminders,setReminders}) {
 }
 
 // ── Auto Pay Page ─────────────────────────────────────────────────────────────
-function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCountdown}) {
-  const {c,font:f}=theme;const[name,setName]=useState(""),[amt,setAmt]=useState(""),[day,setDay]=useState(""),[month,setMonth]=useState(""),[freq,setFreq]=useState("monthly");
+function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCountdown,lang="es"}) {
+  const {c,font:f}=theme;
+  const tr=T[lang]||T.en;
+  const[name,setName]=useState(""),[amt,setAmt]=useState(""),[day,setDay]=useState(""),[month,setMonth]=useState(""),[freq,setFreq]=useState("monthly");
   const add=()=>{
     if(!name||!amt||!day)return;
     if(freq==="yearly"&&!month)return;
@@ -1353,37 +1523,38 @@ function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCountdown})
     setName("");setAmt("");setDay("");setMonth("");
   };
   return <div style={{maxWidth:"580px",fontFamily:f}}>
-    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>💳 Auto Payments</h2>
-    <p style={{color:c.muted,fontSize:"14px",marginBottom:20}}>Recurring charges — know what's coming</p>
+    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>💳 {tr.autoPayTitle}</h2>
+    <p style={{color:c.muted,fontSize:"14px",marginBottom:20}}>{tr.autoPaySub}</p>
     <div style={{background:`${c.p}14`,borderRadius:"14px",padding:"16px 22px",marginBottom:20,border:`1.5px solid ${c.p}30`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-      <div><div style={{fontSize:"11px",color:c.muted,textTransform:"uppercase",letterSpacing:1}}>Monthly commitments</div><div style={{fontSize:"28px",fontWeight:800,color:c.p}}>-€{autoPayments.reduce((s,p)=>s+(p.frequency==="yearly"?p.amount/12:p.amount),0).toFixed(2)}/mo</div></div>
-      <div style={{fontSize:"12px",color:c.muted}}>{autoPayments.length} charges</div>
+      <div><div style={{fontSize:"11px",color:c.muted,textTransform:"uppercase",letterSpacing:1}}>{tr.monthlyCommitments}</div><div style={{fontSize:"28px",fontWeight:800,color:c.p}}>-€{autoPayments.reduce((s,p)=>s+(p.frequency==="yearly"?p.amount/12:p.amount),0).toFixed(2)}/mo</div></div>
+      <div style={{fontSize:"12px",color:c.muted}}>{autoPayments.length} {tr.charges}</div>
     </div>
     {paymentsWithCountdown.map(p=><div key={p.id} style={{background:c.card,borderRadius:"14px",padding:"14px 18px",marginBottom:10,border:`1.5px solid ${p.days<=3?c.danger:p.days<=7?"#f59e0b":c.border}`,display:"flex",alignItems:"center",gap:"14px"}}>
       <div style={{width:50,height:50,borderRadius:"12px",flexShrink:0,background:p.days<=3?`${c.danger}20`:p.days<=7?"#f59e0b20":c.pl,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
         <div style={{fontSize:"20px",fontWeight:800,lineHeight:1,color:p.days<=3?c.danger:p.days<=7?"#d97706":c.p}}>{p.days}</div>
         <div style={{fontSize:"9px",color:c.muted}}>days</div>
       </div>
-      <div style={{flex:1}}><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{p.name}</div><div style={{fontSize:"12px",color:c.muted}}>{p.frequency==="yearly"?`every year${p.month?`, month ${p.month}`:""}, day ${p.day}`:`every month, day ${p.day}`}</div></div>
-      <div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:"15px",color:c.text}}>-€{p.amount.toFixed(2)}{p.frequency==="yearly"?" /yr":"/mo"}</div><button onClick={()=>setAutoPayments(ps=>ps.filter(x=>x.id!==p.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>remove</button></div>
+      <div style={{flex:1}}><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{p.name}</div><div style={{fontSize:"12px",color:c.muted}}>{p.frequency==="yearly"?`${tr.everyYear}${p.month?`, ${lang==="es"?"mes":"month"} ${p.month}`:""}, ${lang==="es"?"día":"day"} ${p.day}`:`${tr.everyMonth}, ${lang==="es"?"día":"day"} ${p.day}`}</div></div>
+      <div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:"15px",color:c.text}}>-€{p.amount.toFixed(2)}{p.frequency==="yearly"?" /yr":"/mo"}</div><button onClick={()=>setAutoPayments(ps=>ps.filter(x=>x.id!==p.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>{tr.remove}</button></div>
     </div>)}
     <div style={{background:c.card,borderRadius:"16px",padding:"20px",marginTop:16,border:`1.5px dashed ${c.border}`}}>
-      <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:12}}>+ Add auto payment</div>
+      <div style={{fontSize:"13px",fontWeight:700,color:c.text,marginBottom:12}}>+ {tr.addPayment}</div>
       <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:10}}>
-        <input value={name} onChange={e=>setName(e.target.value)} placeholder="Name (e.g. Spotify)" style={{flex:"2 1 160px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
-        <input value={amt} onChange={e=>setAmt(e.target.value)} placeholder="€ Amount" type="number" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
-        {freq==="yearly"&&<input value={month} onChange={e=>setMonth(e.target.value)} placeholder="Month (1-12)" type="number" min="1" max="12" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>}
-        <input value={day} onChange={e=>setDay(e.target.value)} placeholder="Day (1-31)" type="number" min="1" max="31" style={{flex:"1 1 80px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
+        <input value={name} onChange={e=>setName(e.target.value)} placeholder={tr.name} style={{flex:"2 1 160px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
+        <input value={amt} onChange={e=>setAmt(e.target.value)} placeholder={tr.amount} type="number" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
+        {freq==="yearly"&&<input value={month} onChange={e=>setMonth(e.target.value)} placeholder={lang==="es"?"Mes (1-12)":"Month (1-12)"} type="number" min="1" max="12" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>}
+        <input value={day} onChange={e=>setDay(e.target.value)} placeholder={`${tr.dayOfMonth} (1-31)`} type="number" min="1" max="31" style={{flex:"1 1 80px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
       </div>
-      <div style={{display:"flex",gap:"6px",marginBottom:12}}>{["monthly","yearly"].map(fr=><button key={fr} onClick={()=>{setFreq(fr);setMonth("");setDay("");}} style={{padding:"5px 13px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,background:freq===fr?c.p:"transparent",color:freq===fr?"white":c.muted,outline:`1.5px solid ${freq===fr?c.p:c.border}`}}>{fr}</button>)}</div>
-      <button onClick={add} style={{padding:"10px 20px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>Add payment</button>
+      <div style={{display:"flex",gap:"6px",marginBottom:12}}>{["monthly","yearly"].map(fr=><button key={fr} onClick={()=>{setFreq(fr);setMonth("");setDay("");}} style={{padding:"5px 13px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,background:freq===fr?c.p:"transparent",color:freq===fr?"white":c.muted,outline:`1.5px solid ${freq===fr?c.p:c.border}`}}>{fr==="monthly"?tr.everyMonth:tr.everyYear}</button>)}</div>
+      <button onClick={add} style={{padding:"10px 20px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"13px",fontFamily:f}}>{tr.addPayment}</button>
     </div>
   </div>;
 }
 
 // ── Data Page ─────────────────────────────────────────────────────────────────
-function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory,onExport}) {
+function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory,onExport,lang="es"}) {
   const {c,font:f,w}=theme;
+  const tr=T[lang]||T.en;
   const[dragging,setDragging]=useState(false),[showLedger,setShowLedger]=useState(false),[showMemory,setShowMemory]=useState(false);
   const[dupWarning,setDupWarning]=useState(null); // {duplicates, parsedMerged}
 
@@ -1437,24 +1608,24 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
   const handleFile=useCallback(file=>{handleFiles([file]);},[handleFiles]);
   const memoryCount=Object.keys(merchantMemory||{}).length;
   return <div style={{maxWidth:"700px",fontFamily:f}}>
-    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>📂 Your Data</h2>
-    <p style={{color:c.muted,fontSize:"14px",marginBottom:22}}>Upload your bank .xlsx export</p>
+    <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>📂 {tr.dataTitle}</h2>
+    <p style={{color:c.muted,fontSize:"14px",marginBottom:22}}>{tr.dataSub}</p>
     {/* Merchant memory status */}
     {memoryCount>0&&<div style={{background:"#f0fdf4",borderRadius:"14px",padding:"14px 18px",marginBottom:14,border:"1.5px solid #bbf7d0",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         <span style={{fontSize:"20px"}}>🧠</span>
         <div>
-          <div style={{fontWeight:700,color:"#15803d",fontSize:"13px"}}>Merchant memory active</div>
-          <div style={{fontSize:"12px",color:"#166534"}}>{memoryCount} merchant{memoryCount!==1?"s":""} remembered — next upload auto-classifies these</div>
+          <div style={{fontWeight:700,color:"#15803d",fontSize:"13px"}}>{tr.memoryActive}</div>
+          <div style={{fontSize:"12px",color:"#166534"}}>{memoryCount} {tr.memoryBody}</div>
         </div>
       </div>
       <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-        <button onClick={()=>setShowMemory(s=>!s)} style={{padding:"5px 10px",borderRadius:"8px",border:"1.5px solid #bbf7d0",background:"white",color:"#15803d",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f}}>{showMemory?"Hide":"View"}</button>
-        <button onClick={onClearMemory} style={{padding:"5px 10px",borderRadius:"8px",border:"1.5px solid #fca5a5",background:"white",color:"#ef4444",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f}}>Clear</button>
+        <button onClick={()=>setShowMemory(s=>!s)} style={{padding:"5px 10px",borderRadius:"8px",border:"1.5px solid #bbf7d0",background:"white",color:"#15803d",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f}}>{showMemory?tr.hideMemory:tr.viewMemory}</button>
+        <button onClick={onClearMemory} style={{padding:"5px 10px",borderRadius:"8px",border:"1.5px solid #fca5a5",background:"white",color:"#ef4444",cursor:"pointer",fontSize:"11px",fontWeight:700,fontFamily:f}}>{tr.clearMemory}</button>
       </div>
     </div>}
     {showMemory&&memoryCount>0&&<div style={{background:c.card,borderRadius:"14px",padding:"14px 18px",marginBottom:14,border:`1.5px solid ${c.border}`,maxHeight:"220px",overflowY:"auto"}}>
-      <div style={{fontSize:"11px",fontWeight:700,color:c.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Remembered merchants</div>
+      <div style={{fontSize:"11px",fontWeight:700,color:c.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>{tr.rememberedMerchants}</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
         {Object.entries(merchantMemory).sort((a,b)=>a[0].localeCompare(b[0])).map(([merchant,cat])=>(
           <div key={merchant} style={{display:"flex",alignItems:"center",gap:"5px",padding:"3px 10px 3px 8px",borderRadius:"20px",background:"white",border:`1.5px solid ${CC[cat]||c.border}50`}}>
@@ -1470,7 +1641,7 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
       onInclude={()=>{onUpload(dupWarning.parsedAll,null,"merged");setDupWarning(null);}}/>}
     {/* Supported banks chips */}
     <div style={{marginBottom:14}}>
-      <div style={{fontSize:"11px",fontWeight:700,color:c.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>Supported banks</div>
+      <div style={{fontSize:"11px",fontWeight:700,color:c.muted,textTransform:"uppercase",letterSpacing:1,marginBottom:8}}>{tr.supportedBanks}</div>
       <div style={{display:"flex",flexWrap:"wrap",gap:"6px"}}>
         {["Santander","BBVA","CaixaBank","Bankinter","Sabadell","ING","Unicaja","Kutxabank","Openbank","Revolut","N26","Wise"].map(bank=>(
           <span key={bank} style={{padding:"3px 10px",borderRadius:"20px",background:c.pl,border:`1.5px solid ${c.border}`,fontSize:"11px",fontWeight:600,color:c.text}}>{bank}</span>
@@ -1481,55 +1652,55 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
     <div style={{background:"#fffbeb",borderRadius:"14px",padding:"16px 20px",border:"1.5px solid #fde68a",display:"flex",gap:"12px",alignItems:"flex-start",marginBottom:14}}>
       <div style={{fontSize:"24px",flexShrink:0}}>🏦</div>
       <div>
-        <div style={{fontWeight:700,fontSize:"14px",color:"#92400e",marginBottom:4}}>Help us support more banks</div>
-        <div style={{fontSize:"12px",color:"#78350f",lineHeight:1.7}}>Is your bank not working? Share an anonymised export sample so we can add support. This helps everyone who uses the same bank.</div>
+        <div style={{fontWeight:700,fontSize:"14px",color:"#92400e",marginBottom:4}}>{tr.helpBanks}</div>
+        <div style={{fontSize:"12px",color:"#78350f",lineHeight:1.7}}>{tr.helpBanksSub}</div>
         <div style={{background:"#fef3c7",borderRadius:"8px",padding:"8px 12px",marginTop:"8px",fontSize:"11px",color:"#92400e",fontWeight:600}}>
-          ⚠️ Before uploading: open your export in Excel, delete ALL rows with real transactions, and keep ONLY the first header row (column names). Never share real financial data.
+          {tr.warning}
         </div>
         <a href="https://forms.gle/B5YN41kHL4qfHf3Y7" target="_blank" rel="noreferrer"
           style={{display:"inline-block",marginTop:"10px",padding:"7px 16px",borderRadius:"20px",background:"#f59e0b",color:"white",fontSize:"12px",fontWeight:700,textDecoration:"none",cursor:"pointer"}}>
-          📋 Share a sample export →
+          {tr.shareBtn}
         </a>
-        <div style={{fontSize:"11px",color:"#a16207",marginTop:"6px"}}>You'll be asked to upload only the header row of your export and describe what went wrong. No account needed.</div>
+        <div style={{fontSize:"11px",color:"#a16207",marginTop:"6px"}}>{lang==="es"?"Solo tendrás que subir la primera fila de cabecera de tu extracto y describir qué falló. Sin registro.":"You'll be asked to upload only the header row of your export and describe what went wrong. No account needed."}</div>
       </div>
     </div>
     <div onDrop={e=>{e.preventDefault();setDragging(false);handleFiles(e.dataTransfer.files);}} onDragOver={e=>{e.preventDefault();setDragging(true);}} onDragLeave={()=>setDragging(false)}
       style={{background:dragging?c.pl:c.card,borderRadius:"20px",padding:"44px",textAlign:"center",transition:"all 0.2s",border:`2.5px dashed ${dragging?c.p:c.border}`,boxShadow:dragging?`0 0 0 4px ${c.p}25`:"none",marginBottom:18}}>
       <div style={{fontSize:"48px",marginBottom:12}}>📊</div>
-      <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:8}}>{dragging?"Drop them!":"Drop your Excel(s) here"}</div>
-      <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>One or multiple bank .xlsx exports · <span style={{fontSize:"12px"}}>stays 100% on your device 🔒</span></div>
+      <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:8}}>{dragging?tr.dropIt:tr.dropHere}</div>
+      <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>{lang==="es"?"Uno o varios extractos bancarios .xlsx · ":"One or multiple bank .xlsx exports · "}<span style={{fontSize:"12px"}}>{lang==="es"?"100% en tu dispositivo 🔒":"stays 100% on your device 🔒"}</span></div>
       <label style={{padding:"12px 28px",borderRadius:"12px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"15px",fontFamily:f,boxShadow:`0 4px 14px ${c.p}40`,display:"inline-block"}}>
-        Choose file(s)<input type="file" multiple accept=".xlsx,.xls,.csv" onChange={e=>handleFiles(e.target.files)} style={{display:"none"}}/>
+        {tr.chooseFile}<input type="file" multiple accept=".xlsx,.xls,.csv" onChange={e=>handleFiles(e.target.files)} style={{display:"none"}}/>
       </label>
     </div>
     {transactions.length>0&&<>
       <div style={{background:`${c.p}14`,borderRadius:"14px",padding:"16px 20px",border:`1.5px solid ${c.p}30`,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div><div style={{fontWeight:700,color:c.text,fontSize:"14px",marginBottom:4}}>✅ Data loaded</div><div style={{fontSize:"13px",color:c.muted}}>{transactions.length} transactions · {transactions[transactions.length-1]?.date} → {transactions[0]?.date}</div></div>
+        <div><div style={{fontWeight:700,color:c.text,fontSize:"14px",marginBottom:4}}>✅ {tr.dataLoaded}</div><div style={{fontSize:"13px",color:c.muted}}>{transactions.length} {tr.transactions} · {transactions[transactions.length-1]?.date} → {transactions[0]?.date}</div></div>
         <button onClick={onExport} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"white",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>📥 Export</button>
       </div>
       <button onClick={()=>setShowLedger(s=>!s)}
         style={{width:"100%",padding:"14px",borderRadius:"14px",border:`2px solid ${c.p}`,background:showLedger?c.p:"transparent",color:showLedger?"white":c.p,cursor:"pointer",fontWeight:700,fontSize:"14px",fontFamily:f,marginBottom:showLedger?12:0,transition:"all 0.2s"}}>
-        {showLedger?"▲ Hide":"📜 View full"} {w.txn} ({transactions.length} transactions, re-classify any)
+        {showLedger?"▲ Hide":`📜 ${tr.viewLedger}`} {w.txn} ({transactions.length} {tr.transactions}{lang==="es"?", reclasifica si quieres":", re-classify any"})
       </button>
-      {showLedger&&<FullLedger theme={theme} transactions={transactions} onCatChange={onCatChange} comments={comments} onCommentSave={onCommentSave} onAddReminder={onAddReminder} allCats={allCats} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} onExport={onExport}/>}
+      {showLedger&&<FullLedger theme={theme} transactions={transactions} onCatChange={onCatChange} comments={comments} onCommentSave={onCommentSave} onAddReminder={onAddReminder} allCats={allCats} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} onExport={onExport} lang={lang}/>}
     </>}
     <div style={{background:"#f0fdf4",borderRadius:"14px",padding:"16px 20px",border:"1.5px solid #bbf7d0",display:"flex",gap:"12px",alignItems:"flex-start",marginTop:14}}>
       <div style={{fontSize:"22px"}}>🔒</div>
-      <div><div style={{fontWeight:700,color:"#15803d",fontSize:"14px",marginBottom:4}}>100% Private</div><div style={{fontSize:"12px",color:"#166534",lineHeight:1.7}}>Everything parsed in your browser. Nothing sent anywhere. Ever.</div></div>
+      <div><div style={{fontWeight:700,color:"#15803d",fontSize:"14px",marginBottom:4}}>{tr.privacyTitle}</div><div style={{fontSize:"12px",color:"#166534",lineHeight:1.7}}>{tr.privacyBody}</div></div>
     </div>
     <div style={{textAlign:"center",marginTop:10,fontSize:"12px",color:c.muted}}>
-      <a href="https://github.com/nesu-glitch/moneda/issues/new" target="_blank" rel="noreferrer" style={{color:c.muted,textDecoration:"none"}}>💬 Found a bug or have a suggestion? → Open an issue on GitHub</a>
+      <a href="https://github.com/nesu-glitch/moneda/issues/new" target="_blank" rel="noreferrer" style={{color:c.muted,textDecoration:"none"}}>{tr.feedbackLink}</a>
     </div>
     {/* Save session banner */}
     {transactions.length>0&&<div style={{background:"linear-gradient(135deg,#1e40af,#7c3aed)",borderRadius:"16px",padding:"22px 24px",marginTop:14,display:"flex",gap:"16px",alignItems:"center",flexWrap:"wrap"}}>
       <div style={{fontSize:"36px",flexShrink:0}}>💾</div>
       <div style={{flex:1,minWidth:"200px"}}>
-        <div style={{fontWeight:800,color:"white",fontSize:"16px",marginBottom:4}}>Save your session</div>
-        <div style={{fontSize:"13px",color:"rgba(255,255,255,0.8)",lineHeight:1.6}}>Download your data with all categories and notes. Next time you start Moneda, re-upload this file — your classifications will be remembered automatically.</div>
+        <div style={{fontWeight:800,color:"white",fontSize:"16px",marginBottom:4}}>{tr.saveSession}</div>
+        <div style={{fontSize:"13px",color:"rgba(255,255,255,0.8)",lineHeight:1.6}}>{tr.saveSessionBody}</div>
       </div>
       <button onClick={onExport}
         style={{padding:"12px 22px",borderRadius:"12px",border:"2px solid rgba(255,255,255,0.4)",background:"rgba(255,255,255,0.15)",color:"white",cursor:"pointer",fontWeight:800,fontSize:"14px",fontFamily:f,whiteSpace:"nowrap",backdropFilter:"blur(4px)"}}>
-        📥 Download .xlsx
+        📥 {tr.exportBtn}
       </button>
     </div>}
   </div>;
@@ -1537,7 +1708,7 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
 
 // ── Onboarding ────────────────────────────────────────────────────────────────
 function Onboarding({onDone}) {
-  const [stage,setStage]=useState("theme"),[u,setU]=useState({name:"",themeId:"nature",avatar:"🦔",goal:""});
+  const [stage,setStage]=useState("theme"),[u,setU]=useState({name:"",themeId:"nature",avatar:"🦔",goal:"",lang:"es"});
   const theme=THEMES[u.themeId];const{c,font:f}=theme;
   const isMobile=useIsMobile();
   const card=(e={})=>({background:"white",borderRadius:"24px",padding:isMobile?"28px 20px":"40px",maxWidth:"480px",width:"100%",boxShadow:"0 12px 48px rgba(0,0,0,0.09)",animation:"pop 0.3s cubic-bezier(.34,1.56,.64,1)",textAlign:"center",...e});
@@ -1617,15 +1788,26 @@ function Onboarding({onDone}) {
       {u.goal?"Start my journey 🚀":"Pick an option above"}
     </button>
   </div>;
-  if(stage==="tutorial")return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:f,padding:"20px"}}>
+  if(stage==="tutorial"){const tl=T[u.lang||"es"]||T.es;return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:f,padding:"20px"}}>
     <div style={{background:"white",borderRadius:"24px",padding:isMobile?"24px 18px":"36px 40px",maxWidth:"520px",width:"100%",boxShadow:"0 12px 48px rgba(0,0,0,0.09)",animation:"pop 0.3s cubic-bezier(.34,1.56,.64,1)",overflowY:"auto",maxHeight:"90vh"}}>
-      <div style={{fontSize:"13px",color:c.muted,textAlign:"center",marginBottom:20}}>Quick guide — how Moneda works</div>
+      {/* Language picker */}
+      <div style={{display:"flex",justifyContent:"center",gap:"8px",marginBottom:18}}>
+        {[["es","🇪🇸 Español"],["en","🇬🇧 English"]].map(([l,lbl])=>(
+          <button key={l} onClick={()=>setU({...u,lang:l})}
+            style={{padding:"6px 16px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:700,
+              background:(u.lang||"es")===l?c.p:"white",color:(u.lang||"es")===l?"white":c.muted,
+              boxShadow:(u.lang||"es")===l?`0 2px 8px ${c.p}50`:`inset 0 0 0 1.5px ${c.border}`}}>
+            {lbl}
+          </button>
+        ))}
+      </div>
+      <div style={{fontSize:"13px",color:c.muted,textAlign:"center",marginBottom:20}}>{tl.tutorialTitle}</div>
       <div style={{display:"flex",flexDirection:"column",gap:"14px"}}>
         {[
-          {n:1,title:"Download your bank export 🏦",sub:"Log into your bank's website or app, go to your transaction history and download it as an Excel file (.xlsx or .csv). Works with Santander, BBVA, CaixaBank, ING, Bankinter, Sabadell and more.",highlight:false},
-          {n:2,title:"Upload it to Moneda 📂",sub:"Go to the Data tab and drop your file. Moneda reads it instantly — nothing is sent anywhere, everything stays on your device.",highlight:false},
-          {n:3,title:"Classify & customise 🗂️",sub:"We auto-categorise most transactions. You can correct any, set monthly budgets, add reminders and track subscriptions.",highlight:false},
-          {n:4,title:"💾 Save your session before you leave",sub:"Any categories, budgets, notes and reminders you create exist only in this browser tab. Before closing, go to the Data tab and tap Download .xlsx — next time upload that file and Moneda will restore everything exactly where you left off.",highlight:true},
+          {n:1,title:tl.step1Title,sub:tl.step1Sub,highlight:false},
+          {n:2,title:tl.step2Title,sub:tl.step2Sub,highlight:false},
+          {n:3,title:tl.step3Title,sub:tl.step3Sub,highlight:false},
+          {n:4,title:tl.step4Title,sub:tl.step4Sub,highlight:true},
         ].map(({n,title,sub,highlight})=>(
           <div key={n} style={{display:"flex",gap:"14px",alignItems:"flex-start",background:highlight?"#fffbeb":"transparent",border:highlight?"1.5px solid #fde68a":"none",borderRadius:highlight?"12px":"0",padding:highlight?"14px":"0"}}>
             <div style={{width:32,height:32,borderRadius:"50%",background:highlight?"#f59e0b":c.p,color:"white",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:"14px",flexShrink:0}}>{n}</div>
@@ -1637,11 +1819,11 @@ function Onboarding({onDone}) {
         ))}
       </div>
       <div style={{display:"flex",gap:"10px",marginTop:"24px"}}>
-        <button onClick={()=>setStage("goal")} style={{flex:1,padding:"12px",borderRadius:"12px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.text,fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:f}}>← Back</button>
-        <button onClick={()=>onDone(u)} style={{flex:2,padding:"12px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:800,cursor:"pointer",fontFamily:f,boxShadow:`0 4px 16px ${c.p}40`}}>Got it — let's go! 🚀</button>
+        <button onClick={()=>setStage("goal")} style={{flex:1,padding:"12px",borderRadius:"12px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.text,fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:f}}>{tl.back}</button>
+        <button onClick={()=>onDone(u)} style={{flex:2,padding:"12px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"15px",fontWeight:800,cursor:"pointer",fontFamily:f,boxShadow:`0 4px 16px ${c.p}40`}}>{tl.gotIt}</button>
       </div>
     </div>
-  </div>;
+  </div>;}
   return null;
 }
 
@@ -1665,6 +1847,7 @@ export default function App() {
   // Merchant memory: {extractedMerchantName: category} — persists across uploads
   const [merchantMemory,setMerchantMemory] = useState({});
   const [widgetConfig,setWidgetConfig]     = useState([]);
+  const [lang,setLang]                     = useState("es");
   const updateMemory = useCallback((txns)=>{
     setMerchantMemory(prev=>{
       const next={...prev};
@@ -1806,12 +1989,20 @@ export default function App() {
   if(!onboarded)return <Onboarding onDone={u=>{
     setUser(u);
     setOnboarded(true);
-    const goalLabels={save:"🎯 Goal: Save for something",cut:"🎯 Goal: Cut my spending",know:"🎯 Goal: Understand my money",chill:"🎯 Goal: Just exploring"};
+    const ul=u.lang||"es";
+    setLang(ul);
+    const goalLabelsEs={save:"🎯 Meta: Ahorrar para algo",cut:"🎯 Meta: Gastar menos",know:"🎯 Meta: Entender mis gastos",chill:"🎯 Meta: Solo explorando"};
+    const goalLabelsEn={save:"🎯 Goal: Save for something",cut:"🎯 Goal: Cut my spending",know:"🎯 Goal: Understand my money",chill:"🎯 Goal: Just exploring"};
+    const goalLabels=ul==="es"?goalLabelsEs:goalLabelsEn;
     const today=new Date().toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"});
-    setReminders([{id:Date.now(),text:`${goalLabels[u.goal]||"🎯 Goal set"} — set on ${today}`,done:false,repeat:"once"}]);
+    setReminders([{id:Date.now(),text:`${goalLabels[u.goal]||"🎯 Goal set"} — ${ul==="es"?"registrado el":"set on"} ${today}`,done:false,repeat:"once"}]);
   }}/>;
 
-  const theme=THEMES[user?.themeId]||THEMES.nature;const{c,font:f,w}=theme;
+  const theme=THEMES[user?.themeId]||THEMES.nature;
+  const w_eff=lang==="es"?(THEME_W_ES[theme.id]||theme.w):theme.w;
+  const effectiveTheme={...theme,w:w_eff};
+  const{c,font:f}=effectiveTheme;const w=w_eff;
+  const tr=T[lang]||T.en;
   const uncategorizedCount=transactions.filter(t=>t.amount<0&&!t.cat).length;
   const txnCatsInUse=transactions.filter(t=>t.cat&&t.cat!=="Income").map(t=>t.cat);
   const allCats=[...new Set([...ALL_CATS,...customCats,...txnCatsInUse])].filter(c=>c!=="Income");
@@ -1850,7 +2041,7 @@ export default function App() {
   const catStepIdx  = modalSteps.indexOf("🤔 Classify");
   const budStepIdx  = modalSteps.indexOf("🎯 Budgets");
 
-  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:"Budgets"},{id:"reminders",e:"📋",label:"Reminders"},{id:"payments",e:"💳",label:"Auto Pay"},{id:"data",e:"📂",label:"Data"}];
+  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"data",e:"📂",label:tr.data}];
 
   return <div style={{minHeight:"100vh",background:theme.grad,fontFamily:f,color:c.text,paddingBottom:0}}>
     {/* ── Desktop top nav ── */}
@@ -1875,13 +2066,13 @@ export default function App() {
     <div style={{paddingTop:isMobile?"16px":"26px",paddingLeft:isMobile?"12px":"24px",paddingRight:isMobile?"12px":"24px",paddingBottom:isMobile?"calc(72px + env(safe-area-inset-bottom, 0px))":"26px",maxWidth:"1080px",margin:"0 auto"}}>
       {uncategorizedCount>0&&<div style={{background:"#fef3c7",border:"1.5px solid #f59e0b",borderRadius:"12px",padding:"12px 18px",marginBottom:16,display:"flex",alignItems:"center",gap:"10px",fontFamily:f}}>
         <span style={{fontSize:"20px"}}>⚠️</span>
-        <span style={{fontWeight:700,color:"#92400e",fontSize:"13px"}}>{uncategorizedCount} uncategorized expense{uncategorizedCount!==1?"s":""} — open <strong>Data → View full log</strong> and assign their categories</span>
+        <span style={{fontWeight:700,color:"#92400e",fontSize:"13px"}}>{lang==="es"?`${uncategorizedCount} gasto${uncategorizedCount!==1?"s":""} sin categoría — abre Datos → Ver log completo y asígnalos`:`${uncategorizedCount} uncategorized expense${uncategorizedCount!==1?"s":""} — open Data → View full log and assign their categories`}</span>
       </div>}
-      {page==="dashboard"&&<Dashboard {...{theme,timeFilter,setTimeFilter,compareMode,setCompareMode,customRange,setCustomRange,filtered,compFiltered,totalInc,totalExp,net,biggestExp,catData,budgetWarnings,paymentsWithCountdown,reminders,setReminders,transactions,comments,onCommentSave,onCatChange,hasData:transactions.length>0,onAddReminder,allCats,reimbursed,onMarkReimbursed,budgets,widgetConfig,setWidgetConfig,onExport:handleExport}}/>}
-      {page==="budgets"  &&<BudgetsPage {...{theme,budgets,setBudgets,catGroups,setCatGroups,allTransactions:transactions,allCats}}/>}
-      {page==="reminders"&&<RemindersPage {...{theme,reminders,setReminders}}/>}
-      {page==="payments" &&<AutoPayPage {...{theme,autoPayments,setAutoPayments,paymentsWithCountdown}}/>}
-      {page==="data"     &&<DataPage {...{theme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory:()=>{setMerchantMemory({});showToast("Memory cleared","info");},onExport:handleExport}}/>}
+      {page==="dashboard"&&<Dashboard {...{theme:effectiveTheme,timeFilter,setTimeFilter,compareMode,setCompareMode,customRange,setCustomRange,filtered,compFiltered,totalInc,totalExp,net,biggestExp,catData,budgetWarnings,paymentsWithCountdown,reminders,setReminders,transactions,comments,onCommentSave,onCatChange,hasData:transactions.length>0,onAddReminder,allCats,reimbursed,onMarkReimbursed,budgets,widgetConfig,setWidgetConfig,onExport:handleExport,lang}}/>}
+      {page==="budgets"  &&<BudgetsPage {...{theme:effectiveTheme,budgets,setBudgets,catGroups,setCatGroups,allTransactions:transactions,allCats,lang}}/>}
+      {page==="reminders"&&<RemindersPage {...{theme:effectiveTheme,reminders,setReminders,lang}}/>}
+      {page==="payments" &&<AutoPayPage {...{theme:effectiveTheme,autoPayments,setAutoPayments,paymentsWithCountdown,lang}}/>}
+      {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory:()=>{setMerchantMemory({});showToast(lang==="es"?"Memoria borrada":"Memory cleared","info");},onExport:handleExport,lang}}/>}
     </div>
     {/* ── Mobile bottom tab bar ── */}
     {isMobile&&<nav style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:c.nav,borderTop:"1px solid rgba(255,255,255,0.12)",display:"flex",paddingBottom:"env(safe-area-inset-bottom, 0px)",boxShadow:"0 -2px 14px rgba(0,0,0,0.22)"}}>
@@ -1890,9 +2081,9 @@ export default function App() {
         <span style={{letterSpacing:0.3}}>{label}</span>
       </button>)}
     </nav>}
-    {showSubVerify&&detectedSubs.length>0&&<SubscriptionVerify theme={theme} subs={detectedSubs} steps={modalSteps} stepIndex={subStepIdx} onDone={handleSubDone}/>}
-    {showCatReview&&unknownTxns.length>0&&<CategoryReview theme={theme} unknowns={unknownTxns} customCats={customCats} steps={modalSteps} stepIndex={catStepIdx} onDone={handleCatDone}/>}
-    {showBudgetWiz&&<BudgetWizard theme={theme} steps={modalSteps} stepIndex={budStepIdx} onDone={lims=>{setBudgets(lims);setShowBudgetWiz(false);showToast("Budgets saved! 🎯");}}/>}
+    {showSubVerify&&detectedSubs.length>0&&<SubscriptionVerify theme={effectiveTheme} subs={detectedSubs} steps={modalSteps} stepIndex={subStepIdx} onDone={handleSubDone} lang={lang}/>}
+    {showCatReview&&unknownTxns.length>0&&<CategoryReview theme={effectiveTheme} unknowns={unknownTxns} customCats={customCats} steps={modalSteps} stepIndex={catStepIdx} onDone={handleCatDone} lang={lang}/>}
+    {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onDone={lims=>{setBudgets(lims);setShowBudgetWiz(false);showToast(lang==="es"?"¡Presupuestos guardados! 🎯":"Budgets saved! 🎯");}} lang={lang}/>}
     {toast&&<Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
   </div>;
 }
