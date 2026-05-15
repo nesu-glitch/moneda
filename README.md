@@ -146,3 +146,7 @@ dist/              # Built output (generated, not committed)
 - 4 themes: Nature, Adventure, Princess, Finance Pro
 - PWA — installable on mobile, works offline
 - 100% offline — nothing sent to any server
+
+---
+
+© 2026 Inés Villarino — MIT License
