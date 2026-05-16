@@ -376,7 +376,9 @@ function parseBankExport(data) {
     if(wb.SheetNames.includes("Presupuestos")){const rows=XLSX.utils.sheet_to_json(wb.Sheets["Presupuestos"],{defval:""});rows.forEach(r=>{const cat=String(r.Categoria||"").trim(),limit=parseFloat(r.LimiteMensual)||0;if(cat&&limit>0)savedBudgets[cat]=limit;});}
     if(wb.SheetNames.includes("Config")){const rows=XLSX.utils.sheet_to_json(wb.Sheets["Config"],{defval:""});savedCustomCats=rows.map(r=>String(r.CategoriaPersonalizada||"").trim()).filter(Boolean);}
     if(wb.SheetNames.includes("Widgets")){const rows=XLSX.utils.sheet_to_json(wb.Sheets["Widgets"],{defval:""});savedWidgetConfig=rows.sort((a,b)=>(+a.Orden||0)-(+b.Orden||0)).map(r=>({id:String(r.Id||"").trim(),label:String(r.Etiqueta||"").trim(),visible:String(r.Visible||"").toLowerCase()==="si"})).filter(w=>w.id);}
-    return{txns,comments,isMonedaExport:true,savedAutoPayments,savedReminders,savedBudgets,savedCustomCats,savedWidgetConfig};
+    let savedProfile=null;
+    if(wb.SheetNames.includes("_moneda_config")){try{const cell=wb.Sheets["_moneda_config"]["A1"];if(cell&&cell.v)savedProfile=JSON.parse(String(cell.v));}catch(_){}}
+    return{txns,comments,isMonedaExport:true,savedAutoPayments,savedReminders,savedBudgets,savedCustomCats,savedWidgetConfig,savedProfile};
   }
 
   // ── Generic Spanish bank (Santander, BBVA, CaixaBank, Bankinter, Sabadell, ING, Unicaja, Kutxabank, Openbank) ──
@@ -501,7 +503,7 @@ function parseBankExport(data) {
   // 7. Return with detected bank name
   return{txns,comments:{},bank:detectedBank};
 }
-function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={},customCats=[],widgetConfig=[]}={}) {
+function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={},customCats=[],widgetConfig=[],profile={}}={}) {
   const wb=XLSX.utils.book_new();
   const data=transactions.map(t=>({Fecha:t.date,Descripción:t.desc,Categoría:t.cat||"",Importe:t.amount,Tipo:t.amount>=0?"Ingreso":"Gasto",Comentario:comments[t.id]||""}));
   const ws=XLSX.utils.json_to_sheet(data);ws["!cols"]=[{wch:12},{wch:45},{wch:16},{wch:10},{wch:10},{wch:40}];
@@ -512,6 +514,9 @@ function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={}
   if(budgetEntries.length>0){const d=budgetEntries.map(([cat,limit])=>({Categoria:cat,LimiteMensual:limit}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:16},{wch:14}];XLSX.utils.book_append_sheet(wb,w,"Presupuestos");}
   if(customCats.length>0){const d=customCats.map(cat=>({CategoriaPersonalizada:cat}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:22}];XLSX.utils.book_append_sheet(wb,w,"Config");}
   if(widgetConfig.length>0){const d=widgetConfig.map((wid,i)=>({Id:wid.id,Etiqueta:wid.label,Visible:wid.visible?"Si":"No",Orden:i+1}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:16},{wch:28},{wch:8},{wch:7}];XLSX.utils.book_append_sheet(wb,w,"Widgets");}
+  // _moneda_config — single-cell JSON profile snapshot (silent, not visible to user)
+  const cfgWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({userName:profile.userName||"",lang:profile.lang||"es",themeId:profile.themeId||"nature",avatar:profile.avatar||"",goal:profile.goal||"know"})]]);
+  XLSX.utils.book_append_sheet(wb,cfgWs,"_moneda_config");
   XLSX.writeFile(wb,`moneda_${new Date().toISOString().split("T")[0]}.xlsx`);
 }
 
@@ -1967,7 +1972,7 @@ export default function App() {
     if(error){showToast(error,"error");return;}
 
     // parsed is now {txns, comments, isMonedaExport, savedAutoPayments, savedReminders, savedBudgets, savedCustomCats, savedWidgetConfig}
-    const {txns:rawTxns, comments:restoredComments={}, isMonedaExport=false, savedAutoPayments=[], savedReminders=[], savedBudgets={}, savedCustomCats=[], savedWidgetConfig=[]} = parsed;
+    const {txns:rawTxns, comments:restoredComments={}, isMonedaExport=false, savedAutoPayments=[], savedReminders=[], savedBudgets={}, savedCustomCats=[], savedWidgetConfig=[], savedProfile=null} = parsed;
 
     // Restore comments from the export
     if(Object.keys(restoredComments).length>0){
@@ -1991,6 +1996,11 @@ export default function App() {
       if(Object.keys(savedBudgets).length>0) setBudgets(prev=>({...savedBudgets,...prev}));
       // Restore widget order/visibility preferences
       if(savedWidgetConfig.length>0) setWidgetConfig(savedWidgetConfig);
+      // Restore user profile (name, theme, language, avatar, goal) — silent
+      if(savedProfile){
+        setUser(prev=>({...(prev||{}),name:savedProfile.userName||prev?.name||"",themeId:savedProfile.themeId||prev?.themeId||"nature",avatar:savedProfile.avatar||prev?.avatar||"",goal:savedProfile.goal||prev?.goal||"know",lang:savedProfile.lang||prev?.lang||"es"}));
+        if(savedProfile.lang) setLang(savedProfile.lang);
+      }
       const restoredCats=sorted.filter(t=>t.cat&&t.cat!=="Income").length;
       showToast(`✅ Restored ${sorted.length} transactions · ${restoredCats} with saved categories`);
       setPage("dashboard");
@@ -2068,7 +2078,7 @@ export default function App() {
   const onCommentSave=useCallback((id,text)=>setComments(c=>({...c,[id]:text})),[]);
   const onAddReminder=useCallback(r=>setReminders(rs=>[...rs,r]),[]);
   const onMarkReimbursed=useCallback((id,data)=>setReimbursed(r=>data?{...r,[id]:data}:Object.fromEntries(Object.entries(r).filter(([k])=>k!==id))),[]);
-  const handleExport=useCallback(()=>doExport(transactions,comments,{autoPayments,reminders,budgets,customCats,widgetConfig}),[transactions,comments,autoPayments,reminders,budgets,customCats,widgetConfig]);
+  const handleExport=useCallback(()=>doExport(transactions,comments,{autoPayments,reminders,budgets,customCats,widgetConfig,profile:{userName:user?.name||"",lang,themeId:user?.themeId||"nature",avatar:user?.avatar||"",goal:user?.goal||"know"}}),[transactions,comments,autoPayments,reminders,budgets,customCats,widgetConfig,user,lang]);
   const isMobile=useIsMobile();
 
   if(!onboarded)return <Onboarding onDone={u=>{
