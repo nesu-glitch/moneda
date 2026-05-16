@@ -90,7 +90,8 @@ const T = {
     billing:"Billing:",billingMonthly:"🗓 Monthly",billingYearly:"📅 Yearly",
     perMonth:"per month",perYear:"per year",renewsDay:"renews day",detected:"Detected:",
     confirmAutoPay:"Confirm & add to Auto Pay ✓",
-    classifyTitle:"Classify merchants",classifyInstruction:"Tap card → tap category",
+    classifyTitle:"Classify merchants",classifyInstruction:"Click a merchant and pick its category",
+    classifyActive:"Now tap a category below to assign",
     classifyDrop:"Drop on a category ↓",createCategory:"+ Create new category (e.g. Pets)",
     add:"Add",categories:"Categories",removeUnneeded:"(✕ to remove unneeded)",assigned:"Assigned ✓",
     doneBtn:"Done — save all ✓",leftToClassify:"merchants left to classify",
@@ -171,7 +172,8 @@ const T = {
     billing:"Facturación:",billingMonthly:"🗓 Mensual",billingYearly:"📅 Anual",
     perMonth:"al mes",perYear:"al año",renewsDay:"se renueva el día",detected:"Detectado:",
     confirmAutoPay:"Confirmar y añadir a Pagos fijos ✓",
-    classifyTitle:"Clasificar comercios",classifyInstruction:"Toca una tarjeta → toca una categoría",
+    classifyTitle:"Clasificar comercios",classifyInstruction:"Haz click en un gasto y elige su categoría",
+    classifyActive:"Ahora elige una categoría para",
     classifyDrop:"Suelta en una categoría ↓",createCategory:"+ Crear nueva categoría (ej: Mascotas)",
     add:"Añadir",categories:"Categorías",removeUnneeded:"(✕ para eliminar las que no necesitas)",assigned:"Asignados ✓",
     doneBtn:"Listo — guardar todo ✓",leftToClassify:"comercios sin clasificar",
@@ -674,15 +676,8 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone,lang="
       </div>
 
       {selected&&<div style={{background:c.pl,borderRadius:"10px",padding:"9px 14px",marginBottom:10,fontSize:"12px",fontWeight:700,color:c.p,fontFamily:f,textAlign:"center",border:`1.5px solid ${c.p}40`}}>
-        ✦ Now tap a category below to assign <strong>{selected}</strong>
+        ✦ {tr.classifyActive} <strong>{selected}</strong>
       </div>}
-
-      {/* Add new category */}
-      <div style={{display:"flex",gap:"8px",marginBottom:12}}>
-        <input value={newCat} onChange={e=>setNewCat(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCat()} placeholder={tr.createCategory}
-          style={{flex:1,padding:"8px 12px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
-        <button onClick={addCat} style={{padding:"8px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>{tr.add}</button>
-      </div>
 
       <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:"12px"}}>
         {/* Merchant cards — paginated 5 at a time */}
@@ -728,6 +723,12 @@ function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone,lang="
         <div>
           <div style={{fontSize:"11px",color:"#6b7280",fontWeight:700,letterSpacing:1,textTransform:"uppercase",marginBottom:8}}>
             {tr.categories} <span style={{fontWeight:400,fontSize:"10px",color:"#9ca3af"}}>{tr.removeUnneeded}</span>
+          </div>
+          {/* Add new category */}
+          <div style={{display:"flex",gap:"8px",marginBottom:12}}>
+            <input value={newCat} onChange={e=>setNewCat(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCat()} placeholder={tr.createCategory}
+              style={{flex:1,padding:"8px 12px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
+            <button onClick={addCat} style={{padding:"8px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>{tr.add}</button>
           </div>
           <div style={{display:"grid",gridTemplateColumns:isMobile?"repeat(2,1fr)":"repeat(3,1fr)",gap:"8px"}}>
             {localCats.map(cat=>{
