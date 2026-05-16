@@ -1617,10 +1617,12 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
   const tr=T[lang]||T.en;
   const[dragging,setDragging]=useState(false),[showLedger,setShowLedger]=useState(false),[showMemory,setShowMemory]=useState(false);
   const[dupWarning,setDupWarning]=useState(null); // {duplicates, parsedMerged}
+  const[fileTypeError,setFileTypeError]=useState(null);
 
   const handleFiles=useCallback(files=>{
     if(!files||!files.length)return;
-    const fileList=[...files];
+    const fileList=[...files].filter(f=>/\.(xlsx|xls|csv)$/i.test(f.name));
+    if(!fileList.length){setFileTypeError(lang==="es"?"Solo se admiten archivos .xlsx, .xls o .csv":"Only .xlsx, .xls or .csv files are supported");setTimeout(()=>setFileTypeError(null),4000);return;}
     // Parse all files
     const results=[];
     let remaining=fileList.length;
@@ -1729,10 +1731,26 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
       <div style={{fontSize:"48px",marginBottom:12}}>📊</div>
       <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:8}}>{dragging?tr.dropIt:tr.dropHere}</div>
       <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>{lang==="es"?"Uno o varios extractos bancarios .xlsx · ":"One or multiple bank .xlsx exports · "}<span style={{fontSize:"12px"}}>{lang==="es"?"100% en tu dispositivo 🔒":"stays 100% on your device 🔒"}</span></div>
-      <button onClick={()=>{const i=document.createElement('input');i.type='file';i.multiple=true;i.accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/csv,.xlsx,.xls,.csv';i.style.cssText='position:fixed;top:-999px;left:-999px;opacity:0;';document.body.appendChild(i);i.onchange=e=>{handleFiles(e.target.files);document.body.removeChild(i);};i.click();setTimeout(()=>{if(document.body.contains(i))document.body.removeChild(i);},30000);}}
+      <button onClick={async()=>{
+        if(typeof window.showOpenFilePicker==="function"){
+          try{
+            const handles=await window.showOpenFilePicker({multiple:true,types:[{description:"Spreadsheet",accept:{"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":[".xlsx"],"application/vnd.ms-excel":[".xls"],"text/csv":[".csv"]}}]});
+            const files=await Promise.all(handles.map(h=>h.getFile()));
+            handleFiles(files);return;
+          }catch(err){if(err.name==="AbortError")return;}
+        }
+        const i=document.createElement('input');
+        i.type='file';i.multiple=true;i.accept='*/*';
+        i.style.cssText='position:fixed;top:-999px;left:-999px;opacity:0;';
+        document.body.appendChild(i);
+        i.onchange=e=>{handleFiles(e.target.files);document.body.removeChild(i);};
+        i.click();
+        setTimeout(()=>{if(document.body.contains(i))document.body.removeChild(i);},30000);
+      }}
         style={{padding:"12px 28px",borderRadius:"12px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"15px",fontFamily:f,boxShadow:`0 4px 14px ${c.p}40`}}>
         {tr.chooseFile}
       </button>
+      {fileTypeError&&<div style={{marginTop:12,padding:"10px 16px",borderRadius:"10px",background:"#fef2f2",border:"1.5px solid #fca5a5",color:"#dc2626",fontSize:"13px",fontWeight:600}}>{fileTypeError}</div>}
     </div>
     {transactions.length>0&&<>
       <div style={{background:`${c.p}14`,borderRadius:"14px",padding:"16px 20px",border:`1.5px solid ${c.p}30`,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
