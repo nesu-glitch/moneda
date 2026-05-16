@@ -1734,7 +1734,7 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
       <button onClick={async()=>{
         if(typeof window.showOpenFilePicker==="function"){
           try{
-            const handles=await window.showOpenFilePicker({multiple:true,types:[{description:"Spreadsheet",accept:{"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":[".xlsx"],"application/vnd.ms-excel":[".xls"],"text/csv":[".csv"]}}]});
+            const handles=await window.showOpenFilePicker({multiple:true,excludeAcceptAllOption:false,types:[{description:"Spreadsheet",accept:{"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":[".xlsx"],"application/vnd.ms-excel":[".xls",".csv"],"text/csv":[".csv"],"text/plain":[".csv"],"application/octet-stream":[".csv"],"application/csv":[".csv"]}}]});
             const files=await Promise.all(handles.map(h=>h.getFile()));
             handleFiles(files);return;
           }catch(err){if(err.name==="AbortError")return;}
