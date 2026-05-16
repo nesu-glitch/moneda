@@ -1730,7 +1730,7 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
       <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:8}}>{dragging?tr.dropIt:tr.dropHere}</div>
       <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>{lang==="es"?"Uno o varios extractos bancarios .xlsx · ":"One or multiple bank .xlsx exports · "}<span style={{fontSize:"12px"}}>{lang==="es"?"100% en tu dispositivo 🔒":"stays 100% on your device 🔒"}</span></div>
       <label style={{padding:"12px 28px",borderRadius:"12px",border:"none",background:c.p,color:"white",cursor:"pointer",fontWeight:700,fontSize:"15px",fontFamily:f,boxShadow:`0 4px 14px ${c.p}40`,display:"inline-block"}}>
-        {tr.chooseFile}<input type="file" multiple accept=".xlsx,.xls,.csv" onChange={e=>handleFiles(e.target.files)} style={{display:"none"}}/>
+        {tr.chooseFile}<input type="file" multiple accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,application/csv" onChange={e=>handleFiles(e.target.files)} style={{display:"none"}}/>
       </label>
     </div>
     {transactions.length>0&&<>
