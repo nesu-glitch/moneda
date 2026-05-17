@@ -142,10 +142,23 @@ dist/              # Built output (generated, not committed)
 - Subscriptions & recurring payment detection
 - Budgets with monthly/weekly view
 - Partial & full reimbursement tracking
+- ✂️ Splits — Tricount-style cost sharing (see below)
 - Multi-sheet Excel export (saves all state — re-upload to restore)
 - 4 themes: Nature, Adventure, Princess, Finance Pro
 - PWA — installable on mobile, works offline
 - 100% offline — nothing sent to any server
+
+---
+
+## ✂️ Splits (Tricount-style cost sharing)
+
+- Create named groups with any number of participants (no accounts needed)
+- Add expenses manually or link directly from any bank transaction row
+- Four split methods: equal, by percentage, exact amounts, or weighted shares
+- Live balance view per participant with a bar chart
+- Minimum-transfer settle-up: fewest possible payments to zero all balances
+- "Mark paid" with auto-detection of matching incoming transactions (±2%)
+- Full state persisted in the existing Excel export (`_splits` sheet)
 
 ---
 

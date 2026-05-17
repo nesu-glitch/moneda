@@ -129,7 +129,20 @@ To save and come back later:
 | 🎯 Budgets | Set monthly spending limits per category |
 | 📋 Reminders | Add to-dos and recurring notes |
 | 💳 Auto Pay | Track subscriptions and recurring charges |
+| ✂️ Splits | Split shared expenses with friends — groups, balances, settle up |
 | 📂 Data | Upload files, view all transactions, export |
+
+---
+
+## ✂️ Splits (Tricount-style cost sharing)
+
+- Create named groups with any number of participants (no accounts needed)
+- Add expenses manually or link directly from any bank transaction row
+- Four split methods: equal, by percentage, exact amounts, or weighted shares
+- Live balance view per participant with a bar chart
+- Minimum-transfer settle-up: fewest possible payments to zero all balances
+- "Mark paid" with auto-detection of matching incoming transactions (±2%)
+- Full state persisted in the existing Excel export (`_splits` sheet)
 
 ---
 
@@ -173,3 +186,7 @@ Wait for it to finish. A new folder called `dist` appears inside `moneda`.
 
 **I want to stop Moneda**  
 → Click the black Command Prompt window and press `Ctrl + C`.
+
+---
+
+© 2026 Inés Villarino — MIT License
