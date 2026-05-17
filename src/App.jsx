@@ -1689,7 +1689,11 @@ function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSav
     if(!results.length){onUpload(null,"No valid transactions found in the uploaded file(s).");return;}
     // Merge all parsed results
     const merged={txns:[],comments:{},isMonedaExport:results.every(r=>r.isMonedaExport),
-      savedAutoPayments:[],savedReminders:[],savedBudgets:{},savedCustomCats:[]};
+      savedAutoPayments:[],savedReminders:[],savedBudgets:{},savedCustomCats:[],
+      // Single-value fields: take the first result that has them (Moneda re-upload is always one file)
+      savedWidgetConfig:results.find(r=>r.savedWidgetConfig?.length)?.savedWidgetConfig||[],
+      savedProfile:results.find(r=>r.savedProfile)?.savedProfile||null,
+      savedSplits:results.find(r=>r.savedSplits)?.savedSplits||null};
     for(const r of results){
       merged.txns.push(...r.txns);
       Object.assign(merged.comments,r.comments);
