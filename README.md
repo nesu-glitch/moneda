@@ -1,165 +1,116 @@
-# Moneda 💸
+# Moneda
 
-Personal finance tracker — upload your bank export and get instant dashboards, budgets, and spending insights. **100% client-side. Your data never leaves your browser.**
+Personal finance tracker that parses Spanish bank export files and runs entirely in the browser. No server, no account, no data leaves your device.
 
-🌐 **Live app:** https://nesu-glitch.github.io/moneda/
+Live app: https://nesu-glitch.github.io/moneda/
 
----
+## What it does
 
-## Supported banks
+Upload a `.xlsx` export from your bank and Moneda will:
 
-| Bank | Country |
-|---|---|
-| Santander | 🇪🇸 Spain |
-| BBVA | 🇪🇸 Spain |
-| CaixaBank | 🇪🇸 Spain |
-| Bankinter | 🇪🇸 Spain |
-| Sabadell | 🇪🇸 Spain |
-| ING | 🇪🇸 Spain |
-| Unicaja | 🇪🇸 Spain |
-| Kutxabank | 🇪🇸 Spain |
-| Openbank | 🇪🇸 Spain |
-| Revolut | 🌍 Multi-country |
-| N26 | 🌍 Multi-country |
-| Wise | 🌍 Multi-country |
+- Parse transactions and auto-categorise them using merchant detection rules and a learned merchant memory
+- Show a dashboard with income, expenses, net balance and a category breakdown chart
+- Let you set monthly budgets per category with weekly pro-rata view
+- Detect recurring subscriptions and track auto-pay commitments with a countdown to next charge
+- Support bill splitting across groups of people with automatic minimum-transfer settlement
+- Export everything back to `.xlsx`, including budgets, reminders, auto-payments and split data
+- Run a multi-step onboarding wizard with theme selection and goal setting
+- Work offline as a PWA once installed
 
-Upload a `.xlsx` export from any of these and Moneda auto-detects the format.
-
----
-
-## Privacy
-
-> **Your bank data never leaves your device.** No server, no account, no analytics, no data collection. Everything is parsed and stored entirely in your browser tab. Closing the tab clears all data (use **Export** to save your session).
-
----
+All state lives in React `useState`. Nothing is persisted unless you explicitly export.
 
 ## Tech stack
 
-| Layer | Tool |
-|---|---|
-| UI | React 19 |
-| Build | Vite 8 |
-| Charts | Recharts |
-| Excel | SheetJS (xlsx) |
-| Hosting | GitHub Pages / Netlify / any static host |
+| Package | Version | Role |
+|---|---|---|
+| React | ^19.2.6 | UI framework |
+| Vite | ^8.0.12 | Build tool and dev server |
+| @e965/xlsx | ^0.20.3 | Spreadsheet parsing and export (CVE-patched SheetJS fork) |
+| Recharts | ^3.8.1 | Bar charts on the dashboard |
+| vite-plugin-pwa | ^1.3.0 | Service worker and offline support |
 
----
+## Folder structure
 
-## Local development
+```
+src/
+  App.jsx                   Root — imports, state wiring, layout (114 lines)
 
-**Prerequisites:** Node.js ≥ 18, npm ≥ 9
+  components/
+    Budget.jsx              BudgetWizard + BudgetsPage
+    CategoryReview.jsx      Drag-and-drop transaction classifier modal
+    Dashboard.jsx           Dashboard, BudgetWidget, MerchantBreakdown, ComparePanel
+    Onboarding.jsx          NPC Dialog typewriter + multi-stage welcome flow
+    Reminders.jsx           RemindersPage
+    Splits.jsx              SplitExpenseForm, SplitModal, SplitsPage
+    StepProgress.jsx        Shared step-indicator bar used by wizard modals
+    Subscriptions.jsx       SubscriptionVerify + AutoPayPage
+    Toast.jsx               Auto-dismiss notification
+    Transactions.jsx        Shared TxnRow, ReimPanel, FullLedger
+    Upload.jsx              DataPage — file upload and full transaction ledger
+
+  hooks/
+    useAppData.js           Derived values: totals, filtered txns, budget warnings, step indices
+    useBudgets.js           Budget limits and category-group state
+    useCategories.js        Custom categories and merchant memory
+    useExport.js            Excel export orchestration
+    useIsMobile.js          Debounced window resize listener
+    useTransactions.js      Upload pipeline, subscription detection, category-review flow
+
+  utils/
+    allCats.js              Master category list with extendAllCats() for custom additions
+    categories.js           Rule-based merchant categorisation
+    constants.js            Themes, translations (T), goals, category labels, colours (CC)
+    filters.js              getRange, filterTxns, compFilterKey
+    format.js               fmt, fmtD, fmtShort, NOW
+    parsers/index.js        parseBankExport + doExport — all spreadsheet I/O
+    recurring.js            Subscription and recurring-payment detection heuristics
+    sanitize.js             sanitizeCellValue — formula injection guard
+```
+
+## How to run
 
 ```bash
-git clone https://github.com/nesu-glitch/moneda.git
-cd moneda
 npm install
-npm run dev
+npm run dev        # http://localhost:5173
 ```
-
-App runs at `http://localhost:5173` with HMR.
-
----
-
-## Production build
 
 ```bash
-npm run build
+npm run build      # production build → dist/
+npm run preview    # serve dist/ locally at http://localhost:4173
 ```
 
-Output goes to `dist/`. Fully static — no server needed.
-
-Preview locally:
-
-```bash
-npm run preview
-# → http://localhost:4173
-```
-
----
-
-## Deploy to GitHub Pages
+## How to deploy
 
 ```bash
 npm run deploy
 ```
 
-This runs `npm run build` then pushes `dist/` to the `gh-pages` branch automatically. Your app will be live at `https://nesu-glitch.github.io/moneda/` within a minute.
+Runs `npm run build` then pushes `dist/` to the `gh-pages` branch via the `gh-pages` package. Requires GitHub Pages to be enabled on that branch in the repository settings.
 
----
+## Supported banks
 
-## Other deploy options
+The parser auto-detects the bank from the first rows of the spreadsheet and applies bank-specific column mappings:
 
-### Netlify (drag & drop — no account needed)
+- Santander
+- BBVA
+- CaixaBank (including La Caixa)
+- Bankinter
+- Sabadell
+- ING
+- Unicaja
+- Kutxabank
+- Openbank
 
-1. Run `npm run build`
-2. Go to [netlify.com/drop](https://netlify.com/drop)
-3. Drag the `dist/` folder onto the page
-4. Get a live URL instantly
+Any other export file with recognisable date, description and amount column headers will be parsed using generic score-based header detection.
 
-### Vercel
+Moneda's own `.xlsx` export format is also re-importable, restoring transactions, categories, budgets, reminders, auto-payments and split group data in full.
 
-```bash
-npm i -g vercel
-vercel --prod
-```
+## Security
 
-### Self-hosted (nginx)
+**Formula injection.** Every string value read from a spreadsheet cell passes through `sanitizeCellValue` in `src/utils/sanitize.js` before use. Values starting with `=`, `+`, `-` or `@` are stripped to prevent formula injection if data is later opened in Excel or Google Sheets.
 
-```bash
-npm run build
-# copy dist/ to your server
-```
+**Dependency audit.** `.github/workflows/security.yml` runs `npm audit --audit-level=high` on every push to `main`. The CI job fails if any high or critical vulnerability is present.
 
-```nginx
-server {
-  listen 80;
-  root /var/www/moneda;
-  index index.html;
-  location / { try_files $uri $uri/ /index.html; }
-}
-```
+**CVE-patched dependency.** The `xlsx` package is aliased to `@e965/xlsx@^0.20.3`, a maintained fork that resolves the prototype-pollution CVEs present in the original SheetJS 0.18.x releases.
 
----
-
-## Project structure
-
-```
-src/
-  App.jsx          # Entire app — components, state, logic
-public/
-  icons/           # PWA icons
-scripts/
-  gen-icons.js     # Regenerate PWA PNG icons from SVG
-dist/              # Built output (generated, not committed)
-```
-
----
-
-## Key features
-
-- Upload one or multiple bank `.xlsx` exports
-- Auto-categorises transactions (rules + merchant memory)
-- Subscriptions & recurring payment detection
-- Budgets with monthly/weekly view
-- Partial & full reimbursement tracking
-- ✂️ Splits — Tricount-style cost sharing (see below)
-- Multi-sheet Excel export (saves all state — re-upload to restore)
-- 4 themes: Nature, Adventure, Princess, Finance Pro
-- PWA — installable on mobile, works offline
-- 100% offline — nothing sent to any server
-
----
-
-## ✂️ Splits (Tricount-style cost sharing)
-
-- Create named groups with any number of participants (no accounts needed)
-- Add expenses manually or link directly from any bank transaction row
-- Four split methods: equal, by percentage, exact amounts, or weighted shares
-- Live balance view per participant with a bar chart
-- Minimum-transfer settle-up: fewest possible payments to zero all balances
-- "Mark paid" with auto-detection of matching incoming transactions (±2%)
-- Full state persisted in the existing Excel export (`_splits` sheet)
-
----
-
-© 2026 Inés Villarino — MIT License
+**No network.** The app makes no outbound requests with user data. All parsing runs in-memory in the browser.

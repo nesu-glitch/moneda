@@ -1,192 +1,93 @@
-# Moneda 💸 — How to run it on your computer
+# Moneda — Plain-language guide
 
-Moneda is a personal finance app that works entirely in your browser.  
-**Your bank data never leaves your device.** No account. No internet required after setup.
+Moneda is a personal finance app that lives in your browser. You upload a file from your bank and it shows you where your money went. That is all it does, and it does it without sending your data anywhere.
 
-🌐 **Already online (no setup needed):** https://nesu-glitch.github.io/moneda/
+Live site: https://nesu-glitch.github.io/moneda/
+
+No installation needed to use the live site. Just open it in any browser.
+
+---
+
+## What your data stays private means
+
+There is no server. There is no account. There is no database. When you upload your bank file, it is read directly by your browser — the same way a Word document is opened by Word. The data is held in the browser tab's memory and disappears when you close the tab.
+
+The only way your data leaves your device is if you share the exported file yourself.
+
+---
+
+## How to use it
+
+### Step 1 — Download your bank file
+
+Log in to your online banking website. Go to your account movements or transaction history. Look for a Download or Export button and choose Excel format (.xlsx). Save the file to your computer.
+
+### Step 2 — Open Moneda
+
+Go to https://nesu-glitch.github.io/moneda/ in your browser.
+
+The first time you open it, a short setup wizard asks you to choose a language, a visual theme, and a financial goal. This takes about a minute.
+
+### Step 3 — Upload your file
+
+Click the Data tab (bottom of the screen on a phone, top-right on a computer). Drag your bank file onto the upload area, or click to browse for it. Moneda reads it and shows your transactions straight away.
+
+### Step 4 — Explore
+
+- The Home tab shows a summary: total income, total spending, and a chart of spending by category.
+- The Budgets tab lets you set a monthly spending limit for each category (for example, 150 euros on groceries).
+- The Auto Pay tab lists your recurring charges and subscriptions with a countdown to the next payment date.
+- The Splits tab lets you divide a shared expense among friends and calculates who owes what.
+- The Reminders tab is a simple to-do list for money-related tasks.
+
+### Step 5 — Save your work
+
+Moneda does not save automatically. When you want to come back later, click the Export button. This downloads a file to your computer. Next time you open Moneda, upload that file instead of the bank file — all your categories, budgets, notes and split groups will be restored exactly as you left them.
 
 ---
 
 ## Supported banks
 
-Moneda can read export files from: **Santander, BBVA, CaixaBank, Bankinter, Sabadell, ING, Unicaja, Kutxabank, Openbank, Revolut, N26, Wise**
+Moneda can read export files from the following Spanish banks:
+
+- Santander
+- BBVA
+- CaixaBank
+- Bankinter
+- Sabadell
+- ING
+- Unicaja
+- Kutxabank
+- Openbank
+
+If your bank is not on the list, try uploading its Excel export anyway. Moneda uses a flexible column-detection system and will often recognise the format automatically.
 
 ---
 
-## What you need first
+## Running it on your own computer (optional)
 
-You need to install two free programs before anything else.  
-You only do this once.
+If you want to run Moneda locally instead of using the live site, you need Node.js installed (free download at nodejs.org). Then:
 
-### Step 1 — Install Node.js
+1. Download or clone this repository.
+2. Open a terminal in the project folder.
+3. Run `npm install` once to download dependencies.
+4. Run `npm run dev` to start the app.
+5. Open `http://localhost:5173` in your browser.
 
-Node.js is the engine that runs the app on your computer.
-
-1. Go to **[nodejs.org](https://nodejs.org)**
-2. Click the big green button that says **"LTS"** (the recommended version)
-3. Download and run the installer
-4. Click Next → Next → Install → Finish
-
-To check it worked: open the **Command Prompt** (press `Windows key`, type `cmd`, press Enter) and type:
-
-```
-node --version
-```
-
-You should see something like `v22.0.0`. Any number is fine as long as it shows up.
+To stop the app, press Ctrl+C in the terminal.
 
 ---
 
-### Step 2 — Download Moneda
+## Questions
 
-If you received Moneda as a ZIP file:
+**Can Moneda see my bank password?**
+No. You export a file from your bank's website yourself. Moneda never connects to your bank.
 
-1. Right-click the ZIP file → **Extract All**
-2. Choose a folder you'll remember (e.g. your Desktop or Documents)
-3. Open the extracted folder — it's called `moneda`
+**What happens if I accidentally close the tab?**
+Your data is gone unless you exported first. Export often, especially after making changes.
 
----
+**Can I use it on my phone?**
+Yes. The live site works on any modern smartphone browser. You can also install it as an app from your browser's menu (Add to Home Screen).
 
-### Step 3 — Install Moneda's pieces (one time only)
-
-1. Open the `moneda` folder
-2. Click on the address bar at the top of the window (where it shows the folder path)
-3. Type `cmd` and press **Enter** — a black Command Prompt window opens *inside that folder*
-4. Type this exactly and press Enter:
-
-```
-npm install
-```
-
-Wait for it to finish (it downloads some files, takes 1–2 minutes). You'll see a blinking cursor when it's done.
-
----
-
-### Step 4 — Start the app
-
-In the same black window, type:
-
-```
-npm run dev
-```
-
-You'll see some text appear, including a line like:
-
-```
-➜  Local:   http://localhost:5173/
-```
-
-5. Open your browser (Chrome, Edge, Firefox — any works)
-6. Type `http://localhost:5173` in the address bar and press Enter
-7. Moneda opens! 🎉
-
-> **Keep the black window open** while you use the app. Closing it stops the app.
-
----
-
-### Every time you want to use Moneda again
-
-1. Open the `moneda` folder
-2. Click the address bar, type `cmd`, press Enter
-3. Type `npm run dev` and press Enter
-4. Open your browser and go to `http://localhost:5173`
-
----
-
-## How to use Moneda
-
-### Upload your bank data
-
-1. Log in to your online banking
-2. Go to your account movements / transactions
-3. Look for a **Download** or **Export** button → choose **Excel (.xlsx)**
-4. Save the file anywhere on your computer
-
-Back in Moneda:
-
-1. Click the **Data** tab (bottom right on mobile, top right on desktop)
-2. Drag your `.xlsx` file onto the upload box, or click **Choose file(s)**
-3. Moneda reads the file and shows your transactions instantly
-
----
-
-### Save your work
-
-Moneda keeps everything in memory while the browser tab is open.  
-To save and come back later:
-
-1. Click **📥 Export** (anywhere in the app)
-2. Save the downloaded `.xlsx` file somewhere safe
-3. Next time: upload *that* file instead of the bank export — all your categories, budgets, and notes come back automatically
-
----
-
-### What each tab does
-
-| Tab | What it's for |
-|---|---|
-| 🏠 Home (Overview) | Dashboard — charts, spending summary, budgets at a glance |
-| 🎯 Budgets | Set monthly spending limits per category |
-| 📋 Reminders | Add to-dos and recurring notes |
-| 💳 Auto Pay | Track subscriptions and recurring charges |
-| ✂️ Splits | Split shared expenses with friends — groups, balances, settle up |
-| 📂 Data | Upload files, view all transactions, export |
-
----
-
-## ✂️ Splits (Tricount-style cost sharing)
-
-- Create named groups with any number of participants (no accounts needed)
-- Add expenses manually or link directly from any bank transaction row
-- Four split methods: equal, by percentage, exact amounts, or weighted shares
-- Live balance view per participant with a bar chart
-- Minimum-transfer settle-up: fewest possible payments to zero all balances
-- "Mark paid" with auto-detection of matching incoming transactions (±2%)
-- Full state persisted in the existing Excel export (`_splits` sheet)
-
----
-
-## Putting it on the internet (optional)
-
-If you want to access Moneda from any device (phone, other computer) without running it locally, you can host it for free on **Netlify** — no technical knowledge needed.
-
-### Free hosting on Netlify (5 minutes)
-
-1. Create a free account at [netlify.com](https://netlify.com)
-2. In the black Command Prompt window (in the `moneda` folder), type:
-
-```
-npm run build
-```
-
-Wait for it to finish. A new folder called `dist` appears inside `moneda`.
-
-3. Go to [netlify.com/drop](https://netlify.com/drop) in your browser
-4. Drag the **`dist` folder** onto the page
-5. Netlify gives you a link like `https://random-name-123.netlify.app`
-6. Open that link on any device — Moneda is live!
-
-> You can repeat steps 2–5 any time you want to update the hosted version.
-
----
-
-## Troubleshooting
-
-**"npm is not recognized"**  
-→ Node.js didn't install correctly. Restart your computer and try again. If still broken, reinstall from [nodejs.org](https://nodejs.org).
-
-**The browser shows "This site can't be reached"**  
-→ The black Command Prompt window was closed. Reopen it, navigate to the `moneda` folder, and run `npm run dev` again.
-
-**"Port 5173 is already in use"**  
-→ Moneda is already running in another window. Just go to `http://localhost:5173` in your browser.
-
-**I accidentally closed the browser tab**  
-→ Just go back to `http://localhost:5173`. The app is still running.
-
-**I want to stop Moneda**  
-→ Click the black Command Prompt window and press `Ctrl + C`.
-
----
-
-© 2026 Inés Villarino — MIT License
+**Is it free?**
+Yes, completely free and open source.
