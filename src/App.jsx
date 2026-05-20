@@ -49,6 +49,7 @@ export default function App() {
     setOnboarded(true);
     const ul=u.lang||"es";
     setLang(ul);
+    if(u.quickStart) setPage("data");
     const goalLabelsEs={save:"🎯 Meta: Ahorrar para algo",cut:"🎯 Meta: Gastar menos",know:"🎯 Meta: Entender mis gastos",chill:"🎯 Meta: Solo explorando"};
     const goalLabelsEn={save:"🎯 Goal: Save for something",cut:"🎯 Goal: Cut my spending",know:"🎯 Goal: Understand my money",chill:"🎯 Goal: Just exploring"};
     const goalLabels=ul==="es"?goalLabelsEs:goalLabelsEn;

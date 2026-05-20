@@ -50,7 +50,7 @@ export function Onboarding({onDone}) {
     </div>
     <div style={{marginTop:24,display:"flex",flexDirection:"column",alignItems:"center",gap:"12px"}}>
       <button onClick={()=>setStage("welcome")} style={{padding:"14px 52px",borderRadius:"14px",border:"none",background:THEMES[u.themeId].c.p,color:"white",fontSize:"16px",fontWeight:700,cursor:"pointer",fontFamily:THEMES[u.themeId].font,boxShadow:`0 4px 16px ${THEMES[u.themeId].c.p}50`}}>{tl.enterWorld}</button>
-      <button onClick={()=>setStage("quickname")} style={{padding:"10px 32px",borderRadius:"14px",border:"2px solid #d1d5db",background:"white",color:"#6b7280",fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:'"Inter",sans-serif'}}>{tl.quickStart}</button>
+      <button onClick={()=>onDone({...u,name:'Usuario',avatar:THEMES[u.themeId].avatars[0],goal:'know',quickStart:true})} style={{padding:"10px 32px",borderRadius:"14px",border:"2px solid #d1d5db",background:"white",color:"#6b7280",fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:'"Inter",sans-serif'}}>{tl.quickStart}</button>
     </div>
   </div>;}
   if(stage==="quickname"){
