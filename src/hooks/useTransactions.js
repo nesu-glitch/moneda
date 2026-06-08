@@ -24,10 +24,13 @@ export function useTransactions({
   const [modalSteps, setModalSteps]     = useState([]);
 
   const finalizeTxns = useCallback((txns, filename) => {
-    const sorted = [...txns].sort((a, b) => new Date(b.date) - new Date(a.date));
-    setTransactions(sorted);
-    updateMemory(sorted);
-    showToast(`✅ Loaded ${sorted.length} transactions`);
+    setTransactions(prev => {
+      const existingKeys = new Set(prev.map(t => `${t.date}|${t.desc}|${t.amount}`));
+      const dedupedNew = txns.filter(t => !existingKeys.has(`${t.date}|${t.desc}|${t.amount}`));
+      return [...prev, ...dedupedNew].sort((a, b) => new Date(b.date) - new Date(a.date));
+    });
+    updateMemory(txns);
+    showToast(`✅ Loaded ${txns.length} transactions`);
     setPage("dashboard");
     if (isFirstUpload && !user?.quickStart) { setShowBudgetWiz(true); }
     setIsFirstUpload(false);
@@ -37,7 +40,7 @@ export function useTransactions({
     if (error) { showToast(error, "error"); return; }
 
     // parsed is now {txns, comments, isMonedaExport, savedAutoPayments, savedReminders, savedBudgets, savedCustomCats, savedWidgetConfig}
-    const { txns: rawTxns, comments: restoredComments = {}, isMonedaExport = false, savedAutoPayments = [], savedReminders = [], savedBudgets = {}, savedCustomCats = [], savedWidgetConfig = [], savedProfile = null, savedSplits = null } = parsed;
+    const { txns: rawTxns, comments: restoredComments = {}, isMonedaExport = false, hasMonedaExport = false, savedAutoPayments = [], savedReminders = [], savedBudgets = {}, savedCustomCats = [], savedWidgetConfig = [], savedProfile = null, savedSplits = null } = parsed;
 
     // Restore comments from the export
     if (Object.keys(restoredComments).length > 0) {
@@ -77,6 +80,29 @@ export function useTransactions({
       if (isFirstUpload && !user?.quickStart) { setShowBudgetWiz(true); }
       setIsFirstUpload(false);
       return;
+    }
+
+    // Mixed upload: Moneda export + bank statement uploaded together.
+    // Restore saved state from the Moneda file, then fall through to the
+    // bank path so new transactions get classified normally.
+    if (hasMonedaExport && !isMonedaExport) {
+      const txnCats = rawTxns.filter(t => t.cat && t.cat !== "Income").map(t => t.cat);
+      const allRestoredCats = [...new Set([...savedCustomCats, ...txnCats])].filter(c => !ALL_CATS.includes(c));
+      if (allRestoredCats.length > 0) { setCustomCats(c => [...new Set([...c, ...allRestoredCats])]); extendAllCats(allRestoredCats); }
+      if (savedAutoPayments.length > 0) setAutoPayments(ps => { const names = new Set(ps.map(p => p.name)); return [...ps, ...savedAutoPayments.filter(p => !names.has(p.name))]; });
+      if (savedReminders.length > 0) setReminders(rs => [...rs, ...savedReminders]);
+      if (Object.keys(savedBudgets).length > 0) setBudgets(prev => ({ ...savedBudgets, ...prev }));
+      if (savedWidgetConfig.length > 0) setWidgetConfig(savedWidgetConfig);
+      if (savedProfile) {
+        setUser(prev => ({ ...(prev || {}), name: savedProfile.userName || prev?.name || "", themeId: savedProfile.themeId || prev?.themeId || "nature", avatar: savedProfile.avatar || prev?.avatar || "", goal: savedProfile.goal || prev?.goal || "know", lang: savedProfile.lang || prev?.lang || "es" }));
+        if (savedProfile.lang) setLang(savedProfile.lang);
+      }
+      if (savedSplits) {
+        if (savedSplits.splitGroups?.length) setSplitGroups(savedSplits.splitGroups);
+        if (savedSplits.splitExpenses?.length) setSplitExpenses(savedSplits.splitExpenses);
+        if (savedSplits.settlements?.length) setSettlements(savedSplits.settlements);
+      }
+      // no return — fall through to bank path for transaction classification
     }
 
     // Sync any custom cats stored in merchant memory into ALL_CATS so CategoryReview shows them

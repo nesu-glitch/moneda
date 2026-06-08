@@ -63,7 +63,7 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
   function mergeAndUpload(results){
     if(!results.length){onUpload(null,"No valid transactions found in the uploaded file(s).");return;}
     // Merge all parsed results
-    const merged={txns:[],comments:{},isMonedaExport:results.every(r=>r.isMonedaExport),
+    const merged={txns:[],comments:{},isMonedaExport:results.every(r=>r.isMonedaExport),hasMonedaExport:results.some(r=>r.isMonedaExport),
       savedAutoPayments:[],savedReminders:[],savedBudgets:{},savedCustomCats:[],
       // Single-value fields: take the first result that has them (Moneda re-upload is always one file)
       savedWidgetConfig:results.find(r=>r.savedWidgetConfig?.length)?.savedWidgetConfig||[],
