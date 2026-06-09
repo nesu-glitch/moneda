@@ -50,7 +50,11 @@ export function useTransactions({
     // For Moneda re-uploads: all cats already set, skip classify entirely
     if (isMonedaExport) {
       const sorted = [...rawTxns].sort((a, b) => new Date(b.date) - new Date(a.date));
-      setTransactions(sorted);
+      setTransactions(prev => {
+        const existingKeys = new Set(prev.map(t => `${t.date}|${t.desc}|${t.amount}`));
+        const dedupedNew = sorted.filter(t => !existingKeys.has(`${t.date}|${t.desc}|${t.amount}`));
+        return [...prev, ...dedupedNew].sort((a, b) => new Date(b.date) - new Date(a.date));
+      });
       updateMemory(sorted);
       // Restore custom categories from Config sheet + any non-standard cats in transactions
       const txnCats = sorted.filter(t => t.cat && t.cat !== "Income").map(t => t.cat);
