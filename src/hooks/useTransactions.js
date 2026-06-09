@@ -10,7 +10,7 @@ export function useTransactions({
   setUser, setLang,
   setSplitGroups, setSplitExpenses, setSettlements,
   showToast, setPage,
-  user, merchantMemory,
+  user, merchantMemory, autoPayments,
 }) {
   const [transactions, setTransactions] = useState([]);
   const [comments, setComments]         = useState({});
@@ -82,6 +82,12 @@ export function useTransactions({
       return;
     }
 
+    // Effective state: merges current React state with values about to be restored
+    // from the Moneda file. React batches state updates, so the bank path below
+    // can't read the new values from state yet — these variables bridge that gap.
+    let effectiveMemory = { ...merchantMemory };
+    const effectiveAutoPayNames = new Set(autoPayments.map(p => p.name));
+
     // Mixed upload: Moneda export + bank statement uploaded together.
     // Restore saved state from the Moneda file, then fall through to the
     // bank path so new transactions get classified normally.
@@ -102,11 +108,22 @@ export function useTransactions({
         if (savedSplits.splitExpenses?.length) setSplitExpenses(savedSplits.splitExpenses);
         if (savedSplits.settlements?.length) setSettlements(savedSplits.settlements);
       }
+      // Derive merchant→category mappings from Moneda transactions so the bank
+      // path auto-classifies the same merchants without prompting the user again.
+      for (const t of rawTxns) {
+        if (t.cat && t.cat !== "Income") {
+          const m = extractMerchant(t.desc);
+          if (m && !effectiveMemory[m]) effectiveMemory[m] = t.cat;
+        }
+      }
+      setMerchantMemory(effectiveMemory);
+      // Mark restored auto-payment names so already-confirmed subs are filtered below.
+      savedAutoPayments.forEach(p => { if (p.name) effectiveAutoPayNames.add(p.name); });
       // no return — fall through to bank path for transaction classification
     }
 
     // Sync any custom cats stored in merchant memory into ALL_CATS so CategoryReview shows them
-    const memCustomCats = [...new Set(Object.values(merchantMemory).filter(c => c && c !== "Income" && !ALL_CATS.includes(c)))];
+    const memCustomCats = [...new Set(Object.values(effectiveMemory).filter(c => c && c !== "Income" && !ALL_CATS.includes(c)))];
     if (memCustomCats.length > 0) { setCustomCats(c => [...new Set([...c, ...memCustomCats])]); extendAllCats(memCustomCats); }
 
     // Standard Bank statement upload — apply merchant memory then classify unknowns
@@ -114,13 +131,14 @@ export function useTransactions({
     const preClassified = rawTxns.map(t => {
       if (t.cat === null) {
         const merchant = extractMerchant(t.desc);
-        if (merchantMemory[merchant]) { autoClassified++; return { ...t, cat: merchantMemory[merchant] }; }
+        if (effectiveMemory[merchant]) { autoClassified++; return { ...t, cat: effectiveMemory[merchant] }; }
       }
       return t;
     });
     if (autoClassified > 0) showToast(`🧠 Auto-classified ${autoClassified} known merchant${autoClassified !== 1 ? "s" : ""} from memory`, "info");
     const namedSubs = detectSubscriptions(preClassified);
-    const subs = [...namedSubs, ...detectRecurring(preClassified, namedSubs)];
+    const subs = [...namedSubs, ...detectRecurring(preClassified, namedSubs)]
+      .filter(s => !effectiveAutoPayNames.has(s.name));
     const unknowns = preClassified.filter(t => t.cat === null);
     const steps = [];
     if (subs.length > 0) steps.push("📦 Subscriptions");
@@ -132,7 +150,7 @@ export function useTransactions({
     if (subs.length > 0) setShowSubVerify(true);
     else if (unknowns.length > 0) setShowCatReview(true);
     else finalizeTxns(preClassified, filename);
-  }, [finalizeTxns, isFirstUpload, merchantMemory, updateMemory, user, showToast, setPage, setShowBudgetWiz, setCustomCats, setBudgets, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements]);
+  }, [finalizeTxns, isFirstUpload, merchantMemory, updateMemory, user, showToast, setPage, setShowBudgetWiz, setCustomCats, setBudgets, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, autoPayments]);
 
   const handleSubDone = useCallback((confirmed) => {
     setShowSubVerify(false);

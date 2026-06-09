@@ -39,7 +39,7 @@ export default function App() {
 
   const showToast=(msg,type="success")=>setToast({msg,type});
 
-  const { transactions, comments, reimbursed, modalSteps, detectedSubs, unknownTxns, showSubVerify, showCatReview, handleUpload, handleSubDone, handleCatDone, onCatChange, onCommentSave, onMarkReimbursed } = useTransactions({ updateMemory, setMerchantMemory, setCustomCats, setBudgets, setShowBudgetWiz, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, showToast, setPage, user, merchantMemory });
+  const { transactions, comments, reimbursed, modalSteps, detectedSubs, unknownTxns, showSubVerify, showCatReview, handleUpload, handleSubDone, handleCatDone, onCatChange, onCommentSave, onMarkReimbursed } = useTransactions({ updateMemory, setMerchantMemory, setCustomCats, setBudgets, setShowBudgetWiz, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, showToast, setPage, user, merchantMemory, autoPayments });
   const onAddReminder=useCallback(r=>setReminders(rs=>[...rs,r]),[]);
   const { handleExport } = useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, user, lang });
   const isMobile=useIsMobile();
