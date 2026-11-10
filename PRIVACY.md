@@ -21,7 +21,7 @@ Moneda no usa cookies, ni analítica, ni rastreadores, y no guarda ninguno de tu
 Los archivos .xlsx exportados se quedan en tu dispositivo. Mantenerlos seguros es tu responsabilidad.
 
 ### Alojamiento
-La web está alojada en GitHub Pages (GitHub, Inc., EE. UU.). Como cualquier servicio de alojamiento, GitHub puede registrar datos técnicos como direcciones IP para servir la web y mantenerla segura (interés legítimo, art. 6.1.f RGPD). Estos datos pueden tratarse en Estados Unidos. GitHub los trata según su propia [declaración de privacidad](https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement).
+La web está alojada en GitHub Pages (GitHub, Inc., EE. UU.) y se sirve a través de Cloudflare (Cloudflare, Inc., EE. UU.), que actúa como capa de red y seguridad por delante. Como cualquier servicio de alojamiento, GitHub y Cloudflare pueden registrar datos técnicos como direcciones IP para servir la web y mantenerla segura (interés legítimo, art. 6.1.f RGPD). Estos datos pueden tratarse en Estados Unidos. Ambos los tratan según sus propias políticas de privacidad: [declaración de privacidad de GitHub](https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement) · [política de privacidad de Cloudflare](https://www.cloudflare.com/privacypolicy/).
 
 ### Enlaces opcionales de opinión
 El formulario de opinión (Google Forms) y el enlace "Abrir issue" (GitHub) son sitios externos que solo visitas si quieres. Si los usas, recibo lo que escribas allí, y Google o GitHub lo tratan según sus propias políticas de privacidad. Por favor, no incluyas datos financieros.
@@ -50,7 +50,7 @@ Moneda uses no cookies, no analytics and no trackers, and stores none of your da
 Exported .xlsx files stay on your device. Keeping them safe is your responsibility.
 
 ### Hosting
-The website is hosted on GitHub Pages (GitHub, Inc., USA). Like any web host, GitHub may log technical data such as IP addresses to deliver the site and keep it secure (legitimate interest, Art. 6(1)(f) GDPR). This data may be processed in the United States. GitHub handles it under its own [privacy statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+The website is hosted on GitHub Pages (GitHub, Inc., USA) and delivered through Cloudflare (Cloudflare, Inc., USA), which acts as a network and security layer in front of it. Like any web host, GitHub and Cloudflare may log technical data such as IP addresses to deliver the site and keep it secure (legitimate interest, Art. 6(1)(f) GDPR). This data may be processed in the United States. They handle it under their own privacy policies: [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) · [Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/).
 
 ### Optional feedback links
 The feedback form (Google Forms) and the "Open an issue" link (GitHub) are external sites you only visit if you choose to. If you use them, I receive what you write there, and Google or GitHub process it under their own privacy policies. Please don't include financial data.

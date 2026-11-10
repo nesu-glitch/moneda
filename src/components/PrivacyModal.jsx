@@ -20,7 +20,7 @@ export function PrivacyModal({theme,lang="es",onClose}) {
         <div style={{fontWeight:700,fontSize:"14px",color:c.p,marginBottom:4,fontFamily:f}}>{s.h}</div>
         <div style={{fontSize:"13px",lineHeight:1.65,color:c.text}}>
           {s.p}
-          {s.link&&<> <a href={s.link.href} target="_blank" rel="noreferrer" style={{color:c.p,fontWeight:700}}>{s.link.label}</a></>}
+          {s.links&&s.links.map((k,i)=><span key={k.href}>{i>0?" · ":" "}<a href={k.href} target="_blank" rel="noreferrer" style={{color:c.p,fontWeight:700}}>{k.label}</a></span>)}
         </div>
       </div>)}
       <div style={{fontSize:"12px",color:c.muted,marginTop:4,marginBottom:18}}>{tr.privacyUpdated}</div>
