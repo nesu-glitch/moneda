@@ -114,3 +114,7 @@ Moneda's own `.xlsx` export format is also re-importable, restoring transactions
 **CVE-patched dependency.** The `xlsx` package is aliased to `@e965/xlsx@^0.20.3`, a maintained fork that resolves the prototype-pollution CVEs present in the original SheetJS 0.18.x releases.
 
 **No network.** The app makes no outbound requests with user data. All parsing runs in-memory in the browser.
+
+**No third-party requests: fonts are self-hosted.** Nunito, Cinzel, Playfair Display and Inter are bundled from `@fontsource/*` (latin + latin-ext only) and precached by the service worker, so nothing is fetched from Google Fonts or any other external domain.
+
+**Privacy notice.** See [PRIVACY.md](PRIVACY.md) (Spanish + English). The same text is shown in the app via the "Privacidad / Privacy" link.

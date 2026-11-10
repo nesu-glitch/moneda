@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { THEMES, THEMES_TR, GOALS, GOALS_TR, T } from "../utils/constants.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
+import { PrivacyModal } from "./PrivacyModal.jsx";
 
 function Dialog({theme,lines,onDone}) {
   const [li,setLi]=useState(0),[ci,setCi]=useState(0);
@@ -20,7 +21,7 @@ function Dialog({theme,lines,onDone}) {
 }
 
 export function Onboarding({onDone}) {
-  const [stage,setStage]=useState("lang"),[u,setU]=useState({name:"",themeId:"nature",avatar:"🦔",goal:"",lang:"es"});
+  const [stage,setStage]=useState("lang"),[showPrivacy,setShowPrivacy]=useState(false),[u,setU]=useState({name:"",themeId:"nature",avatar:"🦔",goal:"",lang:"es"});
   const theme=THEMES[u.themeId];const{c,font:f}=theme;
   const isMobile=useIsMobile();
   const card=(e={})=>({background:"white",borderRadius:"24px",padding:isMobile?"28px 20px":"40px",maxWidth:"480px",width:"100%",boxShadow:"0 12px 48px rgba(0,0,0,0.09)",animation:"pop 0.3s cubic-bezier(.34,1.56,.64,1)",textAlign:"center",...e});
@@ -39,6 +40,8 @@ export function Onboarding({onDone}) {
         </button>
       ))}
     </div>
+    <button onClick={()=>setShowPrivacy(true)} style={{background:"transparent",border:"none",cursor:"pointer",color:"#888",fontSize:"12px",fontFamily:'"Inter",sans-serif',textDecoration:"underline",padding:"6px"}}>🔒 Privacidad / Privacy</button>
+    {showPrivacy&&<PrivacyModal theme={THEMES.nature} lang={u.lang} onClose={()=>setShowPrivacy(false)}/>}
   </div>;}
   if(stage==="theme"){const tl=T[u.lang]||T.es;return <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#f0f0f0,#fafafa)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:'"Inter",sans-serif',padding:"20px"}}>
     <div style={{textAlign:"center",marginBottom:28,animation:"fadeUp 0.4s ease"}}><div style={{fontSize:"44px",marginBottom:10}}>💸</div><h1 style={{fontSize:"30px",fontWeight:800,color:"#111",marginBottom:6}}>{tl.welcomeTitle}</h1><p style={{color:"#888",fontSize:"15px"}}>{tl.pickWorld}</p></div>

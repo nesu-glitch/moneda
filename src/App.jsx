@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { FONT_URL, THEMES, THEME_W_ES, T } from "./utils/constants.js";
+import { THEMES, THEME_W_ES, T } from "./utils/constants.js";
 import { useCategories } from "./hooks/useCategories.js";
 import { useBudgets } from "./hooks/useBudgets.js";
 import { useExport } from "./hooks/useExport.js";
@@ -15,6 +15,7 @@ import { CategoryReview } from "./components/CategoryReview.jsx";
 import { BudgetWizard, BudgetsPage } from "./components/Budget.jsx";
 import { RemindersPage } from "./components/Reminders.jsx";
 import { SplitsPage, SplitModal } from "./components/Splits.jsx";
+import { PrivacyModal } from "./components/PrivacyModal.jsx";
 
 export default function App() {
   const [onboarded,setOnboarded]       = useState(false);
@@ -28,6 +29,7 @@ export default function App() {
   const [reminders,setReminders]       = useState([]);
   const [autoPayments,setAutoPayments] = useState([]);
   const [toast,setToast]               = useState(null);
+  const [showPrivacy,setShowPrivacy]   = useState(false);
   const [widgetConfig,setWidgetConfig]     = useState([]);
   const [lang,setLang]                     = useState("es");
   const [splitGroups,setSplitGroups]       = useState([]);
@@ -35,7 +37,7 @@ export default function App() {
   const [settlements,setSettlements]       = useState([]);
   const [splitTxModal,setSplitTxModal]     = useState(null);
 
-  useEffect(()=>{const s=document.createElement("style");s.textContent=`@import url('${FONT_URL}');*{box-sizing:border-box;margin:0;padding:0}body,#root{margin:0;padding:0;overscroll-behavior-y:none}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{opacity:0;transform:scale(0.88)}100%{opacity:1;transform:scale(1)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:3px}`;document.head.appendChild(s);return()=>s.remove();},[]);
+  useEffect(()=>{const s=document.createElement("style");s.textContent=`*{box-sizing:border-box;margin:0;padding:0}body,#root{margin:0;padding:0;overscroll-behavior-y:none}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{opacity:0;transform:scale(0.88)}100%{opacity:1;transform:scale(1)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:3px}`;document.head.appendChild(s);return()=>s.remove();},[]);
 
   const showToast=(msg,type="success")=>setToast({msg,type});
 
@@ -97,6 +99,7 @@ export default function App() {
       {page==="payments" &&<AutoPayPage {...{theme:effectiveTheme,autoPayments,setAutoPayments,paymentsWithCountdown,lang}}/>}
       {page==="splits"   &&<SplitsPage {...{theme:effectiveTheme,lang,splitGroups,setSplitGroups,splitExpenses,setSplitExpenses,settlements,setSettlements,transactions,onMarkReimbursed,showToastFn:showToast}}/>}
       {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory:()=>{clearMemory();showToast(lang==="es"?"Memoria borrada":"Memory cleared","info");},onExport:handleExport,lang}}/>}
+      <div style={{textAlign:"center",marginTop:22}}><button onClick={()=>setShowPrivacy(true)} style={{background:"transparent",border:"none",cursor:"pointer",color:c.muted,fontSize:"11px",fontFamily:f,textDecoration:"underline",padding:"6px"}}>🔒 {tr.privacyLink}</button></div>
     </div>
     {/* ── Mobile bottom tab bar ── */}
     {isMobile&&<nav style={{position:"fixed",bottom:0,left:0,right:0,zIndex:200,background:c.nav,borderTop:"1px solid rgba(255,255,255,0.12)",display:"flex",paddingBottom:"env(safe-area-inset-bottom, 0px)",boxShadow:"0 -2px 14px rgba(0,0,0,0.22)"}}>
@@ -110,6 +113,7 @@ export default function App() {
     {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onDone={lims=>{setBudgets(lims);setShowBudgetWiz(false);showToast(lang==="es"?"¡Presupuestos guardados! 🎯":"Budgets saved! 🎯");}} lang={lang}/>}
     {splitTxModal&&<SplitModal theme={effectiveTheme} lang={lang} tx={splitTxModal} splitGroups={splitGroups} splitExpenses={splitExpenses}
       onSave={exp=>setSplitExpenses(es=>[...es,exp])} onClose={()=>setSplitTxModal(null)}/>}
+    {showPrivacy&&<PrivacyModal theme={effectiveTheme} lang={lang} onClose={()=>setShowPrivacy(false)}/>}
     {toast&&<Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
   </div>;
 }
