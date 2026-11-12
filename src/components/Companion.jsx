@@ -7,6 +7,8 @@ import { say } from "../utils/i18n.js";
 // Each layer owns its own transform, so the animations never overwrite each other.
 // Uses the Web Animations API: no extra library in the bundle.
 
+// Emojis whose drawing faces left (checked in Noto Color Emoji). Others are drawn facing right.
+const FACES_LEFT = new Set(["🦔","🐿️","🐉","🦄","🦢","🕊️","🐬","🐆","🦅"]);
 const FLYERS = ["🦋","🦉","🦅","🐉","🧚","🐬","🦢","🕊️"];
 const WORLD_MOVE = { nature:"roll", adventure:"dash", princess:"twirl", finance:"glide" };
 const moveFor = (avatar, themeId) => FLYERS.includes(avatar) ? "fly" : (WORLD_MOVE[themeId] || "glide");
@@ -65,6 +67,8 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal }) {
   const [celebrating, setCelebrating] = useState(0);
   const taps = useRef([]), busy = useRef(false), firstPage = useRef(true), firstSave = useRef(saveSignal);
   const move = moveFor(avatar, themeId);
+  const leftRef = useRef(false);
+  useEffect(() => { leftRef.current = FACES_LEFT.has(avatar); }, [avatar]);
 
   const say1 = useCallback((text, ms = 1100) => {
     setBubble({ text, id: Math.random() });
@@ -83,7 +87,7 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal }) {
       y: 12 + Math.random() * Math.max(0, pageH() - SIZE - 24),
     });
     let x = Math.max(12, pageW() - SIZE - 24), y = Math.max(12, window.innerHeight * 0.6);
-    let target = randomSpot(), restUntil = 0, rot = 0, face = 1, last = performance.now(), raf;
+    let target = randomSpot(), restUntil = 0, rot = 0, dir = 1, face = 1, last = performance.now(), raf;
     const tick = now => {
       const dt = Math.min(64, now - last) / 1000; last = now;
       let vx = 0;
@@ -103,7 +107,8 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal }) {
       x = Math.max(0, Math.min(pageW() - SIZE, x));
       y = Math.max(0, Math.min(pageH() - SIZE, y));
       rot += (Math.max(-6, Math.min(6, vx / SPEED * 6)) - rot) * 0.08; // slight lean in the direction it walks
-      if (Math.abs(vx) > 2) face = vx < 0 ? -1 : 1;
+      if (Math.abs(vx) > 2) dir = vx < 0 ? -1 : 1;
+      face = leftRef.current ? -dir : dir; // flip the drawing so it always looks where it walks
       if (outer) outer.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0)`;
       if (driftEl) driftEl.style.transform = `rotate(${rot.toFixed(1)}deg)`;
       if (faceEl) faceEl.style.transform = `scaleX(${face})`;
