@@ -12,7 +12,6 @@ export function useExport({ transactions, comments, autoPayments, reminders, bud
         themeId: user?.themeId || "nature",
         avatar: user?.avatar || "",
         goal: user?.goal || "know",
-        motion: user?.motion,
       },
     }),
     [transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang]

@@ -318,7 +318,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
                 {journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}
               </div>
             :<table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
-                <thead><tr style={{borderBottom:`2px solid ${c.border}`}}>{[say(lang,"Fecha","Date"),say(lang,"Descripción","Description"),say(lang,"Categoría","Category"),say(lang,"Importe","Amount"),""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}</tr></thead>
+                <thead><tr style={{borderBottom:`2px solid ${c.border}`}}>{["Date","Description","Category","Amount",""].map(h=><th key={h} style={{padding:"7px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}</tr></thead>
                 <tbody>{journalTxns.map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}</tbody>
               </table>}
         </div>}
@@ -330,11 +330,11 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
         ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{say(lang,"Sin ingresos en este período","No income in this period")}</div>
         :<>
           <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>
-            {filtered.filter(t=>t.amount>0).length} {tr.transactions} · <span style={{color:"#10b981",fontWeight:700}}>+{fmt(totalInc)} {say(lang,"en total","total")}</span>
+            {filtered.filter(t=>t.amount>0).length} {tr.transactions} · <span style={{color:"#10b981",fontWeight:700}}>+{fmt(totalInc)} total</span>
           </div>
           <div style={{overflowX:"auto",borderRadius:"12px",border:`1.5px solid ${c.border}`}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
-              <thead><tr style={{borderBottom:`2px solid ${c.border}`,background:c.pl}}>{(isMobile?[say(lang,"Fecha","Date"),say(lang,"Importe","Amount")]:[say(lang,"Fecha","Date"),say(lang,"De","From"),say(lang,"Importe","Amount")]).map(h=><th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}</tr></thead>
+              <thead><tr style={{borderBottom:`2px solid ${c.border}`,background:c.pl}}>{(isMobile?["Date","Amount"]:["Date","From","Amount"]).map(h=><th key={h} style={{padding:"8px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}</tr></thead>
               <tbody>
                 {filtered.filter(t=>t.amount>0).map(t=>(
                   <tr key={t.id} style={{borderBottom:`1px solid ${c.border}`}}
