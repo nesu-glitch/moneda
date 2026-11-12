@@ -74,11 +74,11 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isM
     setTimeout(() => setBubble(b => (b && b.text === text ? null : b)), ms);
   }, []);
 
-  // ── Desktop: trail 30px behind the cursor, tilting the way it moves ──
+  // ── Desktop: trail 60px behind the cursor, tilting the way it moves ──
   useEffect(() => {
     if (!follow) return;
     const outer = outerRef.current, driftEl = driftRef.current, faceEl = faceRef.current;
-    const SIZE = 64, TRAIL = 30, EASE = 0.12;
+    const SIZE = 64, TRAIL = 60, EASE = 0.12;
     let cx = window.innerWidth * 0.8, cy = window.innerHeight * 0.8; // last cursor position
     let dirX = 1, dirY = 0;                                          // last movement direction
     let mx = cx - SIZE / 2, my = cy - SIZE / 2;                      // companion top-left
