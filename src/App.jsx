@@ -81,20 +81,22 @@ export default function App() {
     {/* ── Desktop top nav ── */}
     {!isMobile&&<nav style={{background:c.nav,padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100,boxShadow:"0 2px 14px rgba(0,0,0,0.18)"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
-        {motionBtn}
+        <span style={{fontSize:"30px"}}>{user?.avatar}</span>
         <div><div style={{color:c.navT,fontWeight:800,fontSize:"15px",fontFamily:f}}>{title}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} {(THEMES_TR[theme.id]?.[lang]||{}).name||theme.name} · Moneda 💸</div></div>
       </div>
       <div style={{display:"flex",gap:"2px",alignItems:"center"}}>
+        {motionBtn}
         {NAV.map(({id,e,label})=><button key={id} onClick={()=>setPage(id)} style={{background:page===id?"rgba(255,255,255,0.2)":"transparent",border:"none",borderRadius:"10px",padding:"6px 10px",cursor:"pointer",color:page===id?"white":"rgba(255,255,255,0.55)",fontFamily:f,fontWeight:600,fontSize:"10px",display:"flex",flexDirection:"column",alignItems:"center",gap:"1px",transition:"all 0.15s",minHeight:44}}><span style={{fontSize:"20px"}}>{e}</span>{label}</button>)}
       </div>
     </nav>}
     {/* ── Mobile compact top header ── */}
     {isMobile&&<header style={{background:c.nav,padding:"10px 16px",display:"flex",alignItems:"center",gap:"10px",position:"sticky",top:0,zIndex:100,boxShadow:"0 2px 14px rgba(0,0,0,0.18)"}}>
-      {motionBtn}
+      <span style={{fontSize:"26px"}}>{user?.avatar}</span>
       <div style={{flex:1,minWidth:0}}>
         <div style={{color:c.navT,fontWeight:800,fontSize:"14px",fontFamily:f,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{title}</div>
         <div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} Moneda 💸</div>
       </div>
+      {motionBtn}
     </header>}
     {/* ── Main content ── */}
     <div style={{paddingTop:isMobile?"16px":"26px",paddingLeft:isMobile?"12px":"24px",paddingRight:isMobile?"12px":"24px",paddingBottom:isMobile?"calc(72px + env(safe-area-inset-bottom, 0px))":"26px",maxWidth:"1080px",margin:"0 auto"}}>

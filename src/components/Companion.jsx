@@ -63,7 +63,6 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isM
   const [bubble, setBubble] = useState(null);
   const [hidden, setHidden] = useState(false);
   const [celebrating, setCelebrating] = useState(0);
-  const [side, setSide] = useState("right");
   const taps = useRef([]), busy = useRef(false), firstPage = useRef(true), firstSave = useRef(saveSignal);
   const move = moveFor(avatar, themeId);
 
@@ -116,7 +115,6 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isM
   // ── Page change: the world's signature move (runs beside the page, never blocks it) ──
   useEffect(() => {
     if (firstPage.current) { firstPage.current = false; return; }
-    setSide(s => (s === "right" ? "left" : "right"));
     if (!motion || busy.current || !actRef.current?.animate) return;
     const m = PAGE_MOVES[move];
     actRef.current.animate(m.k, { duration: m.d, easing: "cubic-bezier(.45,.05,.35,1)" });
@@ -174,7 +172,7 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isM
       @keyframes compCard{from{opacity:0;transform:translateY(24px) scale(.92)}to{opacity:1;transform:none}}
     `}</style>
     {/* Only the character itself takes taps; the box around it lets clicks through */}
-    <div style={{ position:"fixed", left:side==="left"?(isMobile?10:22):`calc(100vw - ${64+(isMobile?10:22)}px)`, transition:motion?"left .6s cubic-bezier(.45,.05,.35,1)":"none", bottom:isMobile?"calc(66px + env(safe-area-inset-bottom, 0px))":22, zIndex:300, width:64, height:64, pointerEvents:"none", visibility:celebrating?"hidden":"visible" }}>
+    <div style={{ position:"fixed", right:isMobile?10:22, bottom:isMobile?"calc(66px + env(safe-area-inset-bottom, 0px))":22, zIndex:300, width:64, height:64, pointerEvents:"none", visibility:celebrating?"hidden":"visible" }}>
       <div ref={driftRef} style={{ width:"100%", height:"100%", willChange:"transform" }}>
         <div ref={actRef} style={{ width:"100%", height:"100%", perspective:400 }}>
           {bubble && <div key={bubble.id} style={{ position:"absolute", left:"50%", bottom:"100%", marginBottom:4, transform:"translate(-50%,0)", background:"white", borderRadius:14, padding:"3px 9px", fontSize:20, boxShadow:"0 4px 14px rgba(0,0,0,.18)", animation:motion?"compBubble .18s ease-out":"none", whiteSpace:"nowrap" }}>{bubble.text}</div>}
