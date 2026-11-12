@@ -77,9 +77,7 @@ export default function App() {
 
   const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"splits",e:"✂️",label:say(lang,"Dividir","Splits")},{id:"data",e:"📂",label:tr.data}];
 
-  return <div style={{minHeight:"100vh",background:"transparent",fontFamily:f,color:c.text,paddingBottom:0}}>
-    {/* Fixed backdrop: sits under the companion, so it can walk behind cards and buttons */}
-    <div aria-hidden="true" style={{position:"fixed",inset:0,background:theme.grad,zIndex:-2,pointerEvents:"none"}}/>
+  return <div style={{minHeight:"100vh",background:theme.grad,fontFamily:f,color:c.text,paddingBottom:0}}>
     {/* ── Desktop top nav ── */}
     {!isMobile&&<nav style={{background:c.nav,padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100,boxShadow:"0 2px 14px rgba(0,0,0,0.18)"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
@@ -125,7 +123,7 @@ export default function App() {
     {splitTxModal&&<SplitModal theme={effectiveTheme} lang={lang} tx={splitTxModal} splitGroups={splitGroups} splitExpenses={splitExpenses}
       onSave={exp=>setSplitExpenses(es=>[...es,exp])} onClose={()=>setSplitTxModal(null)}/>}
     {showPrivacy&&<PrivacyModal theme={effectiveTheme} lang={lang} onClose={()=>setShowPrivacy(false)}/>}
-    {user?.avatar&&<Companion avatar={user.avatar} themeId={theme.id} page={page} lang={lang} motion={motionOn} saveSignal={saveSignal}/>}
+    {user?.avatar&&<Companion avatar={user.avatar} themeId={theme.id} page={page} lang={lang} motion={motionOn} saveSignal={saveSignal} isMobile={isMobile}/>}
     {toast&&<Toast key={toast.id} msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
   </div>;
 }
