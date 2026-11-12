@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { doExport } from "../utils/parsers/index.js";
 
-export function useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, user, lang }) {
+export function useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang }) {
   const handleExport = useCallback(() =>
     doExport(transactions, comments, {
       autoPayments, reminders, budgets, customCats, widgetConfig,
-      splitGroups, splitExpenses, settlements,
+      splitGroups, splitExpenses, settlements, reimbursed, catGroups,
       profile: {
         userName: user?.name || "",
         lang,
@@ -14,7 +14,7 @@ export function useExport({ transactions, comments, autoPayments, reminders, bud
         goal: user?.goal || "know",
       },
     }),
-    [transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, user, lang]
+    [transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang]
   );
 
   return { handleExport };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { THEMES, THEME_W_ES, T } from "./utils/constants.js";
+import { THEMES, THEMES_TR, THEME_W_ES, T } from "./utils/constants.js";
 import { useCategories } from "./hooks/useCategories.js";
 import { useBudgets } from "./hooks/useBudgets.js";
 import { useExport } from "./hooks/useExport.js";
@@ -39,11 +39,12 @@ export default function App() {
 
   useEffect(()=>{const s=document.createElement("style");s.textContent=`*{box-sizing:border-box;margin:0;padding:0}body,#root{margin:0;padding:0;overscroll-behavior-y:none}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{opacity:0;transform:scale(0.88)}100%{opacity:1;transform:scale(1)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:3px}`;document.head.appendChild(s);return()=>s.remove();},[]);
 
-  const showToast=(msg,type="success")=>setToast({msg,type});
+  const showToast=useCallback((msg,type="success")=>setToast({msg,type,id:Date.now()+Math.random()}),[]);
+  useEffect(()=>{document.documentElement.lang=lang;},[lang]);
 
-  const { transactions, comments, reimbursed, modalSteps, detectedSubs, unknownTxns, showSubVerify, showCatReview, handleUpload, handleSubDone, handleCatDone, onCatChange, onCommentSave, onMarkReimbursed } = useTransactions({ updateMemory, setMerchantMemory, setCustomCats, setBudgets, setShowBudgetWiz, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, showToast, setPage, user, merchantMemory, autoPayments });
+  const { transactions, comments, reimbursed, modalSteps, detectedSubs, unknownTxns, showSubVerify, showCatReview, handleUpload, handleSubDone, handleCatDone, onCatChange, onCommentSave, onMarkReimbursed } = useTransactions({ updateMemory, setMerchantMemory, setCustomCats, setBudgets, setCatGroups, setShowBudgetWiz, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, showToast, setPage, user, merchantMemory, autoPayments, lang });
   const onAddReminder=useCallback(r=>setReminders(rs=>[...rs,r]),[]);
-  const { handleExport } = useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, user, lang });
+  const { handleExport } = useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang });
   const isMobile=useIsMobile();
 
   if(!onboarded)return <Onboarding onDone={u=>{
@@ -64,16 +65,17 @@ export default function App() {
   const effectiveTheme={...theme,w:w_eff};
   const{c,font:f}=effectiveTheme;const w=w_eff;
   const tr=T[lang]||T.en;
+  const title=!user?.name?w.home:lang==="es"?`${user.name} · ${w.home}`:`${user.name}'s ${w.home}`;
   const { allCats, uncategorizedCount, filtered, compFiltered, totalInc, totalExp, net, biggestExp, catData, paymentsWithCountdown, budgetWarnings, subStepIdx, catStepIdx, budStepIdx } = useAppData({ transactions, reimbursed, autoPayments, budgets, timeFilter, customRange, customCats, modalSteps });
 
-  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"splits",e:"✂️",label:"Splits"},{id:"data",e:"📂",label:tr.data}];
+  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"splits",e:"✂️",label:lang==="es"?"Dividir":"Splits"},{id:"data",e:"📂",label:tr.data}];
 
   return <div style={{minHeight:"100vh",background:theme.grad,fontFamily:f,color:c.text,paddingBottom:0}}>
     {/* ── Desktop top nav ── */}
     {!isMobile&&<nav style={{background:c.nav,padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,zIndex:100,boxShadow:"0 2px 14px rgba(0,0,0,0.18)"}}>
       <div style={{display:"flex",alignItems:"center",gap:"10px"}}>
         <span style={{fontSize:"30px"}}>{user?.avatar}</span>
-        <div><div style={{color:c.navT,fontWeight:800,fontSize:"15px",fontFamily:f}}>{user?.name}'s {w.home}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} {theme.name} · Moneda 💸</div></div>
+        <div><div style={{color:c.navT,fontWeight:800,fontSize:"15px",fontFamily:f}}>{title}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} {(THEMES_TR[theme.id]?.[lang]||{}).name||theme.name} · Moneda 💸</div></div>
       </div>
       <div style={{display:"flex",gap:"2px"}}>
         {NAV.map(({id,e,label})=><button key={id} onClick={()=>setPage(id)} style={{background:page===id?"rgba(255,255,255,0.2)":"transparent",border:"none",borderRadius:"10px",padding:"6px 10px",cursor:"pointer",color:page===id?"white":"rgba(255,255,255,0.55)",fontFamily:f,fontWeight:600,fontSize:"10px",display:"flex",flexDirection:"column",alignItems:"center",gap:"1px",transition:"all 0.15s",minHeight:44}}><span style={{fontSize:"20px"}}>{e}</span>{label}</button>)}
@@ -83,7 +85,7 @@ export default function App() {
     {isMobile&&<header style={{background:c.nav,padding:"10px 16px",display:"flex",alignItems:"center",gap:"10px",position:"sticky",top:0,zIndex:100,boxShadow:"0 2px 14px rgba(0,0,0,0.18)"}}>
       <span style={{fontSize:"26px"}}>{user?.avatar}</span>
       <div style={{flex:1,minWidth:0}}>
-        <div style={{color:c.navT,fontWeight:800,fontSize:"14px",fontFamily:f,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{user?.name}'s {w.home}</div>
+        <div style={{color:c.navT,fontWeight:800,fontSize:"14px",fontFamily:f,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{title}</div>
         <div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} Moneda 💸</div>
       </div>
     </header>}
@@ -98,7 +100,7 @@ export default function App() {
       {page==="reminders"&&<RemindersPage {...{theme:effectiveTheme,reminders,setReminders,lang}}/>}
       {page==="payments" &&<AutoPayPage {...{theme:effectiveTheme,autoPayments,setAutoPayments,paymentsWithCountdown,lang}}/>}
       {page==="splits"   &&<SplitsPage {...{theme:effectiveTheme,lang,splitGroups,setSplitGroups,splitExpenses,setSplitExpenses,settlements,setSettlements,transactions,onMarkReimbursed,showToastFn:showToast}}/>}
-      {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory:()=>{clearMemory();showToast(lang==="es"?"Memoria borrada":"Memory cleared","info");},onExport:handleExport,lang}}/>}
+      {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onSplitTx:setSplitTxModal,splitExpenses,merchantMemory,onClearMemory:()=>{clearMemory();showToast(lang==="es"?"Memoria borrada":"Memory cleared","info");},onExport:handleExport,lang}}/>}
       <div style={{textAlign:"center",marginTop:22}}><button onClick={()=>setShowPrivacy(true)} style={{background:"transparent",border:"none",cursor:"pointer",color:c.muted,fontSize:"11px",fontFamily:f,textDecoration:"underline",padding:"6px"}}>🔒 {tr.privacyLink}</button></div>
     </div>
     {/* ── Mobile bottom tab bar ── */}
@@ -110,10 +112,10 @@ export default function App() {
     </nav>}
     {showSubVerify&&detectedSubs.length>0&&<SubscriptionVerify theme={effectiveTheme} subs={detectedSubs} steps={modalSteps} stepIndex={subStepIdx} onDone={handleSubDone} lang={lang}/>}
     {showCatReview&&unknownTxns.length>0&&<CategoryReview theme={effectiveTheme} unknowns={unknownTxns} customCats={customCats} steps={modalSteps} stepIndex={catStepIdx} onDone={handleCatDone} lang={lang}/>}
-    {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onDone={lims=>{setBudgets(lims);setShowBudgetWiz(false);showToast(lang==="es"?"¡Presupuestos guardados! 🎯":"Budgets saved! 🎯");}} lang={lang}/>}
+    {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onSkip={()=>setShowBudgetWiz(false)} onDone={lims=>{setBudgets(b=>({...b,...lims}));setShowBudgetWiz(false);showToast(lang==="es"?"¡Presupuestos guardados! 🎯":"Budgets saved! 🎯");}} lang={lang}/>}
     {splitTxModal&&<SplitModal theme={effectiveTheme} lang={lang} tx={splitTxModal} splitGroups={splitGroups} splitExpenses={splitExpenses}
       onSave={exp=>setSplitExpenses(es=>[...es,exp])} onClose={()=>setSplitTxModal(null)}/>}
     {showPrivacy&&<PrivacyModal theme={effectiveTheme} lang={lang} onClose={()=>setShowPrivacy(false)}/>}
-    {toast&&<Toast msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
+    {toast&&<Toast key={toast.id} msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
   </div>;
 }

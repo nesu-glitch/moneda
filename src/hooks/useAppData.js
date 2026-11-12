@@ -2,6 +2,9 @@ import { ALL_CATS } from "../utils/allCats.js";
 import { filterTxns, compFilterKey } from "../utils/filters.js";
 import { NOW } from "../utils/format.js";
 
+// Next occurrence of a day-of-month, clamped so "day 31" lands on the 30th/28th in short months.
+const dueDate=(y,m,day)=>new Date(y,m,Math.min(day,new Date(y,m+1,0).getDate()));
+
 export function useAppData({ transactions, reimbursed, autoPayments, budgets, timeFilter, customRange, customCats, modalSteps }) {
   const txnCatsInUse=transactions.filter(t=>t.cat&&t.cat!=="Income").map(t=>t.cat);
   const allCats=[...new Set([...ALL_CATS,...customCats,...txnCatsInUse])].filter(c=>c!=="Income");
@@ -17,16 +20,18 @@ export function useAppData({ transactions, reimbursed, autoPayments, budgets, ti
   const net         = totalInc+totalExp;
   const biggestExp  = expenses.length?expenses.reduce((m,t)=>effAmt(t)>effAmt(m)?t:m):null;
   const catData     = Object.entries(expenses.reduce((acc,t)=>({...acc,[t.cat]:(acc[t.cat]||0)+effAmt(t)}),{})).map(([name,value])=>({name,value:+value.toFixed(2)})).sort((a,b)=>b.value-a.value);
+  const today=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate());
   const paymentsWithCountdown=autoPayments.map(p=>{
     let n;
+    // A charge due today counts as 0 days away, not a month (or a year) away.
     if(p.frequency==="yearly"&&p.month){
-      n=new Date(NOW.getFullYear(),p.month-1,p.day);
-      if(n<=NOW)n=new Date(NOW.getFullYear()+1,p.month-1,p.day);
+      n=dueDate(today.getFullYear(),p.month-1,p.day);
+      if(n<today)n=dueDate(today.getFullYear()+1,p.month-1,p.day);
     } else {
-      n=new Date(NOW.getFullYear(),NOW.getMonth(),p.day);
-      if(n<=NOW)n.setMonth(n.getMonth()+1);
+      n=dueDate(today.getFullYear(),today.getMonth(),p.day);
+      if(n<today)n=dueDate(today.getFullYear(),today.getMonth()+1,p.day);
     }
-    return{...p,days:Math.ceil((n-NOW)/86400000)};
+    return{...p,days:Math.round((n-today)/86400000)};
   }).sort((a,b)=>a.days-b.days);
   const isWeekFilter = timeFilter==="week"||timeFilter==="lastWeek";
   const budgetWarnings=Object.entries(budgets).map(([cat,monthlyLimit])=>{

@@ -56,7 +56,7 @@ export function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone
 
   return <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:isMobile?"flex-end":"center",justifyContent:"center",padding:isMobile?0:"16px",background:"rgba(0,0,0,0.78)"}}>
     <div style={{background:"#ffffff",borderRadius:isMobile?"24px 24px 0 0":"20px",padding:isMobile?"20px 16px":"24px 28px",maxWidth:"640px",width:"100%",maxHeight:isMobile?"95vh":"90vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 60px rgba(0,0,0,0.5)",border:"2px solid #e5e7eb",animation:isMobile?"slideUp 0.3s ease":"none"}}>
-      <StepProgress steps={steps} current={stepIndex} theme={theme}/>
+      <StepProgress steps={steps} current={stepIndex} theme={theme} lang={lang}/>
 
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
         <div style={{fontSize:"20px",fontWeight:800,color:c.text,fontFamily:f}}>🤔 {tr.classifyTitle}</div>

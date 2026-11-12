@@ -13,7 +13,7 @@ export function SubscriptionVerify({theme,subs,steps,stepIndex,onDone,lang="es"}
   const setFreq=(key,freq)=>setItems(is=>is.map(i=>i.key===key?{...i,frequency:freq}:i));
   return <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:isMobile?"flex-end":"center",justifyContent:"center",padding:isMobile?0:"20px",background:"rgba(0,0,0,0.75)"}}>
     <div style={{background:"#ffffff",borderRadius:isMobile?"24px 24px 0 0":"20px",padding:isMobile?"24px 20px":"28px 32px",maxWidth:"540px",width:"100%",maxHeight:isMobile?"95vh":"88vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 60px rgba(0,0,0,0.5)",border:`2px solid ${c.border}`,animation:isMobile?"slideUp 0.3s ease":"none"}}>
-      <StepProgress steps={steps} current={stepIndex} theme={theme}/>
+      <StepProgress steps={steps} current={stepIndex} theme={theme} lang={lang}/>
       <div style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:6,fontFamily:f}}>📦 {tr.subsDetected}</div>
       <div style={{fontSize:"13px",color:"#374151",fontWeight:500,marginBottom:16,background:"#f3f4f6",borderRadius:"10px",padding:"10px 14px"}}>
         {tr.subsSub}
@@ -27,7 +27,7 @@ export function SubscriptionVerify({theme,subs,steps,stepIndex,onDone,lang="es"}
               </div>
               <div style={{flex:1}}>
                 <div style={{fontWeight:800,fontSize:"15px",color:"#111827",fontFamily:f}}>{s.name}</div>
-                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?"🔄 Recurring pattern":"📦 Subscription"} · {tr.detected} {fmtD(s.date)} · {tr.renewsDay} {s.day}</div>
+                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?(lang==="es"?"🔄 Cargo recurrente":"🔄 Recurring pattern"):(lang==="es"?"📦 Suscripción":"📦 Subscription")} · {tr.detected} {fmtD(s.date)} · {tr.renewsDay} {s.day}</div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
                 <div style={{fontWeight:700,fontSize:"15px",color:c.danger}}>-{fmt(s.amount)}</div>
@@ -63,9 +63,10 @@ export function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCoun
   const tr=T[lang]||T.en;
   const[name,setName]=useState(""),[amt,setAmt]=useState(""),[day,setDay]=useState(""),[month,setMonth]=useState(""),[freq,setFreq]=useState("monthly");
   const add=()=>{
-    if(!name||!amt||!day)return;
-    if(freq==="yearly"&&!month)return;
-    setAutoPayments(ps=>[...ps,{id:Date.now(),name,amount:+amt,day:+day,month:freq==="yearly"?+month:undefined,frequency:freq}]);
+    const d=Math.round(+day),m=Math.round(+month);
+    if(!name.trim()||!(+amt>0)||!(d>=1&&d<=31))return;
+    if(freq==="yearly"&&!(m>=1&&m<=12))return;
+    setAutoPayments(ps=>[...ps,{id:Date.now()+Math.random(),name:name.trim(),amount:+amt,day:d,month:freq==="yearly"?m:undefined,frequency:freq}]);
     setName("");setAmt("");setDay("");setMonth("");
   };
   return <div style={{maxWidth:"580px",fontFamily:f}}>
@@ -78,7 +79,7 @@ export function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCoun
     {paymentsWithCountdown.map(p=><div key={p.id} style={{background:c.card,borderRadius:"14px",padding:"14px 18px",marginBottom:10,border:`1.5px solid ${p.days<=3?c.danger:p.days<=7?"#f59e0b":c.border}`,display:"flex",alignItems:"center",gap:"14px"}}>
       <div style={{width:50,height:50,borderRadius:"12px",flexShrink:0,background:p.days<=3?`${c.danger}20`:p.days<=7?"#f59e0b20":c.pl,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
         <div style={{fontSize:"20px",fontWeight:800,lineHeight:1,color:p.days<=3?c.danger:p.days<=7?"#d97706":c.p}}>{p.days}</div>
-        <div style={{fontSize:"9px",color:c.muted}}>days</div>
+        <div style={{fontSize:"9px",color:c.muted}}>{p.days===1?tr.day:tr.days}</div>
       </div>
       <div style={{flex:1}}><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{p.name}</div><div style={{fontSize:"12px",color:c.muted}}>{p.frequency==="yearly"?`${tr.everyYear}${p.month?`, ${lang==="es"?"mes":"month"} ${p.month}`:""}, ${lang==="es"?"día":"day"} ${p.day}`:`${tr.everyMonth}, ${lang==="es"?"día":"day"} ${p.day}`}</div></div>
       <div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:"15px",color:c.text}}>-€{p.amount.toFixed(2)}{p.frequency==="yearly"?" /yr":"/mo"}</div><button onClick={()=>setAutoPayments(ps=>ps.filter(x=>x.id!==p.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>{tr.remove}</button></div>

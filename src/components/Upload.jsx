@@ -5,33 +5,35 @@ import { extractMerchant } from "../utils/categories.js";
 import { parseBankExport } from "../utils/parsers/index.js";
 import { fmt, fmtShort } from "../utils/format.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
+import { splitDuplicates } from "../utils/dedupe.js";
 
 // ── Duplicate Warning Modal ───────────────────────────────────────────────────
-function DuplicateWarning({theme,duplicates,onSkip,onInclude}) {
+function DuplicateWarning({theme,duplicates,onSkip,onInclude,lang="es"}) {
   const {c,font:f}=theme;
+  const es=lang==="es";
   const isMobile=useIsMobile();
   return <div style={{position:"fixed",inset:0,zIndex:600,display:"flex",alignItems:isMobile?"flex-end":"center",justifyContent:"center",padding:isMobile?0:"20px",background:"rgba(0,0,0,0.72)"}}>
     <div style={{background:"#ffffff",borderRadius:isMobile?"24px 24px 0 0":"20px",padding:isMobile?"24px 20px":"28px 32px",maxWidth:"540px",width:"100%",maxHeight:isMobile?"95vh":"85vh",display:"flex",flexDirection:"column",boxShadow:"0 24px 60px rgba(0,0,0,0.5)",animation:isMobile?"slideUp 0.3s ease":"none"}}>
-      <div style={{fontSize:"22px",fontWeight:800,color:"#b45309",marginBottom:6,fontFamily:f}}>⚠️ Possible duplicates detected</div>
-      <div style={{fontSize:"13px",color:"#374151",marginBottom:16,lineHeight:1.6}}>The following transactions already exist. They may be from the same bank account uploaded twice.</div>
+      <div style={{fontSize:"22px",fontWeight:800,color:"#b45309",marginBottom:6,fontFamily:f}}>⚠️ {es?"Posibles duplicados":"Possible duplicates detected"}</div>
+      <div style={{fontSize:"13px",color:"#374151",marginBottom:16,lineHeight:1.6}}>{es?"Estos movimientos ya están cargados. Puede que hayas subido el mismo extracto dos veces.":"The following transactions already exist. They may be from the same bank account uploaded twice."}</div>
       <div style={{flex:1,overflowY:"auto",borderRadius:"10px",border:"1.5px solid #e5e7eb",marginBottom:16}}>
         {duplicates.map((t,i)=>(
           <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"8px 14px",borderBottom:"1px solid #f3f4f6",fontSize:"12px"}}>
             <span style={{color:"#374151",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.date} · {t.desc}</span>
-            <span style={{fontWeight:700,color:"#ef4444",marginLeft:12,flexShrink:0}}>{fmt(t.amount)}</span>
+            <span style={{fontWeight:700,color:t.amount>=0?"#10b981":"#ef4444",marginLeft:12,flexShrink:0}}>{t.amount>=0?"+":"-"}{fmt(t.amount)}</span>
           </div>
         ))}
       </div>
       <div style={{display:"flex",gap:"10px"}}>
-        <button onClick={onSkip} style={{flex:1,padding:"12px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"14px",fontWeight:700,fontFamily:f}}>Skip duplicates ✓</button>
-        <button onClick={onInclude} style={{flex:1,padding:"12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"white",color:c.text,cursor:"pointer",fontSize:"13px",fontWeight:600,fontFamily:f}}>Include anyway</button>
+        <button onClick={onSkip} style={{flex:1,padding:"12px",borderRadius:"10px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"14px",fontWeight:700,fontFamily:f}}>{es?"Omitir duplicados ✓":"Skip duplicates ✓"}</button>
+        <button onClick={onInclude} style={{flex:1,padding:"12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"white",color:c.text,cursor:"pointer",fontSize:"13px",fontWeight:600,fontFamily:f}}>{es?"Incluir igualmente":"Include anyway"}</button>
       </div>
     </div>
   </div>;
 }
 
 // ── Data Page ─────────────────────────────────────────────────────────────────
-export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory,onExport,lang="es"}) {
+export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,merchantMemory,onClearMemory,onExport,lang="es",onSplitTx,splitExpenses=[]}) {
   const {c,font:f,w}=theme;
   const tr=T[lang]||T.en;
   const[dragging,setDragging]=useState(false),[showLedger,setShowLedger]=useState(false),[showMemory,setShowMemory]=useState(false);
@@ -58,10 +60,12 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
       };
       reader.readAsArrayBuffer(file);
     });
-  },[onUpload,transactions]);
+  },[onUpload,transactions,lang]);
 
   function mergeAndUpload(results){
-    if(!results.length){onUpload(null,"No valid transactions found in the uploaded file(s).");return;}
+    if(!results.length){onUpload(null,lang==="es"?"No se encontraron movimientos válidos en el archivo.":"No valid transactions found in the uploaded file(s).");return;}
+    // Moneda exports first: their rows carry categories, so they win over the same row in a bank file
+    results.sort((a,b)=>(b.isMonedaExport?1:0)-(a.isMonedaExport?1:0));
     // Merge all parsed results
     const merged={txns:[],comments:{},isMonedaExport:results.every(r=>r.isMonedaExport),hasMonedaExport:results.some(r=>r.isMonedaExport),
       savedAutoPayments:[],savedReminders:[],savedBudgets:{},savedCustomCats:[],
@@ -70,7 +74,9 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
       savedProfile:results.find(r=>r.savedProfile)?.savedProfile||null,
       savedSplits:results.find(r=>r.savedSplits)?.savedSplits||null};
     for(const r of results){
-      merged.txns.push(...r.txns);
+      // Rows repeated across files (overlapping statements) are merged; identical rows
+      // inside one file are real separate purchases and are all kept.
+      merged.txns.push(...splitDuplicates(merged.txns,r.txns).fresh);
       Object.assign(merged.comments,r.comments);
       if(r.savedAutoPayments)merged.savedAutoPayments.push(...r.savedAutoPayments);
       if(r.savedReminders)merged.savedReminders.push(...r.savedReminders);
@@ -78,13 +84,9 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
       if(r.savedCustomCats)merged.savedCustomCats.push(...r.savedCustomCats);
     }
     // Detect duplicates against existing transactions
-    const existingKeys=new Set(transactions.map(t=>`${t.date}|${t.desc}|${t.amount}`));
-    const duplicates=merged.txns.filter(t=>existingKeys.has(`${t.date}|${t.desc}|${t.amount}`));
-    // Also dedup within merged set itself
-    const seen=new Set();
-    merged.txns=merged.txns.filter(t=>{const k=`${t.date}|${t.desc}|${t.amount}`;if(seen.has(k))return false;seen.add(k);return true;});
+    const {fresh,dupes:duplicates}=splitDuplicates(transactions,merged.txns);
     if(duplicates.length>0){
-      setDupWarning({duplicates,parsedSkip:{...merged,txns:merged.txns.filter(t=>!existingKeys.has(`${t.date}|${t.desc}|${t.amount}`))},parsedAll:merged});
+      setDupWarning({duplicates,parsedSkip:{...merged,txns:fresh},parsedAll:{...merged,allowDuplicates:true}});
     }else{
       onUpload(merged,null,"merged");
     }
@@ -121,7 +123,7 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
         ))}
       </div>
     </div>}
-    {dupWarning&&<DuplicateWarning theme={theme} duplicates={dupWarning.duplicates}
+    {dupWarning&&<DuplicateWarning theme={theme} lang={lang} duplicates={dupWarning.duplicates}
       onSkip={()=>{onUpload(dupWarning.parsedSkip,null,"merged");setDupWarning(null);}}
       onInclude={()=>{onUpload(dupWarning.parsedAll,null,"merged");setDupWarning(null);}}/>}
     {/* Supported banks chips */}
@@ -153,7 +155,7 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
       style={{background:dragging?c.pl:c.card,borderRadius:"20px",padding:"44px",textAlign:"center",transition:"all 0.2s",border:`2.5px dashed ${dragging?c.p:c.border}`,boxShadow:dragging?`0 0 0 4px ${c.p}25`:"none",marginBottom:18}}>
       <div style={{fontSize:"48px",marginBottom:12}}>📊</div>
       <div style={{fontWeight:700,color:c.text,fontSize:"17px",marginBottom:8}}>{dragging?tr.dropIt:tr.dropHere}</div>
-      <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>{lang==="es"?"Uno o varios extractos bancarios .xlsx · ":"One or multiple bank .xlsx exports · "}<span style={{fontSize:"12px"}}>{lang==="es"?"100% en tu dispositivo 🔒":"stays 100% on your device 🔒"}</span></div>
+      <div style={{color:c.muted,fontSize:"13px",marginBottom:22,lineHeight:1.6}}>{lang==="es"?"Uno o varios extractos .xlsx, .xls o .csv · ":"One or more .xlsx, .xls or .csv bank exports · "}<span style={{fontSize:"12px"}}>{lang==="es"?"100% en tu dispositivo 🔒":"stays 100% on your device 🔒"}</span></div>
       <button onClick={async()=>{
         if(typeof window.showOpenFilePicker==="function"){
           try{
@@ -182,9 +184,9 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
       </div>
       <button onClick={()=>setShowLedger(s=>!s)}
         style={{width:"100%",padding:"14px",borderRadius:"14px",border:`2px solid ${c.p}`,background:showLedger?c.p:"transparent",color:showLedger?"white":c.p,cursor:"pointer",fontWeight:700,fontSize:"14px",fontFamily:f,marginBottom:showLedger?12:0,transition:"all 0.2s"}}>
-        {showLedger?"▲ Hide":`📜 ${tr.viewLedger}`} {w.txn} ({transactions.length} {tr.transactions}{lang==="es"?", reclasifica si quieres":", re-classify any"})
+        {showLedger?(lang==="es"?"▲ Ocultar":"▲ Hide"):`📜 ${tr.viewLedger}`} {w.txn} ({transactions.length} {tr.transactions}{lang==="es"?", reclasifica si quieres":", re-classify any"})
       </button>
-      {showLedger&&<FullLedger theme={theme} transactions={transactions} onCatChange={onCatChange} comments={comments} onCommentSave={onCommentSave} onAddReminder={onAddReminder} allCats={allCats} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} onExport={onExport} lang={lang}/>}
+      {showLedger&&<FullLedger theme={theme} transactions={transactions} onCatChange={onCatChange} comments={comments} onCommentSave={onCommentSave} onAddReminder={onAddReminder} allCats={allCats} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} onExport={onExport} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>}
     </>}
     <div style={{background:"#f0fdf4",borderRadius:"14px",padding:"16px 20px",border:"1.5px solid #bbf7d0",display:"flex",gap:"12px",alignItems:"flex-start",marginTop:14}}>
       <div style={{fontSize:"22px"}}>🔒</div>

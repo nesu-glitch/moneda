@@ -3,7 +3,13 @@ import { THEMES, THEMES_TR, GOALS, GOALS_TR, T } from "../utils/constants.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 import { PrivacyModal } from "./PrivacyModal.jsx";
 
-function Dialog({theme,lines,onDone}) {
+// Drawn as SVG: Windows has no flag emoji and shows the letters "ES" / "GB" instead.
+const FLAGS={
+  es:<svg viewBox="0 0 3 2" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="3" height="2" fill="#AA151B"/><rect y="0.5" width="3" height="1" fill="#F1BF00"/></svg>,
+  en:<svg viewBox="0 0 60 40" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" strokeWidth="8"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" strokeWidth="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" strokeWidth="13"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" strokeWidth="8"/></svg>,
+};
+
+function Dialog({theme,lines,onDone,lang="es"}) {
   const [li,setLi]=useState(0),[ci,setCi]=useState(0);
   const line=lines[li]||"",shown=line.slice(0,ci),typing=ci<line.length;
   useEffect(()=>{if(!typing)return;const t=setTimeout(()=>setCi(c=>c+1),26);return()=>clearTimeout(t);},[ci,typing]);
@@ -14,7 +20,7 @@ function Dialog({theme,lines,onDone}) {
       <div style={{flex:1}}>
         <div style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",marginBottom:5,letterSpacing:2,textTransform:"uppercase",fontFamily:theme.font}}>{theme.npcName}</div>
         <div style={{color:"white",fontSize:"17px",lineHeight:1.65,fontFamily:theme.font,minHeight:"52px"}}>{shown}{typing&&<span style={{animation:"blink 0.7s step-start infinite"}}>▌</span>}</div>
-        {!typing&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginTop:8,textAlign:"right",animation:"blink 1.3s step-start infinite"}}>{li<lines.length-1?"▶  Click to continue":"▶  Let's go!"}</div>}
+        {!typing&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginTop:8,textAlign:"right",animation:"blink 1.3s step-start infinite"}}>{li<lines.length-1?(lang==="es"?"▶  Pulsa para continuar":"▶  Click to continue"):(lang==="es"?"▶  ¡Vamos!":"▶  Let's go!")}</div>}
       </div>
     </div>
   </div>;
@@ -32,10 +38,10 @@ export function Onboarding({onDone}) {
       <p style={{color:"#888",fontSize:"15px"}}>{tl.pickLang}</p>
     </div>
     <div style={{display:"flex",gap:"16px",flexWrap:"wrap",justifyContent:"center"}}>
-      {[["es","🇪🇸","Español"],["en","🇬🇧","English"]].map(([l,flag,label])=>(
+      {[["es","Español"],["en","English"]].map(([l,label])=>(
         <button key={l} onClick={()=>{setU({...u,lang:l});setStage("theme");}}
           style={{padding:isMobile?"20px 32px":"24px 48px",borderRadius:"20px",border:`3px solid ${u.lang===l?"#4a7c59":"#e5e7eb"}`,background:u.lang===l?"#e2f0db":"white",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",transition:"all 0.18s",transform:u.lang===l?"scale(1.05)":"scale(1)",boxShadow:u.lang===l?"0 8px 24px rgba(74,124,89,0.3)":"0 2px 8px rgba(0,0,0,0.06)"}}>
-          <span style={{fontSize:"42px"}}>{flag}</span>
+          {FLAGS[l]}
           <span style={{fontSize:"17px",fontWeight:700,color:"#111"}}>{label}</span>
         </button>
       ))}
@@ -46,14 +52,14 @@ export function Onboarding({onDone}) {
   if(stage==="theme"){const tl=T[u.lang]||T.es;return <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#f0f0f0,#fafafa)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:'"Inter",sans-serif',padding:"20px"}}>
     <div style={{textAlign:"center",marginBottom:28,animation:"fadeUp 0.4s ease"}}><div style={{fontSize:"44px",marginBottom:10}}>💸</div><h1 style={{fontSize:"30px",fontWeight:800,color:"#111",marginBottom:6}}>{tl.welcomeTitle}</h1><p style={{color:"#888",fontSize:"15px"}}>{tl.pickWorld}</p></div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",maxWidth:"580px",width:"100%",padding:isMobile?"0 4px":0}}>
-      {Object.values(THEMES).map(t=><div key={t.id} onClick={()=>setU({...u,themeId:t.id})} style={{background:u.themeId===t.id?t.c.pl:"white",borderRadius:"20px",padding:isMobile?"16px 12px":"24px",border:`3px solid ${u.themeId===t.id?t.c.p:"#e5e7eb"}`,cursor:"pointer",transition:"all 0.18s",transform:u.themeId===t.id?"scale(1.03)":"scale(1)",boxShadow:u.themeId===t.id?`0 8px 24px ${t.c.p}35`:"0 2px 8px rgba(0,0,0,0.05)",fontFamily:t.font}}>
+      {Object.values(THEMES).map(t=><div key={t.id} onClick={()=>setU({...u,themeId:t.id,avatar:t.avatars[0]})} style={{background:u.themeId===t.id?t.c.pl:"white",borderRadius:"20px",padding:isMobile?"16px 12px":"24px",border:`3px solid ${u.themeId===t.id?t.c.p:"#e5e7eb"}`,cursor:"pointer",transition:"all 0.18s",transform:u.themeId===t.id?"scale(1.03)":"scale(1)",boxShadow:u.themeId===t.id?`0 8px 24px ${t.c.p}35`:"0 2px 8px rgba(0,0,0,0.05)",fontFamily:t.font}}>
         <div style={{fontSize:isMobile?"26px":"32px",marginBottom:8}}>{t.emoji}</div><div style={{fontWeight:700,fontSize:isMobile?"14px":"17px",color:t.c.text}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).name||t.name}</div><div style={{fontSize:"11px",color:t.c.muted,marginTop:4,lineHeight:1.4}}>{(THEMES_TR[t.id]?.[u.lang]||THEMES_TR[t.id]?.en||{}).tagline||t.tagline}</div>
         {u.themeId===t.id&&<div style={{fontSize:"11px",color:t.c.p,fontWeight:700,marginTop:6}}>{tl.selected}</div>}
       </div>)}
     </div>
     <div style={{marginTop:24,display:"flex",flexDirection:"column",alignItems:"center",gap:"12px"}}>
       <button onClick={()=>setStage("welcome")} style={{padding:"14px 52px",borderRadius:"14px",border:"none",background:THEMES[u.themeId].c.p,color:"white",fontSize:"16px",fontWeight:700,cursor:"pointer",fontFamily:THEMES[u.themeId].font,boxShadow:`0 4px 16px ${THEMES[u.themeId].c.p}50`}}>{tl.enterWorld}</button>
-      <button onClick={()=>onDone({...u,name:'Usuario',avatar:THEMES[u.themeId].avatars[0],goal:'know',quickStart:true})} style={{padding:"10px 32px",borderRadius:"14px",border:"2px solid #d1d5db",background:"white",color:"#6b7280",fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:'"Inter",sans-serif'}}>{tl.quickStart}</button>
+      <button onClick={()=>onDone({...u,name:"",avatar:THEMES[u.themeId].avatars[0],goal:'know',quickStart:true})} style={{padding:"10px 32px",borderRadius:"14px",border:"2px solid #d1d5db",background:"white",color:"#6b7280",fontSize:"14px",fontWeight:600,cursor:"pointer",fontFamily:'"Inter",sans-serif'}}>{tl.quickStart}</button>
     </div>
   </div>;}
   if(stage==="quickname"){
@@ -80,11 +86,11 @@ export function Onboarding({onDone}) {
   if(stage==="welcome")return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:f,position:"relative"}}>
     <div style={{textAlign:"center",padding:"0 24px 200px",animation:"fadeUp 0.5s ease"}}>
       <div style={{fontSize:"80px",animation:"bob 2s ease-in-out infinite",marginBottom:20}}>{theme.npc}</div>
-      <div style={{fontSize:"13px",color:c.muted,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>Personal Finance</div>
+      <div style={{fontSize:"13px",color:c.muted,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>{u.lang==="es"?"Finanzas personales":"Personal Finance"}</div>
       <div style={{fontSize:"44px",fontWeight:800,color:c.p,lineHeight:1.1}}>Moneda 💸</div>
       <div style={{fontSize:"16px",color:c.muted,marginTop:12}}>{(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).tagline||theme.tagline}</div>
     </div>
-    <Dialog theme={theme} lines={(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).chat||theme.chat} onDone={()=>setStage("name")}/>
+    <Dialog theme={theme} lang={u.lang} lines={(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).chat||theme.chat} onDone={()=>setStage("name")}/>
   </div>;
   if(stage==="name"){const tl=T[u.lang]||T.es;return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:f,padding:"20px"}}>
     <div style={card()}>

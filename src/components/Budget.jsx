@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { T, CAT_LABELS, CC } from "../utils/constants.js";
 import { ALL_CATS } from "../utils/allCats.js";
-import { fmt } from "../utils/format.js";
+import { fmt, toDate } from "../utils/format.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 import { StepProgress } from "./StepProgress.jsx";
 
-export function BudgetWizard({theme,steps,stepIndex,onDone,lang="es"}) {
+export function BudgetWizard({theme,steps,stepIndex,onDone,onSkip,lang="es"}) {
   const {c,font:f}=theme;
   const tr=T[lang]||T.en;
   const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
@@ -15,7 +15,7 @@ export function BudgetWizard({theme,steps,stepIndex,onDone,lang="es"}) {
   const suggest=inc=>{const i=+inc||1500;setLimits({Groceries:Math.round(i*0.12),Restaurants:Math.round(i*0.10),Transport:Math.round(i*0.07),Shopping:Math.round(i*0.10),Subscriptions:Math.round(i*0.04),Health:Math.round(i*0.05),Entertainment:Math.round(i*0.04)});};
   return <div style={{position:"fixed",inset:0,zIndex:600,display:"flex",alignItems:isMobile?"flex-end":"center",justifyContent:"center",padding:isMobile?0:"20px",background:c.overlay||"rgba(0,0,0,0.65)"}}>
     <div style={{background:"#ffffff",borderRadius:isMobile?"24px 24px 0 0":"24px",padding:isMobile?"24px 20px":"32px",maxWidth:"500px",width:"100%",maxHeight:isMobile?"95vh":"none",overflowY:isMobile?"auto":"visible",boxShadow:"0 24px 60px rgba(0,0,0,0.45)",border:`1.5px solid ${c.border}`,animation:isMobile?"slideUp 0.3s ease":"none"}}>
-      <StepProgress steps={steps} current={stepIndex} theme={theme}/>
+      <StepProgress steps={steps} current={stepIndex} theme={theme} lang={lang}/>
       {step===1&&<>
         <div style={{fontSize:"40px",marginBottom:12,textAlign:"center"}}>🎯</div>
         <h2 style={{fontSize:"22px",fontWeight:800,color:c.text,marginBottom:8,textAlign:"center",fontFamily:f}}>{tr.budgetWizardTitle}</h2>
@@ -26,6 +26,7 @@ export function BudgetWizard({theme,steps,stepIndex,onDone,lang="es"}) {
           style={{width:"100%",padding:"14px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"16px",fontWeight:700,cursor:"pointer",fontFamily:f}}>
           {income?tr.suggestLimits:tr.skipManual}
         </button>
+        {onSkip&&<button onClick={onSkip} style={{width:"100%",marginTop:10,padding:"10px",borderRadius:"12px",border:"none",background:"transparent",color:c.muted,fontSize:"13px",cursor:"pointer",fontFamily:f}}>{lang==="es"?"Ahora no":"Not now"}</button>}
       </>}
       {step===2&&<>
         <h2 style={{fontSize:"20px",fontWeight:800,color:c.text,marginBottom:4,fontFamily:f}}>{tr.adjustTitle}</h2>
@@ -62,7 +63,7 @@ export function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,all
   // Filter transactions to current month or week
   const now=new Date();
   const periodTxns=allTransactions.filter(t=>{
-    const d=new Date(t.date);
+    const d=toDate(t.date);
     if(period==="month") return d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();
     // current week
     const day=now.getDay(),mo=day===0?-6:1-day;
@@ -130,7 +131,7 @@ export function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,all
     {showAdd&&<div style={{background:"#f9fafb",borderRadius:"12px",padding:"14px 18px",marginBottom:12,border:`1.5px dashed ${c.p}`,display:"flex",gap:"10px",alignItems:"center",flexWrap:"wrap"}}>
       <select value={addCat} onChange={e=>setAddCat(e.target.value)}
         style={{padding:"7px 10px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
-        {allCats.filter(cat=>!(budgets[cat]>0)).map(cat=><option key={cat} value={cat}>{cat}</option>)}
+        {allCats.filter(cat=>!(budgets[cat]>0)).map(cat=><option key={cat} value={cat}>{catLabel(cat)}</option>)}
       </select>
       <input value={addVal} onChange={e=>setAddVal(e.target.value)} type="number" placeholder="€/month" min="1"
         style={{width:"110px",padding:"7px 10px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,background:"white"}}/>

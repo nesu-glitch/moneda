@@ -216,7 +216,7 @@ export function SplitsPage({theme,lang,splitGroups,setSplitGroups,splitExpenses,
     {subView!=="groups"&&splitGroups.length>0&&<div style={{display:"flex",gap:"6px",flexWrap:"wrap",marginBottom:16}}>
       {splitGroups.map(g=><button key={g.id} onClick={()=>setActiveGroupId(g.id)}
         style={{padding:"5px 14px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,
-          background:activeGroupId===g.id?c.p:"transparent",color:activeGroupId===g.id?"white":c.muted,outline:`1.5px solid ${activeGroupId===g.id?c.p:c.border}`}}>
+          background:activeGroup?.id===g.id?c.p:"transparent",color:activeGroup?.id===g.id?"white":c.muted,outline:`1.5px solid ${activeGroup?.id===g.id?c.p:c.border}`}}>
         {g.name} <span style={{opacity:0.6}}>({g.participants.length})</span>
       </button>)}
     </div>}

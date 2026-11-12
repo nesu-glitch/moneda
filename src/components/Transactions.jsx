@@ -76,13 +76,16 @@ export function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,
   const isPartial=reimbursed?.paidBack!==undefined;
   const netAmount=isPartial?+(Math.abs(t.amount)-reimbursed.paidBack).toFixed(2):null;
 
-  const catBadge=editCat
-    ?<select autoFocus value={t.cat} onBlur={()=>setEditCat(false)} onChange={e=>{onCatChange(t.id,e.target.value);setEditCat(false);}}
+  // Income is assigned from the sign of the amount — it can't be re-categorised
+  const canEditCat=t.cat!=="Income";
+  const catBadge=editCat&&canEditCat
+    ?<select autoFocus value={t.cat||""} onBlur={()=>setEditCat(false)} onChange={e=>{onCatChange(t.id,e.target.value);setEditCat(false);}}
         style={{padding:"3px 7px",borderRadius:"8px",border:`1.5px solid ${c.p}`,fontSize:"11px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
+        {!t.cat&&<option value="" disabled>—</option>}
         {allCats.map(cat=><option key={cat} value={cat}>{catLabel(cat)}</option>)}
       </select>
-    :<span onClick={()=>setEditCat(true)} title={tr.editCat} style={{padding:"3px 9px",borderRadius:"20px",fontSize:"11px",fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"4px",background:`${CC[t.cat]||c.p}22`,color:CC[t.cat]||c.p}}>
-        {catLabel(t.cat)}<span style={{opacity:0.5,fontSize:"9px"}}>✏️</span>
+    :<span onClick={canEditCat?()=>setEditCat(true):undefined} title={canEditCat?tr.editCat:undefined} style={{padding:"3px 9px",borderRadius:"20px",fontSize:"11px",fontWeight:600,cursor:canEditCat?"pointer":"default",display:"inline-flex",alignItems:"center",gap:"4px",background:`${CC[t.cat]||c.p}22`,color:CC[t.cat]||c.p}}>
+        {t.cat?catLabel(t.cat):"—"}{canEditCat&&<span style={{opacity:0.5,fontSize:"9px"}}>✏️</span>}
       </span>;
 
   const actionBtns=(mobile)=><>
@@ -166,7 +169,7 @@ export function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,
 }
 
 // ── Full Ledger (used in Data page) ──────────────────────────────────────────
-export function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onExport,lang="es"}) {
+export function FullLedger({theme,transactions,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onExport,lang="es",onSplitTx,splitExpenses=[]}) {
   const {c,font:f}=theme;
   const tr=T[lang]||T.en;
   const catLabel=cat=>(CAT_LABELS[lang]||CAT_LABELS.en)[cat]||cat;
@@ -180,18 +183,18 @@ export function FullLedger({theme,transactions,onCatChange,comments,onCommentSav
   const cats=["All",...[...new Set(transactions.map(t=>t.cat).filter(Boolean))]];
   return <div style={{marginTop:24}}>
     <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginBottom:14,alignItems:"center"}}>
-      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search transactions…"
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={lang==="es"?"Buscar movimientos…":"Search transactions…"}
         style={{flex:1,minWidth:"180px",padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
       <select value={catF} onChange={e=>setCatF(e.target.value)}
         style={{padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
-        {cats.map(cat=><option key={cat} value={cat}>{catLabel(cat)}</option>)}
+        {cats.map(cat=><option key={cat} value={cat}>{cat==="All"?(lang==="es"?"Todas":"All"):catLabel(cat)}</option>)}
       </select>
       <button onClick={onExport} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>📥 Export</button>
     </div>
     <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>{visible.length} {tr.transactions}</div>
     {isMobile
       ?<div style={{borderRadius:"14px",border:`1.5px solid ${c.border}`,background:c.card,overflow:"hidden"}}>
-          {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}
+          {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}
         </div>
       :<div style={{overflowX:"auto",borderRadius:"14px",border:`1.5px solid ${c.border}`,background:c.card}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontFamily:f}}>
@@ -199,7 +202,7 @@ export function FullLedger({theme,transactions,onCatChange,comments,onCommentSav
               {["Date","Description","Category","Amount",""].map(h=><th key={h} style={{padding:"9px 12px",textAlign:"left",fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,fontWeight:700}}>{h}</th>)}
             </tr></thead>
             <tbody>
-              {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}
+              {visible.slice(0,limit).map(t=><TxnRow key={t.id} t={t} theme={theme} onCatChange={onCatChange} onAddReminder={onAddReminder} comment={comments[t.id]} onCommentSave={onCommentSave} allCats={allCats} reimbursed={reimbursed?.[t.id]} onMarkReimbursed={onMarkReimbursed} allTransactions={transactions} lang={lang} onSplitTx={onSplitTx} splitExpenses={splitExpenses}/>)}
             </tbody>
           </table>
         </div>}

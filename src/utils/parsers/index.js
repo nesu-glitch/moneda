@@ -6,24 +6,64 @@ import { categorise } from "../categories.js";
 export function parseEuroAmount(raw) {
   if(raw===null||raw===undefined||raw==="")return NaN;
   let s=String(raw).trim().replace(/[€$£\s ]/g,"").replace(/[−–]/g,"-");
+  s=s.replace(/EUR/gi,"");
+  // Accounting negatives: (12,50) and 12,50-
+  if(/^\(.*\)$/.test(s))s="-"+s.slice(1,-1);
+  if(/^[\d.,]+-$/.test(s))s="-"+s.slice(0,-1);
   if(/\d\.\d{3},/.test(s))return parseFloat(s.replace(/\./g,"").replace(",","."));
+  // 1.234 / 12.345.678 — money never has 3 decimals, so dots here are thousands separators
+  if(/^-?\d{1,3}(\.\d{3})+$/.test(s))return parseFloat(s.replace(/\./g,""));
   if(/,\d{1,2}$/.test(s)&&!/\./.test(s))return parseFloat(s.replace(",","."));
   return parseFloat(s.replace(",",""));
 }
 // ── Date parser: DD/MM/YYYY, DD-MM-YYYY, YYYY-MM-DD, Date objects, datetime strings ──
 export function parseFlexDate(raw) {
   if(!raw)return null;
-  if(raw instanceof Date&&!isNaN(raw))return raw.toISOString().split("T")[0];
+  const p2=n=>String(n).padStart(2,"0");
+  if(raw instanceof Date&&!isNaN(raw))return`${raw.getFullYear()}-${p2(raw.getMonth()+1)}-${p2(raw.getDate())}`;
   const s=String(raw).trim().split(" ")[0].split("T")[0];
-  let m=s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-  if(m)return`${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}`;
-  m=s.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
-  if(m)return`${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
+  let m=s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{4}|\d{2})$/);
+  if(m)return`${m[3].length===2?"20"+m[3]:m[3]}-${p2(m[2])}-${p2(m[1])}`;
+  m=s.match(/^(\d{4})[/\-.](\d{1,2})[/\-.](\d{1,2})$/);
+  if(m)return`${m[1]}-${p2(m[2])}-${p2(m[3])}`;
   return null;
 }
 
+// ── Workbook reader ──────────────────────────────────────────────────────────
+// Real spreadsheets (.xlsx / .xls): date cells are rewritten to YYYY-MM-DD straight from the
+// serial number, so they survive whatever display format the bank used (m/d/yy, d-mmm-yy…)
+// and never go through a timezone conversion.
+// Text files (.csv, HTML/XML saved as .xls): decoded here (UTF-8, falling back to
+// Windows-1252, which Spanish banks still use) and read without value guessing, because
+// guessing reads 09/11/2026 as September and "-3,5" as -35.
+function readWorkbook(data) {
+  const isZip=data[0]===0x50&&data[1]===0x4B, isOle=data[0]===0xD0&&data[1]===0xCF;
+  if(!isZip&&!isOle){
+    let text;
+    try{text=new TextDecoder("utf-8",{fatal:true}).decode(data);}
+    catch{text=new TextDecoder("windows-1252").decode(data);}
+    return XLSX.read(text.replace(/^﻿/,""),{type:"string",raw:true});
+  }
+  const wb=XLSX.read(data,{type:"array",cellNF:true});
+  const date1904=!!wb.Workbook?.WBProps?.date1904;
+  for(const name of wb.SheetNames){
+    const ws=wb.Sheets[name];
+    for(const addr of Object.keys(ws)){
+      if(addr[0]==="!")continue;
+      const cell=ws[addr];
+      if(cell.t!=="n"||!cell.z||!XLSX.SSF.is_date(cell.z))continue;
+      const d=XLSX.SSF.parse_date_code(cell.v,{date1904});
+      if(d&&d.y>1900)cell.w=`${d.y}-${p2w(d.m)}-${p2w(d.d)}`;
+    }
+  }
+  return wb;
+}
+const p2w=n=>String(n).padStart(2,"0");
+
 export function parseBankExport(data) {
-  const wb=XLSX.read(data,{type:"array",cellDates:true}),ws=wb.Sheets[wb.SheetNames[0]];
+  const wb=readWorkbook(data),ws=wb.Sheets[wb.SheetNames[0]];
+  // Ids must be unique across every file ever loaded: row numbers alone collide between files.
+  const tok=Math.random().toString(36).slice(2,8);
   const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:"",raw:false});
   if(!rows.length)return{txns:[],comments:{}};
 
@@ -32,18 +72,21 @@ export function parseBankExport(data) {
   const isMoneda=h0.includes("fecha")&&h0.includes("descripción")&&h0.includes("categoría")&&h0.includes("importe");
   if(isMoneda){
     const fI=h0.indexOf("fecha"),dI=h0.indexOf("descripción"),cI=h0.indexOf("categoría");
-    const aI=h0.indexOf("importe"),cmI=h0.indexOf("comentario");
-    const txns=[],comments={};
+    const aI=h0.indexOf("importe"),cmI=h0.indexOf("comentario"),idI=h0.indexOf("id");
+    const txns=[],comments={},usedIds=new Set();
     for(let i=1;i<rows.length;i++){
       const row=rows[i];if(!row||row.every(c=>!c))continue;
-      const date=String(row[fI]||"").trim();
+      const date=parseFlexDate(row[fI])||String(row[fI]||"").trim();
       const desc=sanitizeCellValue(String(row[dI]||"").trim());
       const cat=sanitizeCellValue(String(row[cI]||"").trim())||null;
       const rawAmt=String(row[aI]||"").trim();
       const comment=cmI>=0?sanitizeCellValue(String(row[cmI]||"").trim()):"";
       let amount=parseFloat(rawAmt.replace(/[€$£\s]/g,"").replace(/[−–]/g,"-").replace(",","."));
       if(isNaN(amount))continue;
-      const id=`${date}-${i}`;
+      // Reuse the exported id so reimbursements and split links survive a save/restore cycle
+      let id=idI>=0?String(row[idI]||"").trim():"";
+      if(!id||usedIds.has(id))id=`${date}-${i}-${tok}`;
+      usedIds.add(id);
       txns.push({id,date,desc,amount:+amount.toFixed(2),cat:cat||null});
       if(comment)comments[id]=comment;
     }
@@ -58,7 +101,9 @@ export function parseBankExport(data) {
     if(wb.SheetNames.includes("_moneda_config")){try{const cell=wb.Sheets["_moneda_config"]["A1"];if(cell&&cell.v)savedProfile=JSON.parse(String(cell.v));}catch(_){}}
     let savedSplits=null;
     if(wb.SheetNames.includes("_splits")){try{const cell=wb.Sheets["_splits"]["A1"];if(cell&&cell.v)savedSplits=JSON.parse(String(cell.v));}catch(_){}}
-    return{txns,comments,isMonedaExport:true,savedAutoPayments,savedReminders,savedBudgets,savedCustomCats,savedWidgetConfig,savedProfile,savedSplits};
+    let savedState=null;
+    if(wb.SheetNames.includes("_moneda_state")){try{const cell=wb.Sheets["_moneda_state"]["A1"];if(cell&&cell.v)savedState=JSON.parse(String(cell.v));}catch{/* ignore a corrupt sheet */}}
+    return{txns,comments,isMonedaExport:true,savedAutoPayments,savedReminders,savedBudgets,savedCustomCats,savedWidgetConfig,savedProfile,savedSplits,savedState};
   }
 
   // ── Generic Spanish bank (Santander, BBVA, CaixaBank, Bankinter, Sabadell, ING, Unicaja, Kutxabank, Openbank) ──
@@ -121,7 +166,10 @@ export function parseBankExport(data) {
   };
 
   const dateCol=findCol(...(bankCols.date||[]),"fecha","date","data");
-  const descCol=findCol(...(bankCols.desc||[]),"concepto","descripción","descripcion","descripció","nombre","movimiento","detalle");
+  const descCol=findCol(...(bankCols.desc||[]),"concepto","descripción","descripcion","descripció","nombre","movimiento","detalle","description","merchant","partner name","payee","details","reference");
+  // Revolut & co. also list failed card payments — those never left the account
+  const stateCol=hdr.findIndex(c=>c==="state"||c==="status"||c==="estado");
+  const DEAD_RE=/revert|declin|fail|cancel|rechaz|denega/i;
   const catIngCol=bankCols.cat?findCol(...bankCols.cat):-1;
 
   // Prefer bank-specific separate debit/credit cols; fall back to single signed amount col
@@ -152,6 +200,7 @@ export function parseBankExport(data) {
     // 6b. Skip subtotal/balance rows
     const desc=descCol>=0?sanitizeCellValue(String(row[descCol]||"").trim()):"";
     if(SKIP_RE.test(desc))continue;
+    if(stateCol>=0&&DEAD_RE.test(String(row[stateCol]||"")))continue;
 
     // 3 & 4. Compute amount from debit/credit pair or single signed column
     let amount;
@@ -177,16 +226,16 @@ export function parseBankExport(data) {
       if(ingCat)cat=ingCat;
     }
 
-    txns.push({id:`${date}-${i}`,date,desc,amount:+amount.toFixed(2),cat});
+    txns.push({id:`${date}-${i}-${tok}`,date,desc,amount:+amount.toFixed(2),cat});
   }
 
   // 7. Return with detected bank name
   return{txns,comments:{},bank:detectedBank};
 }
-export function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={},customCats=[],widgetConfig=[],profile={},splitGroups=[],splitExpenses=[],settlements=[]}={}) {
+export function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={},customCats=[],widgetConfig=[],profile={},splitGroups=[],splitExpenses=[],settlements=[],reimbursed={},catGroups=[]}={}) {
   const wb=XLSX.utils.book_new();
-  const data=transactions.map(t=>({Fecha:t.date,Descripción:t.desc,Categoría:t.cat||"",Importe:t.amount,Tipo:t.amount>=0?"Ingreso":"Gasto",Comentario:comments[t.id]||""}));
-  const ws=XLSX.utils.json_to_sheet(data);ws["!cols"]=[{wch:12},{wch:45},{wch:16},{wch:10},{wch:10},{wch:40}];
+  const data=transactions.map(t=>({Fecha:t.date,Descripción:t.desc,Categoría:t.cat||"",Importe:t.amount,Tipo:t.amount>=0?"Ingreso":"Gasto",Comentario:comments[t.id]||"",ID:t.id}));
+  const ws=XLSX.utils.json_to_sheet(data);ws["!cols"]=[{wch:12},{wch:45},{wch:16},{wch:10},{wch:10},{wch:40},{wch:24}];
   XLSX.utils.book_append_sheet(wb,ws,"Transacciones");
   if(autoPayments.length>0){const d=autoPayments.map(p=>({Nombre:p.name,Importe:p.amount,Dia:p.day,Mes:p.month||"",Frecuencia:p.frequency}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:20},{wch:10},{wch:6},{wch:6},{wch:12}];XLSX.utils.book_append_sheet(wb,w,"AutoPagos");}
   if(reminders.length>0){const d=reminders.map(r=>({Texto:r.text,Hecho:r.done?"Si":"No",Repetir:r.repeat}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:40},{wch:8},{wch:12}];XLSX.utils.book_append_sheet(wb,w,"Recordatorios");}
@@ -200,5 +249,8 @@ export function doExport(transactions,comments,{autoPayments=[],reminders=[],bud
   // _splits — split groups, expenses and settlements as JSON
   const splitsWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({splitGroups,splitExpenses,settlements})]]);
   XLSX.utils.book_append_sheet(wb,splitsWs,"_splits");
+  // _moneda_state — reimbursements (keyed by transaction ID) and budget groups
+  const stateWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({reimbursed,catGroups})]]);
+  XLSX.utils.book_append_sheet(wb,stateWs,"_moneda_state");
   XLSX.writeFile(wb,`moneda_${new Date().toISOString().split("T")[0]}.xlsx`);
 }

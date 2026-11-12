@@ -3,8 +3,8 @@ import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { T, CAT_LABELS, CC } from "../utils/constants.js";
 import { extractMerchant } from "../utils/categories.js";
-import { fmt, fmtShort, NOW } from "../utils/format.js";
-import { getRange, compFilterKey } from "../utils/filters.js";
+import { fmt, fmtShort, NOW, toDate } from "../utils/format.js";
+import { compFilterKey, daysCovered } from "../utils/filters.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 
 // ── Merchant Breakdown ────────────────────────────────────────────────────────
@@ -78,7 +78,7 @@ function BudgetWidget({theme,budgets,allTransactions,w,lang="es"}) {
   const wkEnd=new Date(wkStart);wkEnd.setDate(wkStart.getDate()+6);wkEnd.setHours(23,59,59);
   const periodTxns=allTransactions.filter(t=>{
     if(t.amount>=0)return false;
-    const d=new Date(t.date);
+    const d=toDate(t.date);
     return period==="month"
       ? d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()
       : d>=wkStart&&d<=wkEnd;
@@ -130,7 +130,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
   const WIDGET_LABEL_KEY={summary:"wSummary",insights:"wInsights",budget:"wBudget",payments:"wPayments",spending:"wSpending",journal:"wJournal",income:"wIncome",subscriptions:"wSubscriptions"};
   const widgetLabel=id=>tr[WIDGET_LABEL_KEY[id]]||id;
   const isMobile=useIsMobile();
-  const [catFilter,setCatFilter]=useState("All");
+  const [catFilterRaw,setCatFilter]=useState("All");
   const [editMode,setEditMode]=useState(false);
 
   // Widget order/visibility — stored as [{id,visible}]
@@ -162,10 +162,12 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
   // Include ALL cats that appear in filtered expenses (including custom ones)
   const inPeriodCatSet=new Set(filtered.filter(t=>t.amount<0).map(t=>t.cat).filter(Boolean));
   const inPeriodCats=["All",...[...inPeriodCatSet].sort()];
+  // A category picked in one period may not exist in the next one — fall back to the overview
+  const catFilter=inPeriodCats.includes(catFilterRaw)?catFilterRaw:"All";
 
   // Month journal navigation (independent of time filter for browsing)
   const [journalMonth,setJournalMonth]=useState(()=>{const d=new Date(NOW);return{y:d.getFullYear(),m:d.getMonth()};});
-  const journalTxns=transactions.filter(t=>{const d=new Date(t.date);return d.getFullYear()===journalMonth.y&&d.getMonth()===journalMonth.m;});
+  const journalTxns=transactions.filter(t=>{const d=toDate(t.date);return d.getFullYear()===journalMonth.y&&d.getMonth()===journalMonth.m;});
   const prevJM=()=>setJournalMonth(({y,m})=>m===0?{y:y-1,m:11}:{y,m:m-1});
   const nextJM=()=>setJournalMonth(({y,m})=>m===11?{y:y+1,m:0}:{y,m:m+1});
   const journalLabel=new Date(journalMonth.y,journalMonth.m,1).toLocaleDateString("es-ES",{month:"long",year:"numeric"});
@@ -181,7 +183,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
   const topCat=catData[0];
   const merchantCounts=filtered.filter(t=>t.amount<0).reduce((acc,t)=>{const m=extractMerchant(t.desc);acc[m]=(acc[m]||0)+1;return acc;},{});
   const topMerchant=Object.entries(merchantCounts).sort((a,b)=>b[1]-a[1])[0];
-  const avgDaily=filtered.filter(t=>t.amount<0).length?Math.abs(totalExp)/Math.max(1,Math.ceil((getRange(timeFilter,customRange)[1]-getRange(timeFilter,customRange)[0])/86400000)):0;
+  const avgDaily=filtered.filter(t=>t.amount<0).length?Math.abs(totalExp)/daysCovered(timeFilter,customRange,filtered):0;
 
   const SCard=({label,value,sub,color})=><div style={{background:c.card,borderRadius:"16px",padding:"20px",flex:"0 0 auto",width:isMobile?"160px":"auto",minWidth:isMobile?"160px":"130px",boxShadow:"0 2px 12px rgba(0,0,0,0.05)",border:`1.5px solid ${c.border}`}}>
     <div style={{fontSize:"10px",color:c.muted,textTransform:"uppercase",letterSpacing:1.2,marginBottom:6,fontFamily:f}}>{label}</div>
@@ -237,8 +239,8 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("summary")&&<div style={{display:"flex",gap:"12px",flexWrap:isMobile?"nowrap":"wrap",overflowX:isMobile?"auto":"visible",paddingBottom:isMobile?"4px":0}}>
       <SCard label={w.inc} value={`+${fmt(totalInc)}`} sub={`${filtered.filter(t=>t.amount>0).length} ${tr.transactions}`} color="#10b981"/>
       <SCard label={tr.expenses} value={`-${fmt(Math.abs(totalExp))}`} sub={`${filtered.filter(t=>t.amount<0).length} ${tr.transactions}`} color={c.danger}/>
-      <SCard label={tr.net} value={`${net>=0?"+":""}${fmt(net)}`} sub={net>=0?"Great work! 🎉":"More out than in"} color={net>=0?"#10b981":c.danger}/>
-      {biggestExp&&<SCard label={tr.biggestExpense} value={`-${fmt(Math.abs(biggestExp.amount))}`} sub={biggestExp.desc.slice(0,28)+"…"} color={c.danger}/>}
+      <SCard label={tr.net} value={`${net>=0?"+":"-"}${fmt(net)}`} sub={lang==="es"?(net>=0?"¡Buen trabajo! 🎉":"Sale más de lo que entra"):(net>=0?"Great work! 🎉":"More out than in")} color={net>=0?"#10b981":c.danger}/>
+      {biggestExp&&<SCard label={tr.biggestExpense} value={`-${fmt(Math.abs(biggestExp.amount))}`} sub={biggestExp.desc.length>28?biggestExp.desc.slice(0,28)+"…":biggestExp.desc} color={c.danger}/>}
     </div>}
     {/* Insights strip */}
     {isVisible("insights")&&hasData&&(topCat||topMerchant)&&<div style={{background:c.card,borderRadius:"14px",padding:"14px 20px",border:`1.5px solid ${c.border}`,display:"flex",gap:"20px",flexWrap:"wrap"}}>
@@ -253,7 +255,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("payments")&&<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"16px"}}>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>💳 {tr.upcomingCharges}</div>
-        {(()=>{const monthly=paymentsWithCountdown.filter(p=>p.frequency!=="yearly");return monthly.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>:monthly.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}><div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{tr.inDays} {p.days} {p.days!==1?tr.days:tr.day}</div></div><div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div></div>);})()}
+        {(()=>{const monthly=paymentsWithCountdown.filter(p=>p.frequency!=="yearly");return monthly.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>:monthly.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}><div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{p.days===0?(lang==="es"?"hoy":"today"):`${tr.inDays} ${p.days} ${p.days!==1?tr.days:tr.day}`}</div></div><div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div></div>);})()}
       </div>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📋 {tr.remindersTitle}</div>
@@ -268,7 +270,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("spending")&&catData.length>0&&<div style={{background:c.card,borderRadius:"16px",padding:"22px 24px",border:`1.5px solid ${c.border}`}}>
       <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📊 {tr.spendingTitle}</div>
       <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:16}}>
-        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat==="All"?cat:catLabel(cat)}</button>)}
+        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat==="All"?(lang==="es"?"Todas":"All"):catLabel(cat)}</button>)}
       </div>
       {catFilter==="All"
         ? <ResponsiveContainer width="100%" height={200}>
