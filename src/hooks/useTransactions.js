@@ -1,3 +1,4 @@
+import { say } from "../utils/i18n.js";
 import { useState, useCallback } from "react";
 import { extractMerchant } from "../utils/categories.js";
 import { detectSubscriptions, detectRecurring } from "../utils/recurring.js";
@@ -5,7 +6,8 @@ import { ALL_CATS, extendAllCats } from "../utils/allCats.js";
 import { splitDuplicates, byDateDesc } from "../utils/dedupe.js";
 import { toDate } from "../utils/format.js";
 
-const isGoalReminder = r => /^🎯 (Meta|Goal)/.test(r.text || "");
+// Goal reminders start with "🎯 <word>:" in every language (Meta, Goal, Helburua…)
+const isGoalReminder = r => /^🎯 [^:\s]{2,20}:/.test(r.text || "");
 
 export function useTransactions({
   updateMemory, setMerchantMemory, setCustomCats,
@@ -27,7 +29,6 @@ export function useTransactions({
   const [isFirstUpload, setIsFirstUpload] = useState(true);
   const [modalSteps, setModalSteps]     = useState([]);
 
-  const es = lang === "es";
 
   // Adds transactions to state. Rows already loaded are skipped unless the user
   // explicitly chose "include anyway" in the duplicate warning.
@@ -40,11 +41,11 @@ export function useTransactions({
   const finalizeTxns = useCallback((txns, { allowDuplicates = false, skipWizard = false } = {}) => {
     const fresh = addTxns(txns, allowDuplicates);
     updateMemory(txns);
-    showToast(es ? `${fresh.length} movimientos cargados` : `Loaded ${fresh.length} transactions`);
+    showToast(say(lang, "{n} movimientos cargados", "Loaded {n} transactions", { n: fresh.length }));
     setPage("dashboard");
     if (isFirstUpload && !user?.quickStart && !skipWizard) { setShowBudgetWiz(true); }
     setIsFirstUpload(false);
-  }, [addTxns, isFirstUpload, updateMemory, user, showToast, setPage, setShowBudgetWiz, es]);
+  }, [addTxns, isFirstUpload, updateMemory, user, showToast, setPage, setShowBudgetWiz, lang]);
 
   // Restores everything a Moneda export carries besides the transactions themselves.
   const restoreSavedState = useCallback((parsed, txns) => {
@@ -107,7 +108,7 @@ export function useTransactions({
       updateMemory(rawTxns);
       const hasBudgets = restoreSavedState(parsed, rawTxns);
       const restoredCats = fresh.filter(t => t.cat && t.cat !== "Income").length;
-      showToast(es ? `${fresh.length} movimientos restaurados · ${restoredCats} con categoría guardada` : `Restored ${fresh.length} transactions · ${restoredCats} with saved categories`);
+      showToast(say(lang, "{n} movimientos restaurados · {c} con categoría guardada", "Restored {n} transactions · {c} with saved categories", { n: fresh.length, c: restoredCats }));
       setPage("dashboard");
       // A backup that already carries budgets doesn't need the budget wizard on top
       if (isFirstUpload && !user?.quickStart && !hasBudgets) { setShowBudgetWiz(true); }
@@ -153,7 +154,7 @@ export function useTransactions({
       }
       return t;
     });
-    if (autoClassified > 0) showToast(es ? `🧠 ${autoClassified} movimiento${autoClassified !== 1 ? "s" : ""} clasificado${autoClassified !== 1 ? "s" : ""} de memoria` : `🧠 Auto-classified ${autoClassified} transaction${autoClassified !== 1 ? "s" : ""} from memory`, "info");
+    if (autoClassified > 0) showToast(autoClassified === 1 ? say(lang, "🧠 1 movimiento clasificado de memoria", "🧠 Auto-classified 1 transaction from memory") : say(lang, "🧠 {n} movimientos clasificados de memoria", "🧠 Auto-classified {n} transactions from memory", { n: autoClassified }), "info");
     const namedSubs = detectSubscriptions(preClassified);
     const subs = [...namedSubs, ...detectRecurring(preClassified, namedSubs)]
       .filter(s => !effectiveAutoPayNames.has(s.name));
@@ -169,7 +170,7 @@ export function useTransactions({
     if (subs.length > 0) setShowSubVerify(true);
     else if (unknowns.length > 0) setShowCatReview(true);
     else finalizeTxns(preClassified, opts);
-  }, [transactions, addTxns, finalizeTxns, restoreSavedState, isFirstUpload, merchantMemory, updateMemory, user, showToast, setPage, setShowBudgetWiz, setCustomCats, setMerchantMemory, autoPayments, es]);
+  }, [transactions, addTxns, finalizeTxns, restoreSavedState, isFirstUpload, merchantMemory, updateMemory, user, showToast, setPage, setShowBudgetWiz, setCustomCats, setMerchantMemory, autoPayments, lang]);
 
   const handleSubDone = useCallback((confirmed) => {
     setShowSubVerify(false);
@@ -211,8 +212,8 @@ export function useTransactions({
     });
     setTransactions(updated);
     setMerchantMemory(prev => ({ ...prev, [merchant]: cat }));
-    if (changedCount > 1) showToast(es ? `${changedCount} movimientos de "${merchant}" → ${cat}` : `Updated ${changedCount} transactions for "${merchant}" → ${cat}`, "info");
-  }, [transactions, setMerchantMemory, showToast, es]);
+    if (changedCount > 1) showToast(say(lang, "{n} movimientos de \"{m}\" → {c}", "Updated {n} transactions for \"{m}\" → {c}", { n: changedCount, m: merchant, c: cat }), "info");
+  }, [transactions, setMerchantMemory, showToast, lang]);
 
   const onCommentSave = useCallback((id, text) => setComments(c => ({ ...c, [id]: text })), []);
   const onMarkReimbursed = useCallback((id, data) => setReimbursed(r => data ? { ...r, [id]: data } : Object.fromEntries(Object.entries(r).filter(([k]) => k !== id))), []);

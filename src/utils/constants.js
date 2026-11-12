@@ -1,3 +1,4 @@
+import { EXTRA_LANGS } from "./i18n.js";
 // ── Themes ────────────────────────────────────────────────────────────────────
 export const THEMES = {
   nature:    { id:"nature",    name:"Nature",      emoji:"🌿", tagline:"Grow your savings like a garden",      bg:"#f0f7ec", card:"#ffffff", grad:"linear-gradient(160deg,#dff0d8,#f0f7ec 60%)", c:{p:"#4a7c59",pl:"#e2f0db",acc:"#f9c74f",danger:"#d95f0e",text:"#2d4a3e",muted:"#7a9e82",border:"#c5e0b8",nav:"#3a6347",navT:"#ffffff",overlay:"rgba(42,74,56,0.65)"}, font:'"Nunito",sans-serif',       w:{home:"My Grove",    txn:"Gatherings",   budget:"Garden Limit", inc:"Harvest", over:"Over your garden limit 🌱"},  npc:"🦔",npcName:"Hedgie",  chat:["Oh! A rustling in the leaves... 🍃","A new friend has arrived at the grove!","The forest remembers every acorn you spend.","Shall I help you track yours?"],          avatars:["🐸","🦔","🐰","🦋","🐿️","🦉"] },
@@ -240,3 +241,13 @@ export const THEME_W_ES = {
 };
 
 export const CC = {Groceries:"#4caf50",Restaurants:"#ff9800",Transport:"#2196f3",Shopping:"#e91e63",Subscriptions:"#9c27b0",Health:"#f44336",Housing:"#795548",Income:"#00bcd4","ATM / Cash":"#607d8b",Transfers:"#ff5722",Entertainment:"#3f51b5",Utilities:"#009688",Education:"#8bc34a",Other:"#9e9e9e"};
+
+// ── Catalan, Basque, Galician: merged over Spanish so any missing key still shows Spanish ──
+export const THEME_W = { es: THEME_W_ES };
+for (const [id, L] of Object.entries(EXTRA_LANGS)) {
+  T[id] = { ...T.es, ...L.T };
+  CAT_LABELS[id] = { ...CAT_LABELS.es, ...L.CAT_LABELS };
+  GOALS_TR[id] = { ...GOALS_TR.es, ...L.GOALS_TR };
+  for (const theme of Object.keys(THEMES_TR)) THEMES_TR[theme][id] = { ...THEMES_TR[theme].es, ...L.THEMES_TR?.[theme] };
+  THEME_W[id] = { ...THEME_W_ES, ...L.THEME_W };
+}

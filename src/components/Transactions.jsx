@@ -1,3 +1,4 @@
+import { say } from "../utils/i18n.js";
 import { useState } from "react";
 import { T, CAT_LABELS, CC } from "../utils/constants.js";
 import { extractMerchant } from "../utils/categories.js";
@@ -5,7 +6,7 @@ import { fmt, fmtShort } from "../utils/format.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 
 // ── Reimbursement expand panel (shared by mobile+desktop) ────────────────────
-export function ReimPanel({t,theme,reimbursed,onMarkReimbursed,setShowReim,allTransactions}) {
+export function ReimPanel({t,theme,reimbursed,onMarkReimbursed,setShowReim,allTransactions,lang="es"}) {
   const {c,font:f}=theme;
   const isReimbursed=!!reimbursed;
   const isPartial=reimbursed?.paidBack!==undefined;
@@ -18,33 +19,33 @@ export function ReimPanel({t,theme,reimbursed,onMarkReimbursed,setShowReim,allTr
     : [];
   return isReimbursed
     ?<div style={{display:"flex",alignItems:"center",gap:"12px",flexWrap:"wrap"}}>
-        <span style={{fontSize:"12px",color:"#15803d",fontWeight:600}}>{isPartial?`↩ Partial: -${fmt(reimbursed.paidBack)} paid back`:(`↩ ${reimbursed.reason}`)}</span>
+        <span style={{fontSize:"12px",color:"#15803d",fontWeight:600}}>{isPartial?say(lang,"↩ Parcial: -{a} devuelto","↩ Partial: -{a} paid back",{a:fmt(reimbursed.paidBack)}):(`↩ ${reimbursed.reason}`)}</span>
         {linkedTxn&&<span style={{fontSize:"11px",color:"#6b7280",background:"#f3f4f6",borderRadius:"6px",padding:"2px 8px"}}>🔗 {fmtShort(linkedTxn.date)} {extractMerchant(linkedTxn.desc)} ({linkedTxn.amount>=0?"+":""}{fmt(linkedTxn.amount)})</span>}
-        {isPartial&&<span style={{fontSize:"11px",color:"#92400e",background:"#fef9c3",borderRadius:"6px",padding:"2px 8px",fontWeight:700}}>net {fmt(netAmount)}</span>}
-        <button onClick={()=>{onMarkReimbursed(t.id,null);setShowReim(false);}} style={{padding:"5px 12px",borderRadius:"8px",border:"1.5px solid #d1d5db",background:"white",color:"#6b7280",cursor:"pointer",fontSize:"12px",fontFamily:f}}>Remove</button>
+        {isPartial&&<span style={{fontSize:"11px",color:"#92400e",background:"#fef9c3",borderRadius:"6px",padding:"2px 8px",fontWeight:700}}>{say(lang,"neto","net")} {fmt(netAmount)}</span>}
+        <button onClick={()=>{onMarkReimbursed(t.id,null);setShowReim(false);}} style={{padding:"5px 12px",borderRadius:"8px",border:"1.5px solid #d1d5db",background:"white",color:"#6b7280",cursor:"pointer",fontSize:"12px",fontFamily:f}}>{say(lang,"Quitar","Remove")}</button>
       </div>
     :<div style={{display:"flex",flexDirection:"column",gap:"10px"}}>
         <div style={{display:"flex",gap:"6px",alignItems:"center"}}>
-          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>Type:</span>
-          {[["full","↩ Full refund"],["partial","↩ Partial refund"]].map(([type,lbl])=>(
+          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>{say(lang,"Tipo:","Type:")}</span>
+          {[["full",say(lang,"↩ Reembolso total","↩ Full refund")],["partial",say(lang,"↩ Reembolso parcial","↩ Partial refund")]].map(([type,lbl])=>(
             <button key={type} onClick={()=>setReimType(type)} style={{padding:"4px 12px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f,background:reimType===type?"#15803d":"white",color:reimType===type?"white":"#6b7280",boxShadow:reimType===type?"none":`inset 0 0 0 1.5px #d1d5db`}}>{lbl}</button>
           ))}
         </div>
         <div style={{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}}>
-          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>Reason:</span>
-          <input value={reimReason} onChange={e=>setReimReason(e.target.value)} placeholder={reimType==="partial"?"e.g. Phoebe paid back for drinks":"e.g. Friend fully covered this"}
+          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>{say(lang,"Motivo:","Reason:")}</span>
+          <input value={reimReason} onChange={e=>setReimReason(e.target.value)} placeholder={reimType==="partial"?say(lang,"ej: Lucía me pagó las bebidas","e.g. Phoebe paid back for drinks"):say(lang,"ej: Un amigo lo pagó todo","e.g. Friend fully covered this")}
             style={{flex:1,minWidth:"180px",padding:"6px 10px",borderRadius:"8px",border:"1.5px solid #bbf7d0",fontSize:"13px",outline:"none",fontFamily:f,background:"white"}}/>
         </div>
         {reimType==="partial"&&<div style={{display:"flex",gap:"8px",alignItems:"center",flexWrap:"wrap"}}>
-          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>Paid back:</span>
-          <input value={reimPaidBack} onChange={e=>setReimPaidBack(e.target.value)} placeholder={`e.g. ${fmt(Math.abs(t.amount)/2)}`} type="number" step="0.01" min="0" max={Math.abs(t.amount)}
+          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0}}>{say(lang,"Devuelto:","Paid back:")}</span>
+          <input value={reimPaidBack} onChange={e=>setReimPaidBack(e.target.value)} placeholder={say(lang,"ej: {a}","e.g. {a}",{a:fmt(Math.abs(t.amount)/2)})} type="number" step="0.01" min="0" max={Math.abs(t.amount)}
             style={{width:"100px",padding:"6px 10px",borderRadius:"8px",border:"1.5px solid #bbf7d0",fontSize:"13px",outline:"none",fontFamily:f,background:"white"}}/>
-          <span style={{fontSize:"11px",color:"#6b7280"}}>of {fmt(Math.abs(t.amount))} → net {fmt(Math.max(0,Math.abs(t.amount)-(+reimPaidBack||0)))}</span>
+          <span style={{fontSize:"11px",color:"#6b7280"}}>{say(lang,"de {a} → neto {b}","of {a} → net {b}",{a:fmt(Math.abs(t.amount)),b:fmt(Math.max(0,Math.abs(t.amount)-(+reimPaidBack||0)))})}</span>
         </div>}
         <div style={{display:"flex",gap:"8px",alignItems:"flex-start",flexWrap:"wrap"}}>
-          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0,paddingTop:"6px"}}>🔗 Link:</span>
+          <span style={{fontSize:"12px",color:"#15803d",fontWeight:700,flexShrink:0,paddingTop:"6px"}}>🔗 {say(lang,"Vincular:","Link:")}</span>
           <div style={{flex:1,minWidth:"180px"}}>
-            <input value={reimSearch} onChange={e=>{setReimSearch(e.target.value);setLinkedId("");}} placeholder="Search income transaction to link…"
+            <input value={reimSearch} onChange={e=>{setReimSearch(e.target.value);setLinkedId("");}} placeholder={say(lang,"Busca el ingreso para vincular…","Search income transaction to link…")}
               style={{width:"100%",padding:"6px 10px",borderRadius:"8px",border:"1.5px solid #bbf7d0",fontSize:"13px",outline:"none",fontFamily:f,background:"white",marginBottom:searchResults.length?"4px":0}}/>
             {searchResults.map(x=>(
               <div key={x.id} onClick={()=>{setLinkedId(x.id);setReimSearch(extractMerchant(x.desc)+` ${fmt(x.amount)}`);if(reimType==="partial"&&!reimPaidBack)setReimPaidBack(String(Math.abs(x.amount)));}}
@@ -53,11 +54,11 @@ export function ReimPanel({t,theme,reimbursed,onMarkReimbursed,setShowReim,allTr
                 <span style={{color:x.amount>=0?"#15803d":"#ef4444",fontWeight:700}}>{x.amount>=0?"+":""}{fmt(x.amount)}</span>
               </div>
             ))}
-            {linkedId&&!searchResults.length&&<div style={{fontSize:"11px",color:"#15803d",padding:"4px 0"}}>✓ Linked</div>}
+            {linkedId&&!searchResults.length&&<div style={{fontSize:"11px",color:"#15803d",padding:"4px 0"}}>✓ {say(lang,"Vinculado","Linked")}</div>}
           </div>
         </div>
         <div style={{display:"flex",gap:"8px"}}>
-          <button onClick={()=>{if(!reimReason.trim())return;const data={reason:reimReason.trim(),linkedTxnId:linkedId||null};if(reimType==="partial"&&+reimPaidBack>0)data.paidBack=+parseFloat(reimPaidBack).toFixed(2);onMarkReimbursed(t.id,data);setShowReim(false);}} style={{padding:"7px 16px",borderRadius:"8px",border:"none",background:"#15803d",color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>Confirm ✓</button>
+          <button onClick={()=>{if(!reimReason.trim())return;const data={reason:reimReason.trim(),linkedTxnId:linkedId||null};if(reimType==="partial"&&+reimPaidBack>0)data.paidBack=+parseFloat(reimPaidBack).toFixed(2);onMarkReimbursed(t.id,data);setShowReim(false);}} style={{padding:"7px 16px",borderRadius:"8px",border:"none",background:"#15803d",color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>{say(lang,"Confirmar ✓","Confirm ✓")}</button>
           <button onClick={()=>setShowReim(false)} style={{padding:"7px 10px",borderRadius:"8px",border:"1.5px solid #d1d5db",background:"white",color:"#6b7280",cursor:"pointer",fontSize:"12px"}}>✕</button>
         </div>
       </div>;
@@ -138,7 +139,7 @@ export function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,
     {showCom&&<div style={{background:c.pl,padding:"8px 14px",borderBottom:`1px solid ${c.border}`}}>{commentPanel}</div>}
     {showRem&&<div style={{background:c.pl,padding:"10px 14px",borderBottom:`1px solid ${c.border}`}}>{reminderPanel}</div>}
     {showReim&&<div style={{background:"#f0fdf4",padding:"12px 14px",borderBottom:`1px solid ${c.border}`}}>
-      <ReimPanel t={t} theme={theme} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} setShowReim={setShowReim} allTransactions={allTransactions}/>
+      <ReimPanel t={t} theme={theme} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} setShowReim={setShowReim} allTransactions={allTransactions} lang={lang}/>
     </div>}
   </>;
 
@@ -163,7 +164,7 @@ export function TxnRow({t,theme,onCatChange,onAddReminder,comment,onCommentSave,
     {showCom&&<tr style={{borderBottom:`1px solid ${c.border}`,background:c.pl}}><td colSpan={5} style={{padding:"8px 16px"}}>{commentPanel}</td></tr>}
     {showRem&&<tr style={{borderBottom:`1px solid ${c.border}`,background:c.pl}}><td colSpan={5} style={{padding:"10px 16px"}}>{reminderPanel}</td></tr>}
     {showReim&&<tr style={{borderBottom:`1px solid ${c.border}`,background:"#f0fdf4"}}><td colSpan={5} style={{padding:"12px 16px"}}>
-      <ReimPanel t={t} theme={theme} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} setShowReim={setShowReim} allTransactions={allTransactions}/>
+      <ReimPanel t={t} theme={theme} reimbursed={reimbursed} onMarkReimbursed={onMarkReimbursed} setShowReim={setShowReim} allTransactions={allTransactions} lang={lang}/>
     </td></tr>}
   </>;
 }
@@ -183,11 +184,11 @@ export function FullLedger({theme,transactions,onCatChange,comments,onCommentSav
   const cats=["All",...[...new Set(transactions.map(t=>t.cat).filter(Boolean))]];
   return <div style={{marginTop:24}}>
     <div style={{display:"flex",gap:"10px",flexWrap:"wrap",marginBottom:14,alignItems:"center"}}>
-      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={lang==="es"?"Buscar movimientos…":"Search transactions…"}
+      <input value={search} onChange={e=>setSearch(e.target.value)} placeholder={say(lang,"Buscar movimientos…","Search transactions…")}
         style={{flex:1,minWidth:"180px",padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
       <select value={catF} onChange={e=>setCatF(e.target.value)}
         style={{padding:"8px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",background:"white",color:c.text,fontFamily:f,outline:"none"}}>
-        {cats.map(cat=><option key={cat} value={cat}>{cat==="All"?(lang==="es"?"Todas":"All"):catLabel(cat)}</option>)}
+        {cats.map(cat=><option key={cat} value={cat}>{cat==="All"?(say(lang,"Todas","All")):catLabel(cat)}</option>)}
       </select>
       <button onClick={onExport} style={{padding:"8px 14px",borderRadius:"10px",border:`1.5px solid ${c.border}`,background:"transparent",color:c.p,cursor:"pointer",fontSize:"12px",fontWeight:700,fontFamily:f}}>📥 Export</button>
     </div>
@@ -211,4 +212,4 @@ export function FullLedger({theme,transactions,onCatChange,comments,onCommentSav
     </div>}
   </div>;
 }
-
+

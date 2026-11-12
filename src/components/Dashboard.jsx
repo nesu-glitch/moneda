@@ -1,3 +1,4 @@
+import { say, locale } from "../utils/i18n.js";
 import { ReimPanel, TxnRow } from "./Transactions.jsx";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -83,8 +84,8 @@ function BudgetWidget({theme,budgets,allTransactions,w,lang="es"}) {
       ? d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()
       : d>=wkStart&&d<=wkEnd;
   });
-  const monthLabel=now.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-  const wkLabel=`${wkStart.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})} – ${wkEnd.toLocaleDateString("es-ES",{day:"2-digit",month:"short"})}`;
+  const monthLabel=now.toLocaleDateString(locale(lang),{month:"long",year:"numeric"});
+  const wkLabel=`${wkStart.toLocaleDateString(locale(lang),{day:"2-digit",month:"short"})} – ${wkEnd.toLocaleDateString(locale(lang),{day:"2-digit",month:"short"})}`;
   const budgetRows=Object.entries(budgets).filter(([,v])=>v>0).map(([cat,monthlyLimit])=>{
     const limit=period==="week"?+(monthlyLimit/4).toFixed(2):monthlyLimit;
     const spent=+(periodTxns.filter(t=>t.cat===cat).reduce((s,t)=>s+Math.abs(t.amount),0)).toFixed(2);
@@ -170,7 +171,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
   const journalTxns=transactions.filter(t=>{const d=toDate(t.date);return d.getFullYear()===journalMonth.y&&d.getMonth()===journalMonth.m;});
   const prevJM=()=>setJournalMonth(({y,m})=>m===0?{y:y-1,m:11}:{y,m:m-1});
   const nextJM=()=>setJournalMonth(({y,m})=>m===11?{y:y+1,m:0}:{y,m:m+1});
-  const journalLabel=new Date(journalMonth.y,journalMonth.m,1).toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  const journalLabel=new Date(journalMonth.y,journalMonth.m,1).toLocaleDateString(locale(lang),{month:"long",year:"numeric"});
   const isCurrentMonth=journalMonth.y===NOW.getFullYear()&&journalMonth.m===NOW.getMonth();
 
   const compKey=compFilterKey(timeFilter);
@@ -239,7 +240,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("summary")&&<div style={{display:"flex",gap:"12px",flexWrap:isMobile?"nowrap":"wrap",overflowX:isMobile?"auto":"visible",paddingBottom:isMobile?"4px":0}}>
       <SCard label={w.inc} value={`+${fmt(totalInc)}`} sub={`${filtered.filter(t=>t.amount>0).length} ${tr.transactions}`} color="#10b981"/>
       <SCard label={tr.expenses} value={`-${fmt(Math.abs(totalExp))}`} sub={`${filtered.filter(t=>t.amount<0).length} ${tr.transactions}`} color={c.danger}/>
-      <SCard label={tr.net} value={`${net>=0?"+":"-"}${fmt(net)}`} sub={lang==="es"?(net>=0?"¡Buen trabajo! 🎉":"Sale más de lo que entra"):(net>=0?"Great work! 🎉":"More out than in")} color={net>=0?"#10b981":c.danger}/>
+      <SCard label={tr.net} value={`${net>=0?"+":"-"}${fmt(net)}`} sub={net>=0?say(lang,"¡Buen trabajo! 🎉","Great work! 🎉"):say(lang,"Sale más de lo que entra","More out than in")} color={net>=0?"#10b981":c.danger}/>
       {biggestExp&&<SCard label={tr.biggestExpense} value={`-${fmt(Math.abs(biggestExp.amount))}`} sub={biggestExp.desc.length>28?biggestExp.desc.slice(0,28)+"…":biggestExp.desc} color={c.danger}/>}
     </div>}
     {/* Insights strip */}
@@ -255,7 +256,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("payments")&&<div style={{display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:"16px"}}>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>💳 {tr.upcomingCharges}</div>
-        {(()=>{const monthly=paymentsWithCountdown.filter(p=>p.frequency!=="yearly");return monthly.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>:monthly.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}><div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{p.days===0?(lang==="es"?"hoy":"today"):`${tr.inDays} ${p.days} ${p.days!==1?tr.days:tr.day}`}</div></div><div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div></div>);})()}
+        {(()=>{const monthly=paymentsWithCountdown.filter(p=>p.frequency!=="yearly");return monthly.length===0?<div style={{color:c.muted,fontSize:"13px"}}>{tr.noPayments}</div>:monthly.map(p=><div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8,padding:"10px 12px",borderRadius:"10px",background:p.days<=3?`${c.danger}15`:p.days<=7?"#f59e0b18":c.pl}}><div><div style={{fontWeight:600,fontSize:"13px",color:c.text}}>{p.name}</div><div style={{fontSize:"11px",color:c.muted}}>{p.days===0?(say(lang,"hoy","today")):`${tr.inDays} ${p.days} ${p.days!==1?tr.days:tr.day}`}</div></div><div style={{fontWeight:700,fontSize:"14px",color:p.days<=3?c.danger:c.text}}>-{fmt(p.amount)}</div></div>);})()}
       </div>
       <div style={{background:c.card,borderRadius:"16px",padding:"20px",border:`1.5px solid ${c.border}`}}>
         <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📋 {tr.remindersTitle}</div>
@@ -270,7 +271,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("spending")&&catData.length>0&&<div style={{background:c.card,borderRadius:"16px",padding:"22px 24px",border:`1.5px solid ${c.border}`}}>
       <div style={{fontWeight:700,color:c.text,marginBottom:14,fontSize:"15px"}}>📊 {tr.spendingTitle}</div>
       <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:16}}>
-        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat==="All"?(lang==="es"?"Todas":"All"):catLabel(cat)}</button>)}
+        {inPeriodCats.map(cat=><button key={cat} onClick={()=>setCatFilter(cat)} style={{padding:"5px 13px",borderRadius:"20px",border:"none",cursor:"pointer",fontSize:"12px",fontFamily:f,fontWeight:600,transition:"all 0.15s",background:catFilter===cat?(CC[cat]||c.p):"transparent",color:catFilter===cat?"white":c.muted,outline:`1.5px solid ${catFilter===cat?(CC[cat]||c.p):c.border}`}}>{cat==="All"?(say(lang,"Todas","All")):catLabel(cat)}</button>)}
       </div>
       {catFilter==="All"
         ? <ResponsiveContainer width="100%" height={200}>
@@ -309,7 +310,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
         </div>
       </div>
       {journalTxns.length===0
-        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{tr.noTxns} — {lang==="es"?"usa ← para volver":"use ← to go back"}</div>
+        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{tr.noTxns} — {say(lang,"usa ← para volver","use ← to go back")}</div>
         :<div style={{overflowX:"auto"}}>
           <div style={{fontSize:"12px",color:c.muted,marginBottom:8}}>{journalTxns.length} {tr.transactions} · {journalTxns.filter(t=>t.amount<0).length} {tr.expenses2} · {fmt(Math.abs(journalTxns.filter(t=>t.amount<0).reduce((s,t)=>s+t.amount,0)))} {tr.spent}</div>
           {isMobile
@@ -326,7 +327,7 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     {isVisible("income")&&hasData&&<div style={{background:c.card,borderRadius:"16px",padding:"22px 24px",border:`1.5px solid ${c.border}`}}>
       <div style={{fontWeight:700,color:c.text,fontSize:"15px",marginBottom:14}}>💰 {w.inc} — {periodLabel}</div>
       {filtered.filter(t=>t.amount>0).length===0
-        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{lang==="es"?"Sin ingresos en este período":"No income in this period"}</div>
+        ?<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px"}}>{say(lang,"Sin ingresos en este período","No income in this period")}</div>
         :<>
           <div style={{fontSize:"12px",color:c.muted,marginBottom:10}}>
             {filtered.filter(t=>t.amount>0).length} {tr.transactions} · <span style={{color:"#10b981",fontWeight:700}}>+{fmt(totalInc)} total</span>
@@ -383,4 +384,4 @@ export function Dashboard({theme,timeFilter,setTimeFilter,compareMode,setCompare
     </div>}
   </div>;
 }
-
+

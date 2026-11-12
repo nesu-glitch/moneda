@@ -60,7 +60,93 @@ function readWorkbook(data) {
 }
 const p2w=n=>String(n).padStart(2,"0");
 
-export function parseBankExport(data) {
+// ── Header vocabulary ────────────────────────────────────────────────────────
+// Column names as banks write them, normalised by normHeader (lowercase, no accents, no
+// punctuation). Spanish, Catalan/Valencian, Basque and Galician — Spanish banks follow the
+// language of the customer's online banking, so the same bank can export any of these —
+// plus English, Portuguese, French, Italian and German for foreign banks used in Spain
+// (Revolut, N26, Wise…). Earlier entries win when several columns match.
+export const normHeader=s=>String(s??"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/\(.*?\)/g," ").replace(/[^a-z0-9]+/g," ").trim();
+export const HEADER_KW={
+  date:[
+    "fecha operacion","fecha de operacion","fecha","f operacion","fecha contable",                        // es
+    "data operacio","data d operacio","data de l operacio","data",                                        // ca · gl · pt · it
+    "data operacion","data da operacion","data de operacion",                                             // gl
+    "eragiketa data","eragiketaren data","data eragiketa","eguna",                                         // eu
+    "date","transaction date","booking date","completed date","started date","posting date","date completed",
+    "date operation","date de l operation","date d operation","datum","buchungstag","buchungsdatum","data movimento","data contabile",
+    "fecha valor","f valor","data valor","balio data","value date","valuta","wertstellung","date de valeur",
+  ],
+  desc:[
+    "concepto","descripcion","concepte","descripcio","descricion","descripcao","concepto da operacion",
+    "kontzeptua","deskribapena","azalpena","mugimendua","xehetasunak",
+    "movimiento","moviment","movemento","detalle","detall","detalles","observaciones",
+    "description","details","merchant","partner name","payee","counterparty","reference","name","nombre","nom",
+    "libelle","libelle operation","descrizione","causale","verwendungszweck","beschreibung","buchungstext",
+  ],
+  amount:[
+    "importe","import","zenbatekoa","kopurua","cantidad","quantitat","cantidade","montante","monto",
+    "amount","value","valor","balioa","montant","importo","betrag","umsatz",
+  ],
+  debit:["cargo","cargos","carrec","carrecs","debito","debitos","debit","debits","kargua","kargak","zorra","zordunketa",
+    "gasto","gastos","despesa","despeses","money out","paid out","withdrawal","withdrawals","debit amount","addebiti","dare","soll","ausgang"],
+  credit:["abono","abonos","abonament","abonaments","credito","creditos","credit","credits","abonua","abonuak","hartzekoa",
+    "ingreso","ingresos","ingres","ingressos","money in","paid in","deposit","deposits","credit amount","accrediti","avere","haben","eingang"],
+  // Never money-in or money-out: running balances
+  ignore:["saldo","disponible","saldoa","balance","solde","kontostand","saldo disponible","saldo contable","running balance","saldo final"],
+  category:["categoria","category","kategoria","categorie","kategorie","subcategoria"],
+  state:["state","status","estado","estat","egoera","estado da operacion"],
+};
+
+// exact match → 3, keyword as whole words inside the cell → 1; lower rank = earlier keyword
+function matchKw(cell,kws){
+  if(!cell||cell.length>40)return null;
+  for(let i=0;i<kws.length;i++)if(cell===kws[i])return{score:3,rank:i};
+  const padded=` ${cell} `;
+  for(let i=0;i<kws.length;i++)if(padded.includes(` ${kws[i]} `))return{score:1,rank:i};
+  return null;
+}
+const isIgnored=c=>HEADER_KW.ignore.some(k=>c===k||c.startsWith(k+" "));
+const looksDate=c=>!!matchKw(c,HEADER_KW.date);
+
+// Picks a column for each role from one header row. Columns are never shared between roles.
+export function resolveColumns(rawHeader){
+  const hdr=rawHeader.map(normHeader),used=new Set();
+  const pick=(role,exclude=()=>false)=>{
+    let best=-1,bm=null;
+    hdr.forEach((c,j)=>{
+      if(used.has(j)||isIgnored(c)||exclude(c))return;
+      const m=matchKw(c,HEADER_KW[role]);if(!m)return;
+      if(!bm||m.score>bm.score||(m.score===bm.score&&m.rank<bm.rank)){bm=m;best=j;}
+    });
+    if(best>=0)used.add(best);
+    return{col:best,score:bm?.score||0};
+  };
+  const date=pick("date");
+  // Separate money-out / money-in columns first (BBVA, CaixaBank, Unicaja…), else one signed column
+  const debit=pick("debit",looksDate),credit=pick("credit",looksDate);
+  let amount={col:-1,score:0};
+  if(debit.col<0||credit.col<0){
+    if(debit.col>=0)used.delete(debit.col);
+    if(credit.col>=0)used.delete(credit.col);
+    amount=pick("amount",looksDate);
+  }
+  const pair=amount.col<0&&debit.col>=0&&credit.col>=0;
+  const desc=pick("desc",looksDate);
+  const find=role=>hdr.findIndex(c=>HEADER_KW[role].includes(c));
+  return{
+    date:date.col,desc:desc.col,amount:amount.col,
+    debit:pair?debit.col:-1,credit:pair?credit.col:-1,
+    category:find("category"),state:find("state"),
+    score:date.score+desc.score+(pair?Math.max(debit.score,credit.score):amount.score),
+    complete:date.col>=0&&(amount.col>=0||pair),
+  };
+}
+
+const COL_LETTER=i=>{let s="";i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26);}return s;};
+
+export function parseBankExport(data,opts={}) {
   const wb=readWorkbook(data),ws=wb.Sheets[wb.SheetNames[0]];
   // Ids must be unique across every file ever loaded: row numbers alone collide between files.
   const tok=Math.random().toString(36).slice(2,8);
@@ -106,130 +192,83 @@ export function parseBankExport(data) {
     return{txns,comments,isMonedaExport:true,savedAutoPayments,savedReminders,savedBudgets,savedCustomCats,savedWidgetConfig,savedProfile,savedSplits,savedState};
   }
 
-  // ── Generic Spanish bank (Santander, BBVA, CaixaBank, Bankinter, Sabadell, ING, Unicaja, Kutxabank, Openbank) ──
+  // ── Any bank ────────────────────────────────────────────────────────────────
 
-  // 1. Detect bank from first 8 rows of text
+  // 1. Bank name, only for display
   const topText=rows.slice(0,8).map(r=>r.map(c=>String(c)).join(" ")).join(" ").toLowerCase();
-  let detectedBank="your bank";
-  if(topText.includes("bbva"))                                       detectedBank="BBVA";
-  else if(topText.includes("caixabank")||topText.includes("la caixa")) detectedBank="CaixaBank";
-  else if(topText.includes("bankinter"))                             detectedBank="Bankinter";
-  else if(topText.includes("sabadell"))                              detectedBank="Sabadell";
-  else if(topText.includes("ing direct")||topText.includes("ing españa")||/\bing\b/.test(topText)) detectedBank="ING";
-  else if(topText.includes("unicaja"))                               detectedBank="Unicaja";
-  else if(topText.includes("kutxabank")||topText.includes("kutxa"))  detectedBank="Kutxabank";
-  else if(topText.includes("openbank"))                              detectedBank="Openbank";
-  else if(topText.includes("santander"))                             detectedBank="Santander";
+  const BANKS=[["bbva","BBVA"],["caixabank","CaixaBank"],["la caixa","CaixaBank"],["imagin","imagin"],["bankinter","Bankinter"],["sabadell","Sabadell"],
+    ["ing direct","ING"],["ing españa","ING"],["unicaja","Unicaja"],["laboral kutxa","Laboral Kutxa"],["kutxabank","Kutxabank"],["kutxa","Kutxabank"],
+    ["abanca","Abanca"],["ibercaja","Ibercaja"],["cajamar","Cajamar"],["caja rural","Caja Rural"],["openbank","Openbank"],["santander","Santander"],
+    ["revolut","Revolut"],["n26","N26"],["wise","Wise"]];
+  const detectedBank=(BANKS.find(([k])=>topText.includes(k))||[])[1]||(/\bing\b/.test(topText)?"ING":null);
 
-  // 2. Bank-specific column keyword overrides
-  const BANK_COLS={
-    BBVA:      {date:["fecha"],                                        desc:["concepto"],                                                                   debit:["cargo"],                         credit:["abono"]},
-    CaixaBank: {date:["data operació","fecha operación","data operacio","fecha operacion"], desc:["descripció","descripción","descripcio","descripcion"],     debit:["càrrecs","cargos","carrecs"],     credit:["abonaments","abonos"]},
-    Bankinter: {date:["fecha operación","fecha operacion","fecha"],     desc:["descripción","descripcion","concepto"],                                        amount:["importe"]},
-    Sabadell:  {date:["fecha"],                                        desc:["concepto"],                                                                   debit:["cargo"],                         credit:["abono"],   amount:["importe"]},
-    ING:       {date:["fecha"],                                        desc:["descripción","descripcion","nombre"],                                          amount:["importe (€)","importe"],         cat:["categoría","categoria"]},
-    Unicaja:   {date:["fecha"],                                        desc:["concepto"],                                                                   debit:["cargos"],                        credit:["abonos"]},
-    Kutxabank: {date:["fecha valor","fecha"],                           desc:["concepto"],                                                                   debit:["débitos","debitos","cargo"],      credit:["créditos","creditos","abono"]},
-    Openbank:  {date:["fecha"],                                        desc:["concepto"],                                                                   amount:["importe"]},
-    Santander: {date:["fecha"],                                        desc:["concepto"],                                                                   amount:["importe"]},
-  };
-  const bankCols=BANK_COLS[detectedBank]||{};
-
-  // 3. Score-based header row detection (scan up to row 30)
-  const DATE_KW=["fecha","date","data","fecha operación","fecha valor","fecha operacion","data operació"];
-  const DESC_KW=["concepto","descripción","descripcion","descripció","descripcio","nombre","movimiento","detalle","description"];
-  const AMT_KW =["importe","amount","cargo","abono","cargos","abonos","débitos","créditos","debitos","creditos","càrrecs","abonaments","importe (€)","valor"];
-
-  let headerRow=-1,bestScore=-1;
+  // 2. Header row = the best-scoring row among the first 30
+  let headerRow=-1,cols=null;
   for(let i=0;i<Math.min(rows.length,30);i++){
-    const r=rows[i].map(c=>String(c).toLowerCase().trim());
-    let score=0;
-    for(let j=0;j<r.length;j++){
-      const cell=r[j];
-      if(DATE_KW.some(k=>cell===k))score+=2; else if(DATE_KW.some(k=>cell.includes(k)))score+=1;
-      if(DESC_KW.some(k=>cell===k))score+=2; else if(DESC_KW.some(k=>cell.includes(k)))score+=1;
-      if(AMT_KW.some(k=>cell===k)) score+=2; else if(AMT_KW.some(k=>cell.includes(k)))score+=1;
-      // +1 bonus when a neighbouring cell looks numeric (suggests this is a real data header)
-      const next=String(r[j+1]||"").replace(/[€$£\s]/g,"");
-      if(score>0&&/^-?[\d.,]+$/.test(next))score+=1;
-    }
-    if(score>bestScore){bestScore=score;headerRow=i;}
+    const r=resolveColumns(rows[i]);
+    if(!r.complete)continue;
+    // A real header is followed by a row whose date cell parses
+    const next=rows.slice(i+1,i+4).some(n=>parseFlexDate(n?.[r.date]));
+    const score=r.score+(next?3:0);
+    if(!cols||score>cols.score){cols={...r,score};headerRow=i;}
   }
-  if(bestScore<2)headerRow=0; // nothing convincing found — assume row 0
 
-  // 4. Resolve column indices with exact-match priority, then loose contains-match
-  const hdr=rows[headerRow].map(c=>String(c).toLowerCase().trim());
-  const findCol=(...keys)=>{
-    for(const k of keys){const idx=hdr.findIndex(c=>c===k||c.replace(/\s+/g," ")===k);if(idx>=0)return idx;}
-    for(const k of keys){const idx=hdr.findIndex(c=>c.includes(k));if(idx>=0)return idx;}
-    return -1;
+  // 3. Caller-supplied mapping (from the column picker) overrides detection
+  const m=opts.mapping;
+  if(m){
+    cols={date:m.date,desc:m.desc??-1,amount:m.amount??-1,debit:m.debit??-1,credit:m.credit??-1,category:-1,state:-1};
+    headerRow=-1; // the date check below skips header and title rows on its own
+  }
+
+  // Nothing convincing: hand the file back so the user can point at the columns
+  const preview=()=>{
+    const width=Math.max(...rows.slice(0,40).map(r=>r.length));
+    const labelRow=headerRow>=0?rows[headerRow]:null;
+    return{needsMapping:true,bank:detectedBank,preview:{
+      columns:Array.from({length:width},(_,j)=>({index:j,label:String(labelRow?.[j]??"").trim()||`${COL_LETTER(j)}`,
+        sample:rows.slice(headerRow+1).map(r=>String(r?.[j]??"").trim()).filter(Boolean).slice(0,3)})),
+      guess:cols?{date:cols.date,desc:cols.desc,amount:cols.amount,debit:cols.debit,credit:cols.credit}:null,
+    },txns:[],comments:{}};
   };
+  if(!cols)return preview();
 
-  const dateCol=findCol(...(bankCols.date||[]),"fecha","date","data");
-  const descCol=findCol(...(bankCols.desc||[]),"concepto","descripción","descripcion","descripció","nombre","movimiento","detalle","description","merchant","partner name","payee","details","reference");
-  // Revolut & co. also list failed card payments — those never left the account
-  const stateCol=hdr.findIndex(c=>c==="state"||c==="status"||c==="estado");
-  const DEAD_RE=/revert|declin|fail|cancel|rechaz|denega/i;
-  const catIngCol=bankCols.cat?findCol(...bankCols.cat):-1;
-
-  // Prefer bank-specific separate debit/credit cols; fall back to single signed amount col
-  let debitCol=-1,creditCol=-1,amtCol=-1;
-  if(bankCols.debit&&bankCols.credit){
-    debitCol=findCol(...bankCols.debit);
-    creditCol=findCol(...bankCols.credit);
-  }
-  if(bankCols.amount){
-    amtCol=findCol(...bankCols.amount);
-  }
-  // Generic fallback when nothing matched yet
-  if(debitCol===-1&&creditCol===-1&&amtCol===-1){
-    amtCol=findCol("importe","amount","valor");
-  }
-
-  // 5–7. Parse data rows
+  // 4. Data rows
   const txns=[];
-  const SKIP_RE=/^(total|saldo|balance|subtotal)\b/i;
+  const SKIP_RE=/^(total|saldo|saldoa|balance|subtotal|solde)\b/i;
+  const DEAD_RE=/revert|declin|fail|cancel|rechaz|denega|anul|ezeztat/i;
   for(let i=headerRow+1;i<rows.length;i++){
     const row=rows[i];
     if(!row||row.every(c=>!String(c).trim()))continue;
-
-    // 6a. Date must parse
-    const date=parseFlexDate(dateCol>=0?row[dateCol]:row[0]);
+    const date=parseFlexDate(row[cols.date]);
     if(!date)continue;
-
-    // 6b. Skip subtotal/balance rows
-    const desc=descCol>=0?sanitizeCellValue(String(row[descCol]||"").trim()):"";
+    const desc=cols.desc>=0?sanitizeCellValue(String(row[cols.desc]||"").trim()):"";
     if(SKIP_RE.test(desc))continue;
-    if(stateCol>=0&&DEAD_RE.test(String(row[stateCol]||"")))continue;
+    // Revolut & co. also list failed card payments — those never left the account
+    if(cols.state>=0&&DEAD_RE.test(String(row[cols.state]||"")))continue;
 
-    // 3 & 4. Compute amount from debit/credit pair or single signed column
     let amount;
-    if(debitCol>=0&&creditCol>=0){
-      const dv=parseEuroAmount(row[debitCol]);
-      const cv=parseEuroAmount(row[creditCol]);
+    if(cols.debit>=0&&cols.credit>=0){
+      const dv=parseEuroAmount(row[cols.debit]),cv=parseEuroAmount(row[cols.credit]);
       if(isNaN(dv)&&isNaN(cv))continue;
-      const d=isNaN(dv)?0:dv, cr=isNaN(cv)?0:cv;
-      if(d===0&&cr===0)continue;
-      amount=+(cr-d).toFixed(2); // credit positive, debit negative
-    } else if(amtCol>=0){
-      amount=parseEuroAmount(row[amtCol]);
+      // Some banks already write money-out as negative, others as positive: sign comes from the column
+      amount=(isNaN(cv)?0:Math.abs(cv))-(isNaN(dv)?0:Math.abs(dv));
+      if(amount===0)continue;
+    }else if(cols.amount>=0){
+      amount=parseEuroAmount(row[cols.amount]);
       if(isNaN(amount))continue;
-    } else continue;
-
-    // 6c. Skip blank desc + zero amount
+    }else continue;
+    if(m?.invert)amount=-amount;
     if(!desc&&amount===0)continue;
 
-    // Category: income flag, ING category fallback, then rule-based
     let cat=amount>0?"Income":categorise(desc);
-    if(catIngCol>=0&&!cat){
-      const ingCat=sanitizeCellValue(String(row[catIngCol]||"").trim());
-      if(ingCat)cat=ingCat;
+    if(!cat&&cols.category>=0){
+      const bankCat=sanitizeCellValue(String(row[cols.category]||"").trim());
+      if(bankCat)cat=bankCat;
     }
-
     txns.push({id:`${date}-${i}-${tok}`,date,desc,amount:+amount.toFixed(2),cat});
   }
-
-  // 7. Return with detected bank name
+  // Headers matched but no row parsed (odd date or number format): let the user check the columns
+  if(!txns.length&&!m)return preview();
   return{txns,comments:{},bank:detectedBank};
 }
 export function doExport(transactions,comments,{autoPayments=[],reminders=[],budgets={},customCats=[],widgetConfig=[],profile={},splitGroups=[],splitExpenses=[],settlements=[],reimbursed={},catGroups=[]}={}) {

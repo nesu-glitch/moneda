@@ -1,11 +1,15 @@
+import { say, LANGS } from "../utils/i18n.js";
 import { useState, useEffect } from "react";
 import { THEMES, THEMES_TR, GOALS, GOALS_TR, T } from "../utils/constants.js";
 import { useIsMobile } from "../hooks/useIsMobile.js";
 import { PrivacyModal } from "./PrivacyModal.jsx";
 
-// Drawn as SVG: Windows has no flag emoji and shows the letters "ES" / "GB" instead.
+// Drawn as SVG: Windows has no flag emoji, and Catalonia, the Basque Country and Galicia have none anywhere.
 const FLAGS={
   es:<svg viewBox="0 0 3 2" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="3" height="2" fill="#AA151B"/><rect y="0.5" width="3" height="1" fill="#F1BF00"/></svg>,
+  ca:<svg viewBox="0 0 9 6" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="9" height="6" fill="#FCDD09"/>{[1,3,5,7].map(i=><rect key={i} y={i*2/3} width="9" height={2/3} fill="#DA121A"/>)}</svg>,
+  eu:<svg viewBox="0 0 50 28" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="50" height="28" fill="#D52B1E"/><path d="M0,0 L50,28 M50,0 L0,28" stroke="#009B48" strokeWidth="4.3"/><path d="M25,0 V28 M0,14 H50" stroke="#fff" strokeWidth="4.3"/></svg>,
+  gl:<svg viewBox="0 0 3 2" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect x="0.02" y="0.02" width="2.96" height="1.96" rx="0.08" fill="#fff" stroke="#d1d5db" strokeWidth="0.04"/><path d="M0,0 L0.62,0 L3,1.6 L3,2 L2.38,2 L0,0.4 Z" fill="#009ADE"/></svg>,
   en:<svg viewBox="0 0 60 40" width="54" height="36" style={{borderRadius:5,display:"block"}} aria-hidden="true"><rect width="60" height="40" fill="#012169"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#fff" strokeWidth="8"/><path d="M0,0 L60,40 M60,0 L0,40" stroke="#C8102E" strokeWidth="3"/><path d="M30,0 V40 M0,20 H60" stroke="#fff" strokeWidth="13"/><path d="M30,0 V40 M0,20 H60" stroke="#C8102E" strokeWidth="8"/></svg>,
 };
 
@@ -20,7 +24,7 @@ function Dialog({theme,lines,onDone,lang="es"}) {
       <div style={{flex:1}}>
         <div style={{fontSize:"10px",color:"rgba(255,255,255,0.35)",marginBottom:5,letterSpacing:2,textTransform:"uppercase",fontFamily:theme.font}}>{theme.npcName}</div>
         <div style={{color:"white",fontSize:"17px",lineHeight:1.65,fontFamily:theme.font,minHeight:"52px"}}>{shown}{typing&&<span style={{animation:"blink 0.7s step-start infinite"}}>▌</span>}</div>
-        {!typing&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginTop:8,textAlign:"right",animation:"blink 1.3s step-start infinite"}}>{li<lines.length-1?(lang==="es"?"▶  Pulsa para continuar":"▶  Click to continue"):(lang==="es"?"▶  ¡Vamos!":"▶  Let's go!")}</div>}
+        {!typing&&<div style={{color:"rgba(255,255,255,0.35)",fontSize:"12px",marginTop:8,textAlign:"right",animation:"blink 1.3s step-start infinite"}}>{li<lines.length-1?(say(lang,"▶  Pulsa para continuar","▶  Click to continue")):(say(lang,"▶  ¡Vamos!","▶  Let's go!"))}</div>}
       </div>
     </div>
   </div>;
@@ -38,9 +42,9 @@ export function Onboarding({onDone}) {
       <p style={{color:"#888",fontSize:"15px"}}>{tl.pickLang}</p>
     </div>
     <div style={{display:"flex",gap:"16px",flexWrap:"wrap",justifyContent:"center"}}>
-      {[["es","Español"],["en","English"]].map(([l,label])=>(
+      {LANGS.map(({id:l,name:label})=>(
         <button key={l} onClick={()=>{setU({...u,lang:l});setStage("theme");}}
-          style={{padding:isMobile?"20px 32px":"24px 48px",borderRadius:"20px",border:`3px solid ${u.lang===l?"#4a7c59":"#e5e7eb"}`,background:u.lang===l?"#e2f0db":"white",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",transition:"all 0.18s",transform:u.lang===l?"scale(1.05)":"scale(1)",boxShadow:u.lang===l?"0 8px 24px rgba(74,124,89,0.3)":"0 2px 8px rgba(0,0,0,0.06)"}}>
+          style={{padding:isMobile?"16px 20px":"22px 34px",minWidth:isMobile?130:150,borderRadius:"20px",border:`3px solid ${u.lang===l?"#4a7c59":"#e5e7eb"}`,background:u.lang===l?"#e2f0db":"white",cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",gap:"10px",transition:"all 0.18s",transform:u.lang===l?"scale(1.05)":"scale(1)",boxShadow:u.lang===l?"0 8px 24px rgba(74,124,89,0.3)":"0 2px 8px rgba(0,0,0,0.06)"}}>
           {FLAGS[l]}
           <span style={{fontSize:"17px",fontWeight:700,color:"#111"}}>{label}</span>
         </button>
@@ -86,7 +90,7 @@ export function Onboarding({onDone}) {
   if(stage==="welcome")return <div style={{minHeight:"100vh",background:theme.grad,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:f,position:"relative"}}>
     <div style={{textAlign:"center",padding:"0 24px 200px",animation:"fadeUp 0.5s ease"}}>
       <div style={{fontSize:"80px",animation:"bob 2s ease-in-out infinite",marginBottom:20}}>{theme.npc}</div>
-      <div style={{fontSize:"13px",color:c.muted,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>{u.lang==="es"?"Finanzas personales":"Personal Finance"}</div>
+      <div style={{fontSize:"13px",color:c.muted,letterSpacing:3,textTransform:"uppercase",marginBottom:10}}>{say(u.lang,"Finanzas personales","Personal Finance")}</div>
       <div style={{fontSize:"44px",fontWeight:800,color:c.p,lineHeight:1.1}}>Moneda 💸</div>
       <div style={{fontSize:"16px",color:c.muted,marginTop:12}}>{(THEMES_TR[theme.id]?.[u.lang]||THEMES_TR[theme.id]?.en||{}).tagline||theme.tagline}</div>
     </div>

@@ -1,3 +1,4 @@
+import { say } from "../utils/i18n.js";
 import { useState } from "react";
 import { T } from "../utils/constants.js";
 import { fmt, fmtD } from "../utils/format.js";
@@ -27,7 +28,7 @@ export function SubscriptionVerify({theme,subs,steps,stepIndex,onDone,lang="es"}
               </div>
               <div style={{flex:1}}>
                 <div style={{fontWeight:800,fontSize:"15px",color:"#111827",fontFamily:f}}>{s.name}</div>
-                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?(lang==="es"?"🔄 Cargo recurrente":"🔄 Recurring pattern"):(lang==="es"?"📦 Suscripción":"📦 Subscription")} · {tr.detected} {fmtD(s.date)} · {tr.renewsDay} {s.day}</div>
+                <div style={{fontSize:"11px",color:"#6b7280",marginTop:2}}>{s.isRecurring?(say(lang,"🔄 Cargo recurrente","🔄 Recurring pattern")):(say(lang,"📦 Suscripción","📦 Subscription"))} · {tr.detected} {fmtD(s.date)} · {tr.renewsDay} {s.day}</div>
               </div>
               <div style={{textAlign:"right",flexShrink:0}}>
                 <div style={{fontWeight:700,fontSize:"15px",color:c.danger}}>-{fmt(s.amount)}</div>
@@ -81,7 +82,7 @@ export function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCoun
         <div style={{fontSize:"20px",fontWeight:800,lineHeight:1,color:p.days<=3?c.danger:p.days<=7?"#d97706":c.p}}>{p.days}</div>
         <div style={{fontSize:"9px",color:c.muted}}>{p.days===1?tr.day:tr.days}</div>
       </div>
-      <div style={{flex:1}}><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{p.name}</div><div style={{fontSize:"12px",color:c.muted}}>{p.frequency==="yearly"?`${tr.everyYear}${p.month?`, ${lang==="es"?"mes":"month"} ${p.month}`:""}, ${lang==="es"?"día":"day"} ${p.day}`:`${tr.everyMonth}, ${lang==="es"?"día":"day"} ${p.day}`}</div></div>
+      <div style={{flex:1}}><div style={{fontWeight:700,color:c.text,fontSize:"15px"}}>{p.name}</div><div style={{fontSize:"12px",color:c.muted}}>{p.frequency==="yearly"?`${tr.everyYear}${p.month?`, ${say(lang,"mes","month")} ${p.month}`:""}, ${say(lang,"día","day")} ${p.day}`:`${tr.everyMonth}, ${say(lang,"día","day")} ${p.day}`}</div></div>
       <div style={{textAlign:"right"}}><div style={{fontWeight:700,fontSize:"15px",color:c.text}}>-€{p.amount.toFixed(2)}{p.frequency==="yearly"?" /yr":"/mo"}</div><button onClick={()=>setAutoPayments(ps=>ps.filter(x=>x.id!==p.id))} style={{fontSize:"11px",color:c.muted,background:"transparent",border:"none",cursor:"pointer",fontFamily:f}}>{tr.remove}</button></div>
     </div>)}
     <div style={{background:c.card,borderRadius:"16px",padding:"20px",marginTop:16,border:`1.5px dashed ${c.border}`}}>
@@ -89,7 +90,7 @@ export function AutoPayPage({theme,autoPayments,setAutoPayments,paymentsWithCoun
       <div style={{display:"flex",gap:"8px",flexWrap:"wrap",marginBottom:10}}>
         <input value={name} onChange={e=>setName(e.target.value)} placeholder={tr.name} style={{flex:"2 1 160px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
         <input value={amt} onChange={e=>setAmt(e.target.value)} placeholder={tr.amount} type="number" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
-        {freq==="yearly"&&<input value={month} onChange={e=>setMonth(e.target.value)} placeholder={lang==="es"?"Mes (1-12)":"Month (1-12)"} type="number" min="1" max="12" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>}
+        {freq==="yearly"&&<input value={month} onChange={e=>setMonth(e.target.value)} placeholder={say(lang,"Mes (1-12)","Month (1-12)")} type="number" min="1" max="12" style={{flex:"1 1 90px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>}
         <input value={day} onChange={e=>setDay(e.target.value)} placeholder={`${tr.dayOfMonth} (1-31)`} type="number" min="1" max="31" style={{flex:"1 1 80px",padding:"9px 12px",borderRadius:"10px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,color:c.text,background:"white"}}/>
       </div>
       <div style={{display:"flex",gap:"6px",marginBottom:12}}>{["monthly","yearly"].map(fr=><button key={fr} onClick={()=>{setFreq(fr);setMonth("");setDay("");}} style={{padding:"5px 13px",borderRadius:"16px",border:"none",cursor:"pointer",fontSize:"12px",fontWeight:600,fontFamily:f,background:freq===fr?c.p:"transparent",color:freq===fr?"white":c.muted,outline:`1.5px solid ${freq===fr?c.p:c.border}`}}>{fr==="monthly"?tr.everyMonth:tr.everyYear}</button>)}</div>

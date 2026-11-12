@@ -1,3 +1,4 @@
+import { say, locale } from "../utils/i18n.js";
 import { useState } from "react";
 import { T, CAT_LABELS, CC } from "../utils/constants.js";
 import { ALL_CATS } from "../utils/allCats.js";
@@ -26,7 +27,7 @@ export function BudgetWizard({theme,steps,stepIndex,onDone,onSkip,lang="es"}) {
           style={{width:"100%",padding:"14px",borderRadius:"12px",border:"none",background:c.p,color:"white",fontSize:"16px",fontWeight:700,cursor:"pointer",fontFamily:f}}>
           {income?tr.suggestLimits:tr.skipManual}
         </button>
-        {onSkip&&<button onClick={onSkip} style={{width:"100%",marginTop:10,padding:"10px",borderRadius:"12px",border:"none",background:"transparent",color:c.muted,fontSize:"13px",cursor:"pointer",fontFamily:f}}>{lang==="es"?"Ahora no":"Not now"}</button>}
+        {onSkip&&<button onClick={onSkip} style={{width:"100%",marginTop:10,padding:"10px",borderRadius:"12px",border:"none",background:"transparent",color:c.muted,fontSize:"13px",cursor:"pointer",fontFamily:f}}>{say(lang,"Ahora no","Not now")}</button>}
       </>}
       {step===2&&<>
         <h2 style={{fontSize:"20px",fontWeight:800,color:c.text,marginBottom:4,fontFamily:f}}>{tr.adjustTitle}</h2>
@@ -74,7 +75,7 @@ export function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,all
   const periodSpent=Object.entries(periodTxns.filter(t=>t.amount<0).reduce((acc,t)=>({...acc,[t.cat]:(acc[t.cat]||0)+Math.abs(t.amount)}),{})).reduce((o,[k,v])=>({...o,[k]:+v.toFixed(2)}),{});
   // For budget limits: monthly is stored, weekly = monthly÷4
   const effectiveLimit=cat=>period==="week"?+((budgets[cat]||0)/4).toFixed(2):(budgets[cat]||0);
-  const periodLabel=period==="month"?now.toLocaleDateString("es-ES",{month:"long",year:"numeric"}):"this week";
+  const periodLabel=period==="month"?now.toLocaleDateString(locale(lang),{month:"long",year:"numeric"}):say(lang,"esta semana","this week");
 
   return <div style={{maxWidth:"640px",fontFamily:f}}>
     <h2 style={{color:c.text,marginBottom:6,fontSize:"22px",fontWeight:800}}>🎯 {theme.w.budget}</h2>
@@ -136,8 +137,8 @@ export function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,all
       <input value={addVal} onChange={e=>setAddVal(e.target.value)} type="number" placeholder="€/month" min="1"
         style={{width:"110px",padding:"7px 10px",borderRadius:"9px",border:`1.5px solid ${c.border}`,fontSize:"13px",outline:"none",fontFamily:f,background:"white"}}/>
       <button onClick={()=>{if(addCat&&+addVal>0){setBudgets(b=>({...b,[addCat]:+addVal}));setAddVal("");setShowAdd(false);}}}
-        style={{padding:"7px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"13px",fontWeight:700,fontFamily:f}}>Save</button>
-      <button onClick={()=>setShowAdd(false)} style={{padding:"7px 10px",borderRadius:"9px",border:`1.5px solid ${c.border}`,background:"white",color:c.muted,cursor:"pointer",fontSize:"13px"}}>Cancel</button>
+        style={{padding:"7px 14px",borderRadius:"9px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"13px",fontWeight:700,fontFamily:f}}>{tr.saveComment}</button>
+      <button onClick={()=>setShowAdd(false)} style={{padding:"7px 10px",borderRadius:"9px",border:`1.5px solid ${c.border}`,background:"white",color:c.muted,cursor:"pointer",fontSize:"13px"}}>{tr.cancel}</button>
     </div>}
     {allCats.filter(cat=>budgets[cat]>0).length===0&&!showAdd&&<div style={{color:c.muted,fontSize:"13px",textAlign:"center",padding:"20px 0"}}>No budgets set yet — click <strong>+ Add</strong> to create one</div>}
     {allCats.filter(cat=>budgets[cat]>0).map(cat=>{
@@ -151,7 +152,7 @@ export function BudgetsPage({theme,budgets,setBudgets,catGroups,setCatGroups,all
           {editing===cat?<div style={{display:"flex",gap:"6px"}}>
             <input value={val} onChange={e=>setVal(e.target.value)} type="number" autoFocus onKeyDown={e=>{if(e.key==="Enter"){setBudgets(b=>({...b,[cat]:+val}));setEditing(null);}}} style={{width:"80px",padding:"6px 8px",borderRadius:"8px",border:`2px solid ${c.p}`,fontSize:"14px",outline:"none",fontFamily:f,background:"white"}}/>
             <span style={{fontSize:"11px",color:c.muted,alignSelf:"center"}}>/mo</span>
-            <button onClick={()=>{setBudgets(b=>({...b,[cat]:+val}));setEditing(null);}} style={{padding:"6px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>Set</button>
+            <button onClick={()=>{setBudgets(b=>({...b,[cat]:+val}));setEditing(null);}} style={{padding:"6px 12px",borderRadius:"8px",border:"none",background:c.p,color:"white",cursor:"pointer",fontSize:"12px",fontWeight:700}}>{say(lang,"Fijar","Set")}</button>
             <button onClick={()=>setEditing(null)} style={{padding:"6px 10px",borderRadius:"8px",border:`1.5px solid ${c.border}`,background:"transparent",cursor:"pointer",fontSize:"13px",color:c.muted}}>✕</button>
           </div>:<div style={{display:"flex",alignItems:"center",gap:"8px"}}>
             <span style={{color:c.muted,fontSize:"12px"}}>{fmt(spent)} / {fmt(limit)}{period==="week"?" /wk":" /mo"}</span>
