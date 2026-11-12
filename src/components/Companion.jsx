@@ -7,7 +7,7 @@ import { say } from "../utils/i18n.js";
 // Each layer owns its own transform, so the animations never overwrite each other.
 // Uses the Web Animations API: no extra library in the bundle.
 
-const FLYERS = ["🦋","🦉","🦅","🐉","🧚","🐬"];
+const FLYERS = ["🦋","🦉","🦅","🐉","🧚","🐬","🦢","🕊️"];
 const WORLD_MOVE = { nature:"roll", adventure:"dash", princess:"twirl", finance:"glide" };
 const moveFor = (avatar, themeId) => FLYERS.includes(avatar) ? "fly" : (WORLD_MOVE[themeId] || "glide");
 
@@ -59,64 +59,95 @@ const pick = a => a[Math.floor(Math.random()*a.length)];
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isMobile }) {
-  const driftRef = useRef(null), actRef = useRef(null), faceRef = useRef(null);
+  const driftRef = useRef(null), actRef = useRef(null), faceRef = useRef(null), outerRef = useRef(null), jumpRef = useRef(null);
   const [bubble, setBubble] = useState(null);
   const [hidden, setHidden] = useState(false);
   const [celebrating, setCelebrating] = useState(0);
   const [side, setSide] = useState("right");
   const taps = useRef([]), busy = useRef(false), firstPage = useRef(true), firstSave = useRef(saveSignal);
   const move = moveFor(avatar, themeId);
+  // Desktop with a mouse: trails the cursor. Phones and tablets keep the bottom-corner placement.
+  const follow = !!motion && !isMobile && !!window.matchMedia?.("(pointer: fine)").matches;
 
   const say1 = useCallback((text, ms = 1100) => {
     setBubble({ text, id: Math.random() });
     setTimeout(() => setBubble(b => (b && b.text === text ? null : b)), ms);
   }, []);
 
-  // ── Drift: follow the pointer on computers, lean with scrolling on phones ──
+  // ── Desktop: trail 30px behind the cursor, tilting the way it moves ──
   useEffect(() => {
-    if (!motion) return;
-    const driftEl = driftRef.current, faceEl = faceRef.current;
-    const fine = window.matchMedia?.("(pointer: fine)").matches && !isMobile;
-    let raf, x = 0, y = 0, rot = 0, tx = 0, ty = 0, trot = 0, face = 1;
-    let lastY = window.scrollY, lastT = performance.now();
-    const onMove = e => {
-      const box = driftEl?.parentElement?.getBoundingClientRect();
-      if (!box) return;
-      const dx = e.clientX - (box.left + box.width / 2), dy = e.clientY - (box.top + box.height / 2);
-      const dist = Math.hypot(dx, dy) || 1, reach = Math.min(1, dist / 400);
-      tx = dx / dist * 60 * reach; ty = dy / dist * 40 * reach;
-      trot = Math.max(-12, Math.min(12, dx / 40));
-      if (Math.abs(dx) > 30) face = dx < 0 ? -1 : 1;
+    if (!follow) return;
+    const outer = outerRef.current, driftEl = driftRef.current, faceEl = faceRef.current;
+    const SIZE = 64, TRAIL = 30, EASE = 0.12;
+    let cx = window.innerWidth * 0.8, cy = window.innerHeight * 0.8; // last cursor position
+    let dirX = 1, dirY = 0;                                          // last movement direction
+    let mx = cx - SIZE / 2, my = cy - SIZE / 2;                      // companion top-left
+    let tx = mx, ty = my, rot = 0, face = 1, raf;
+    // Page change: jump to a random spot; the next mouse move brings it back behind the cursor
+    jumpRef.current = () => {
+      tx = 16 + Math.random() * Math.max(0, window.innerWidth - SIZE - 32);
+      ty = 16 + Math.random() * Math.max(0, window.innerHeight - SIZE - 32);
     };
-    const home = () => { tx = ty = trot = 0; };
+    const onMove = e => {
+      const dx = e.clientX - cx, dy = e.clientY - cy, d = Math.hypot(dx, dy);
+      if (d > 1) { dirX = dx / d; dirY = dy / d; }
+      cx = e.clientX; cy = e.clientY;
+      tx = cx - dirX * TRAIL - SIZE / 2;
+      ty = cy - dirY * TRAIL - SIZE / 2;
+    };
+    const tick = () => {
+      const nx = mx + (tx - mx) * EASE, ny = my + (ty - my) * EASE;
+      const vx = nx - mx;
+      mx = nx; my = ny;
+      rot += (Math.max(-12, Math.min(12, vx * 1.5)) - rot) * 0.15; // slight lean toward the movement
+      if (Math.abs(vx) > 0.3) face = vx < 0 ? -1 : 1;
+      if (outer) outer.style.transform = `translate3d(${mx.toFixed(1)}px,${my.toFixed(1)}px,0)`;
+      if (driftEl) driftEl.style.transform = `rotate(${rot.toFixed(1)}deg)`;
+      if (faceEl) faceEl.style.transform = `scaleX(${face})`;
+      raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      jumpRef.current = null;
+      window.removeEventListener("pointermove", onMove);
+      if (outer) outer.style.transform = "";
+      if (driftEl) driftEl.style.transform = "";
+      if (faceEl) faceEl.style.transform = "";
+    };
+  }, [follow]);
+
+  // ── Phones: lean with scrolling (no cursor to follow) ──
+  useEffect(() => {
+    if (!motion || follow) return;
+    const driftEl = driftRef.current;
+    let raf, y = 0, ty = 0, rot = 0, trot = 0, lastY = window.scrollY, lastT = performance.now();
     const onScroll = () => {
       const now = performance.now(), v = (window.scrollY - lastY) / Math.max(16, now - lastT);
       lastY = window.scrollY; lastT = now;
       trot = Math.max(-15, Math.min(15, v * 20)); ty = Math.max(-20, Math.min(20, -v * 15));
     };
     const tick = () => {
-      x += (tx - x) * 0.08; y += (ty - y) * 0.08; rot += (trot - rot) * 0.1;
-      if (!fine) { trot *= 0.92; ty *= 0.92; }
-      if (driftEl) driftEl.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(1)}deg)`;
-      if (faceEl) faceEl.style.transform = `scaleX(${face})`;
+      y += (ty - y) * 0.1; rot += (trot - rot) * 0.1;
+      trot *= 0.92; ty *= 0.92;
+      if (driftEl) driftEl.style.transform = `translate(0px,${y.toFixed(1)}px) rotate(${rot.toFixed(1)}deg)`;
       raf = requestAnimationFrame(tick);
     };
-    if (fine) { window.addEventListener("pointermove", onMove); document.addEventListener("pointerleave", home); }
     window.addEventListener("scroll", onScroll, { passive: true });
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("pointermove", onMove); document.removeEventListener("pointerleave", home);
       window.removeEventListener("scroll", onScroll);
       if (driftEl) driftEl.style.transform = "";
-      if (faceEl) faceEl.style.transform = "";
     };
-  }, [motion, isMobile]);
+  }, [motion, follow]);
 
   // ── Page change: the world's signature move (runs beside the page, never blocks it) ──
   useEffect(() => {
     if (firstPage.current) { firstPage.current = false; return; }
     setSide(s => (s === "right" ? "left" : "right"));
+    jumpRef.current?.();
     if (!motion || busy.current || !actRef.current?.animate) return;
     const m = PAGE_MOVES[move];
     actRef.current.animate(m.k, { duration: m.d, easing: "cubic-bezier(.45,.05,.35,1)" });
@@ -174,7 +205,8 @@ export function Companion({ avatar, themeId, page, lang, motion, saveSignal, isM
       @keyframes compCard{from{opacity:0;transform:translateY(24px) scale(.92)}to{opacity:1;transform:none}}
     `}</style>
     {/* Only the character itself takes taps; the box around it lets clicks through */}
-    <div style={{ position:"fixed", left:side==="left"?(isMobile?10:22):`calc(100vw - ${64+(isMobile?10:22)}px)`, transition:motion?"left .6s cubic-bezier(.45,.05,.35,1)":"none", bottom:isMobile?"calc(66px + env(safe-area-inset-bottom, 0px))":22, zIndex:300, width:64, height:64, pointerEvents:"none", visibility:celebrating?"hidden":"visible" }}>
+    <div ref={outerRef} style={{ position:"fixed", zIndex:300, width:64, height:64, pointerEvents:"none", visibility:celebrating?"hidden":"visible",
+      ...(follow ? { left:0, top:0 } : { left:side==="left"?(isMobile?10:22):`calc(100vw - ${64+(isMobile?10:22)}px)`, bottom:isMobile?"calc(66px + env(safe-area-inset-bottom, 0px))":22, transition:motion?"left .6s cubic-bezier(.45,.05,.35,1)":"none" }) }}>
       <div ref={driftRef} style={{ width:"100%", height:"100%", willChange:"transform" }}>
         <div ref={actRef} style={{ width:"100%", height:"100%", perspective:400 }}>
           {bubble && <div key={bubble.id} style={{ position:"absolute", left:"50%", bottom:"100%", marginBottom:4, transform:"translate(-50%,0)", background:"white", borderRadius:14, padding:"3px 9px", fontSize:20, boxShadow:"0 4px 14px rgba(0,0,0,.18)", animation:motion?"compBubble .18s ease-out":"none", whiteSpace:"nowrap" }}>{bubble.text}</div>}
