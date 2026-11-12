@@ -112,7 +112,7 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
     const fileList=[...files].filter(f=>/\.(xlsx|xls|csv)$/i.test(f.name));
     if(!fileList.length){setFileTypeError(say(lang,"Solo se admiten archivos .xlsx, .xls o .csv","Only .xlsx, .xls or .csv files are supported"));setTimeout(()=>setFileTypeError(null),4000);return;}
     // Parse all files
-    const results=[],unreadable=[];
+    const results=[],unreadable=[],failures=[];
     let remaining=fileList.length;
     fileList.forEach(file=>{
       const reader=new FileReader();
@@ -122,14 +122,17 @@ export function DataPage({theme,transactions,onUpload,onCatChange,comments,onCom
           const parsed=parseBankExport(data);
           if(parsed.needsMapping)unreadable.push({name:file.name,data,preview:parsed.preview});
           else if(parsed.txns&&parsed.txns.length>0)results.push(parsed);
-        }catch(_){}
+        }catch(err){console.error('Moneda: could not read',file.name,err);failures.push(`${file.name}: ${err?.message||err}`);}
         remaining--;
         if(remaining===0){
+          // Nothing readable at all: say why, instead of failing silently
+          if(!results.length&&!unreadable.length&&failures.length){onUpload(null,say(lang,"No se pudo leer el archivo. ","The file could not be read. ")+failures.join(" · "));return;}
           // Files we couldn't read go through the column picker one by one, then everything is merged
           if(unreadable.length)setMapping({results,queue:unreadable});
           else mergeAndUpload(results);
         }
       };
+      reader.onerror=()=>{failures.push(`${file.name}: read error`);remaining--;if(remaining===0)onUpload(null,say(lang,"No se pudo leer el archivo.","The file could not be read."));};
       reader.readAsArrayBuffer(file);
     });
   },[onUpload,transactions,lang]);
