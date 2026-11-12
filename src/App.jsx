@@ -18,6 +18,8 @@ import { BudgetWizard, BudgetsPage } from "./components/Budget.jsx";
 import { RemindersPage } from "./components/Reminders.jsx";
 import { SplitsPage, SplitModal } from "./components/Splits.jsx";
 import { PrivacyModal } from "./components/PrivacyModal.jsx";
+import { Companion } from "./components/Companion.jsx";
+import { prefersReducedMotion } from "./utils/motion.js";
 
 export default function App() {
   const [onboarded,setOnboarded]       = useState(false);
@@ -38,6 +40,8 @@ export default function App() {
   const [splitExpenses,setSplitExpenses]   = useState([]);
   const [settlements,setSettlements]       = useState([]);
   const [splitTxModal,setSplitTxModal]     = useState(null);
+  const [saveSignal,setSaveSignal]         = useState(0); // bumps on every export → companion celebrates
+  const [motionDefault]                    = useState(()=>!prefersReducedMotion());
 
   useEffect(()=>{const s=document.createElement("style");s.textContent=`*{box-sizing:border-box;margin:0;padding:0}body,#root{margin:0;padding:0;overscroll-behavior-y:none}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{opacity:0;transform:scale(0.88)}100%{opacity:1;transform:scale(1)}}@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.18);border-radius:3px}`;document.head.appendChild(s);return()=>s.remove();},[]);
 
@@ -46,7 +50,8 @@ export default function App() {
 
   const { transactions, comments, reimbursed, modalSteps, detectedSubs, unknownTxns, showSubVerify, showCatReview, handleUpload, handleSubDone, handleCatDone, onCatChange, onCommentSave, onMarkReimbursed } = useTransactions({ updateMemory, setMerchantMemory, setCustomCats, setBudgets, setCatGroups, setShowBudgetWiz, setAutoPayments, setReminders, setWidgetConfig, setUser, setLang, setSplitGroups, setSplitExpenses, setSettlements, showToast, setPage, user, merchantMemory, autoPayments, lang });
   const onAddReminder=useCallback(r=>setReminders(rs=>[...rs,r]),[]);
-  const { handleExport } = useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang });
+  const { handleExport: exportFile } = useExport({ transactions, comments, autoPayments, reminders, budgets, customCats, widgetConfig, splitGroups, splitExpenses, settlements, reimbursed, catGroups, user, lang });
+  const handleExport=useCallback(()=>{exportFile();setSaveSignal(n=>n+1);},[exportFile]);
   const isMobile=useIsMobile();
 
   if(!onboarded)return <Onboarding onDone={u=>{
@@ -65,6 +70,8 @@ export default function App() {
   const effectiveTheme={...theme,w:w_eff};
   const{c,font:f}=effectiveTheme;const w=w_eff;
   const tr=T[lang]||T.en;
+  const motionOn=user?.motion??motionDefault;
+  const motionBtn=<button onClick={()=>setUser(u=>({...u,motion:!motionOn}))} aria-pressed={motionOn} title={motionOn?say(lang,"Desactivar animaciones","Turn animations off"):say(lang,"Activar animaciones","Turn animations on")} aria-label={motionOn?say(lang,"Desactivar animaciones","Turn animations off"):say(lang,"Activar animaciones","Turn animations on")} style={{background:"rgba(255,255,255,0.12)",border:"none",borderRadius:"10px",width:36,height:36,cursor:"pointer",fontSize:"18px",flexShrink:0}}>{motionOn?"✨":"💤"}</button>;
   const title=!user?.name?w.home:lang==="en"?`${user.name}'s ${w.home}`:`${user.name} · ${w.home}`;
   const { allCats, uncategorizedCount, filtered, compFiltered, totalInc, totalExp, net, biggestExp, catData, paymentsWithCountdown, budgetWarnings, subStepIdx, catStepIdx, budStepIdx } = useAppData({ transactions, reimbursed, autoPayments, budgets, timeFilter, customRange, customCats, modalSteps });
 
@@ -77,7 +84,8 @@ export default function App() {
         <span style={{fontSize:"30px"}}>{user?.avatar}</span>
         <div><div style={{color:c.navT,fontWeight:800,fontSize:"15px",fontFamily:f}}>{title}</div><div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} {(THEMES_TR[theme.id]?.[lang]||{}).name||theme.name} · Moneda 💸</div></div>
       </div>
-      <div style={{display:"flex",gap:"2px"}}>
+      <div style={{display:"flex",gap:"2px",alignItems:"center"}}>
+        {motionBtn}
         {NAV.map(({id,e,label})=><button key={id} onClick={()=>setPage(id)} style={{background:page===id?"rgba(255,255,255,0.2)":"transparent",border:"none",borderRadius:"10px",padding:"6px 10px",cursor:"pointer",color:page===id?"white":"rgba(255,255,255,0.55)",fontFamily:f,fontWeight:600,fontSize:"10px",display:"flex",flexDirection:"column",alignItems:"center",gap:"1px",transition:"all 0.15s",minHeight:44}}><span style={{fontSize:"20px"}}>{e}</span>{label}</button>)}
       </div>
     </nav>}
@@ -88,6 +96,7 @@ export default function App() {
         <div style={{color:c.navT,fontWeight:800,fontSize:"14px",fontFamily:f,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{title}</div>
         <div style={{color:"rgba(255,255,255,0.4)",fontSize:"10px"}}>{theme.emoji} Moneda 💸</div>
       </div>
+      {motionBtn}
     </header>}
     {/* ── Main content ── */}
     <div style={{paddingTop:isMobile?"16px":"26px",paddingLeft:isMobile?"12px":"24px",paddingRight:isMobile?"12px":"24px",paddingBottom:isMobile?"calc(72px + env(safe-area-inset-bottom, 0px))":"26px",maxWidth:"1080px",margin:"0 auto"}}>
@@ -116,6 +125,7 @@ export default function App() {
     {splitTxModal&&<SplitModal theme={effectiveTheme} lang={lang} tx={splitTxModal} splitGroups={splitGroups} splitExpenses={splitExpenses}
       onSave={exp=>setSplitExpenses(es=>[...es,exp])} onClose={()=>setSplitTxModal(null)}/>}
     {showPrivacy&&<PrivacyModal theme={effectiveTheme} lang={lang} onClose={()=>setShowPrivacy(false)}/>}
+    {user?.avatar&&<Companion avatar={user.avatar} themeId={theme.id} page={page} lang={lang} motion={motionOn} saveSignal={saveSignal} isMobile={isMobile}/>}
     {toast&&<Toast key={toast.id} msg={toast.msg} type={toast.type} onClose={()=>setToast(null)}/>}
   </div>;
 }

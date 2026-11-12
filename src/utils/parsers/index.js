@@ -283,7 +283,7 @@ export function doExport(transactions,comments,{autoPayments=[],reminders=[],bud
   if(customCats.length>0){const d=customCats.map(cat=>({CategoriaPersonalizada:cat}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:22}];XLSX.utils.book_append_sheet(wb,w,"Config");}
   if(widgetConfig.length>0){const d=widgetConfig.map((wid,i)=>({Id:wid.id,Etiqueta:wid.label,Visible:wid.visible?"Si":"No",Orden:i+1}));const w=XLSX.utils.json_to_sheet(d);w["!cols"]=[{wch:16},{wch:28},{wch:8},{wch:7}];XLSX.utils.book_append_sheet(wb,w,"Widgets");}
   // _moneda_config — single-cell JSON profile snapshot (silent, not visible to user)
-  const cfgWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({userName:profile.userName||"",lang:profile.lang||"es",themeId:profile.themeId||"nature",avatar:profile.avatar||"",goal:profile.goal||"know"})]]);
+  const cfgWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({userName:profile.userName||"",lang:profile.lang||"es",themeId:profile.themeId||"nature",avatar:profile.avatar||"",goal:profile.goal||"know",...(typeof profile.motion==="boolean"?{motion:profile.motion}:{})})]]);
   XLSX.utils.book_append_sheet(wb,cfgWs,"_moneda_config");
   // _splits — split groups, expenses and settlements as JSON
   const splitsWs=XLSX.utils.aoa_to_sheet([[JSON.stringify({splitGroups,splitExpenses,settlements})]]);

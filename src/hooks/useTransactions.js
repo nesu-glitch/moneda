@@ -68,7 +68,7 @@ export function useTransactions({
     if (savedWidgetConfig.length > 0) setWidgetConfig(savedWidgetConfig);
     // User profile (name, theme, language, avatar, goal) — silent
     if (savedProfile) {
-      setUser(prev => ({ ...(prev || {}), name: savedProfile.userName || prev?.name || "", themeId: savedProfile.themeId || prev?.themeId || "nature", avatar: savedProfile.avatar || prev?.avatar || "", goal: savedProfile.goal || prev?.goal || "know", lang: savedProfile.lang || prev?.lang || "es" }));
+      setUser(prev => ({ ...(prev || {}), name: savedProfile.userName || prev?.name || "", themeId: savedProfile.themeId || prev?.themeId || "nature", avatar: savedProfile.avatar || prev?.avatar || "", goal: savedProfile.goal || prev?.goal || "know", lang: savedProfile.lang || prev?.lang || "es", motion: typeof savedProfile.motion === "boolean" ? savedProfile.motion : prev?.motion }));
       if (savedProfile.lang) setLang(savedProfile.lang);
     }
     if (savedSplits) {
