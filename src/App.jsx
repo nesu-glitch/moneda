@@ -1,5 +1,7 @@
+import { say } from "./utils/i18n.js";
 import { useState, useEffect, useCallback } from "react";
-import { THEMES, THEMES_TR, THEME_W_ES, T } from "./utils/constants.js";
+import { THEMES, THEMES_TR, THEME_W, T } from "./utils/constants.js";
+import { locale } from "./utils/i18n.js";
 import { useCategories } from "./hooks/useCategories.js";
 import { useBudgets } from "./hooks/useBudgets.js";
 import { useExport } from "./hooks/useExport.js";
@@ -53,22 +55,20 @@ export default function App() {
     const ul=u.lang||"es";
     setLang(ul);
     if(u.quickStart) setPage("data");
-    const goalLabelsEs={save:"🎯 Meta: Ahorrar para algo",cut:"🎯 Meta: Gastar menos",know:"🎯 Meta: Entender mis gastos",chill:"🎯 Meta: Solo explorando"};
-    const goalLabelsEn={save:"🎯 Goal: Save for something",cut:"🎯 Goal: Cut my spending",know:"🎯 Goal: Understand my money",chill:"🎯 Goal: Just exploring"};
-    const goalLabels=ul==="es"?goalLabelsEs:goalLabelsEn;
-    const today=new Date().toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit",year:"numeric"});
-    setReminders([{id:Date.now(),text:`${goalLabels[u.goal]||"🎯 Goal set"} — ${ul==="es"?"registrado el":"set on"} ${today}`,done:false,repeat:"once"}]);
+    const goalLabels={save:say(ul,"🎯 Meta: Ahorrar para algo","🎯 Goal: Save for something"),cut:say(ul,"🎯 Meta: Gastar menos","🎯 Goal: Cut my spending"),know:say(ul,"🎯 Meta: Entender mis gastos","🎯 Goal: Understand my money"),chill:say(ul,"🎯 Meta: Solo explorando","🎯 Goal: Just exploring")};
+    const today=new Date().toLocaleDateString(locale(ul),{day:"2-digit",month:"2-digit",year:"numeric"});
+    setReminders([{id:Date.now(),text:`${goalLabels[u.goal]||say(ul,"🎯 Meta: fijada","🎯 Goal: set")} — ${say(ul,"registrado el","set on")} ${today}`,done:false,repeat:"once"}]);
   }}/>;
 
   const theme=THEMES[user?.themeId]||THEMES.nature;
-  const w_eff=lang==="es"?(THEME_W_ES[theme.id]||theme.w):theme.w;
+  const w_eff=lang==="en"?theme.w:(THEME_W[lang]?.[theme.id]||THEME_W.es[theme.id]||theme.w);
   const effectiveTheme={...theme,w:w_eff};
   const{c,font:f}=effectiveTheme;const w=w_eff;
   const tr=T[lang]||T.en;
-  const title=!user?.name?w.home:lang==="es"?`${user.name} · ${w.home}`:`${user.name}'s ${w.home}`;
+  const title=!user?.name?w.home:lang==="en"?`${user.name}'s ${w.home}`:`${user.name} · ${w.home}`;
   const { allCats, uncategorizedCount, filtered, compFiltered, totalInc, totalExp, net, biggestExp, catData, paymentsWithCountdown, budgetWarnings, subStepIdx, catStepIdx, budStepIdx } = useAppData({ transactions, reimbursed, autoPayments, budgets, timeFilter, customRange, customCats, modalSteps });
 
-  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"splits",e:"✂️",label:lang==="es"?"Dividir":"Splits"},{id:"data",e:"📂",label:tr.data}];
+  const NAV=[{id:"dashboard",e:theme.emoji,label:w.home},{id:"budgets",e:"🎯",label:tr.budgets},{id:"reminders",e:"📋",label:tr.reminders},{id:"payments",e:"💳",label:tr.autoPay},{id:"splits",e:"✂️",label:say(lang,"Dividir","Splits")},{id:"data",e:"📂",label:tr.data}];
 
   return <div style={{minHeight:"100vh",background:theme.grad,fontFamily:f,color:c.text,paddingBottom:0}}>
     {/* ── Desktop top nav ── */}
@@ -93,14 +93,14 @@ export default function App() {
     <div style={{paddingTop:isMobile?"16px":"26px",paddingLeft:isMobile?"12px":"24px",paddingRight:isMobile?"12px":"24px",paddingBottom:isMobile?"calc(72px + env(safe-area-inset-bottom, 0px))":"26px",maxWidth:"1080px",margin:"0 auto"}}>
       {uncategorizedCount>0&&<div style={{background:"#fef3c7",border:"1.5px solid #f59e0b",borderRadius:"12px",padding:"12px 18px",marginBottom:16,display:"flex",alignItems:"center",gap:"10px",fontFamily:f}}>
         <span style={{fontSize:"20px"}}>⚠️</span>
-        <span style={{fontWeight:700,color:"#92400e",fontSize:"13px"}}>{lang==="es"?`${uncategorizedCount} gasto${uncategorizedCount!==1?"s":""} sin categoría — abre Datos → Ver log completo y asígnalos`:`${uncategorizedCount} uncategorized expense${uncategorizedCount!==1?"s":""} — open Data → View full log and assign their categories`}</span>
+        <span style={{fontWeight:700,color:"#92400e",fontSize:"13px"}}>{uncategorizedCount===1?say(lang,"1 gasto sin categoría — abre Datos → Ver log completo y asígnalo","1 uncategorized expense — open Data → View full log and assign its category"):say(lang,"{n} gastos sin categoría — abre Datos → Ver log completo y asígnalos","{n} uncategorized expenses — open Data → View full log and assign their categories",{n:uncategorizedCount})}</span>
       </div>}
       {page==="dashboard"&&<Dashboard {...{theme:effectiveTheme,timeFilter,setTimeFilter,compareMode,setCompareMode,customRange,setCustomRange,filtered,compFiltered,totalInc,totalExp,net,biggestExp,catData,budgetWarnings,paymentsWithCountdown,reminders,setReminders,transactions,comments,onCommentSave,onCatChange,hasData:transactions.length>0,onAddReminder,allCats,reimbursed,onMarkReimbursed,budgets,widgetConfig,setWidgetConfig,onExport:handleExport,lang,onSplitTx:setSplitTxModal,splitExpenses}}/>}
       {page==="budgets"  &&<BudgetsPage {...{theme:effectiveTheme,budgets,setBudgets,catGroups,setCatGroups,allTransactions:transactions,allCats,lang}}/>}
       {page==="reminders"&&<RemindersPage {...{theme:effectiveTheme,reminders,setReminders,lang}}/>}
       {page==="payments" &&<AutoPayPage {...{theme:effectiveTheme,autoPayments,setAutoPayments,paymentsWithCountdown,lang}}/>}
       {page==="splits"   &&<SplitsPage {...{theme:effectiveTheme,lang,splitGroups,setSplitGroups,splitExpenses,setSplitExpenses,settlements,setSettlements,transactions,onMarkReimbursed,showToastFn:showToast}}/>}
-      {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onSplitTx:setSplitTxModal,splitExpenses,merchantMemory,onClearMemory:()=>{clearMemory();showToast(lang==="es"?"Memoria borrada":"Memory cleared","info");},onExport:handleExport,lang}}/>}
+      {page==="data"     &&<DataPage {...{theme:effectiveTheme,transactions,onUpload:handleUpload,onCatChange,comments,onCommentSave,onAddReminder,allCats,reimbursed,onMarkReimbursed,onSplitTx:setSplitTxModal,splitExpenses,merchantMemory,onClearMemory:()=>{clearMemory();showToast(say(lang,"Memoria borrada","Memory cleared"),"info");},onExport:handleExport,lang}}/>}
       <div style={{textAlign:"center",marginTop:22}}><button onClick={()=>setShowPrivacy(true)} style={{background:"transparent",border:"none",cursor:"pointer",color:c.muted,fontSize:"11px",fontFamily:f,textDecoration:"underline",padding:"6px"}}>🔒 {tr.privacyLink}</button></div>
     </div>
     {/* ── Mobile bottom tab bar ── */}
@@ -112,7 +112,7 @@ export default function App() {
     </nav>}
     {showSubVerify&&detectedSubs.length>0&&<SubscriptionVerify theme={effectiveTheme} subs={detectedSubs} steps={modalSteps} stepIndex={subStepIdx} onDone={handleSubDone} lang={lang}/>}
     {showCatReview&&unknownTxns.length>0&&<CategoryReview theme={effectiveTheme} unknowns={unknownTxns} customCats={customCats} steps={modalSteps} stepIndex={catStepIdx} onDone={handleCatDone} lang={lang}/>}
-    {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onSkip={()=>setShowBudgetWiz(false)} onDone={lims=>{setBudgets(b=>({...b,...lims}));setShowBudgetWiz(false);showToast(lang==="es"?"¡Presupuestos guardados! 🎯":"Budgets saved! 🎯");}} lang={lang}/>}
+    {showBudgetWiz&&<BudgetWizard theme={effectiveTheme} steps={modalSteps} stepIndex={budStepIdx} onSkip={()=>setShowBudgetWiz(false)} onDone={lims=>{setBudgets(b=>({...b,...lims}));setShowBudgetWiz(false);showToast(say(lang,"¡Presupuestos guardados! 🎯","Budgets saved! 🎯"));}} lang={lang}/>}
     {splitTxModal&&<SplitModal theme={effectiveTheme} lang={lang} tx={splitTxModal} splitGroups={splitGroups} splitExpenses={splitExpenses}
       onSave={exp=>setSplitExpenses(es=>[...es,exp])} onClose={()=>setSplitTxModal(null)}/>}
     {showPrivacy&&<PrivacyModal theme={effectiveTheme} lang={lang} onClose={()=>setShowPrivacy(false)}/>}

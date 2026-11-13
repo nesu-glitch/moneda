@@ -1,3 +1,4 @@
+import { say } from "../utils/i18n.js";
 const STEP_ES={"📦 Subscriptions":"📦 Suscripciones","🤔 Classify":"🤔 Clasificar","🎯 Budgets":"🎯 Presupuestos"};
 export function StepProgress({steps,current,theme,lang="es"}) {
   const {c,font:f}=theme;
@@ -8,7 +9,7 @@ export function StepProgress({steps,current,theme,lang="es"}) {
         color:i===current?"white":i<current?c.p:c.muted,
         borderRight:i<steps.length-1?`1px solid ${c.border}`:"none",
         transition:"all 0.3s"}}>
-        {i<current&&<span style={{marginRight:"4px"}}>✓</span>}{lang==="es"?(STEP_ES[s]||s):s}
+        {i<current&&<span style={{marginRight:"4px"}}>✓</span>}{STEP_ES[s]?say(lang,STEP_ES[s],s):s}
       </div>
     ))}
   </div>;

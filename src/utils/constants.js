@@ -1,3 +1,4 @@
+import { EXTRA_LANGS } from "./i18n.js";
 // ── Themes ────────────────────────────────────────────────────────────────────
 export const THEMES = {
   nature:    { id:"nature",    name:"Nature",      emoji:"🌿", tagline:"Grow your savings like a garden",      bg:"#f0f7ec", card:"#ffffff", grad:"linear-gradient(160deg,#dff0d8,#f0f7ec 60%)", c:{p:"#4a7c59",pl:"#e2f0db",acc:"#f9c74f",danger:"#d95f0e",text:"#2d4a3e",muted:"#7a9e82",border:"#c5e0b8",nav:"#3a6347",navT:"#ffffff",overlay:"rgba(42,74,56,0.65)"}, font:'"Nunito",sans-serif',       w:{home:"My Grove",    txn:"Gatherings",   budget:"Garden Limit", inc:"Harvest", over:"Over your garden limit 🌱"},  npc:"🦔",npcName:"Hedgie",  chat:["Oh! A rustling in the leaves... 🍃","A new friend has arrived at the grove!","The forest remembers every acorn you spend.","Shall I help you track yours?"],          avatars:["🐸","🦔","🐰","🦋","🐿️","🦉"] },
@@ -107,13 +108,13 @@ export const T = {
     pickLang:"Choose your language",
     privacyLink:"Privacy",privacyNoticeTitle:"Privacy notice",privacyClose:"Close",privacyUpdated:"Last updated: 10 November 2026",
     privacySections:[
-      {h:"Who runs Moneda",p:"Moneda is run by Ines Villarino de Funes, who is responsible for this notice. Contact: inesvillarino128@gmail.com"},
+      {h:"Who runs Moneda",p:"Moneda is run by Ines Villarino de Funes, who is responsible for this notice. Contact: nesu.glitch@gmail.com"},
       {h:"Your financial data",p:"Your bank files and financial data are processed only in your browser. They are never sent to any server, and I never see them. I do not collect, receive or keep any of your personal data."},
       {h:"No cookies, no tracking",p:"Moneda uses no cookies, no analytics and no trackers, and stores none of your data in your browser. Your data disappears when you close the tab unless you export it. So the app can work offline, your browser keeps a copy of the app's own files (code, icons, fonts) — never your data."},
       {h:"Exported files",p:"Exported .xlsx files stay on your device. Keeping them safe is your responsibility."},
       {h:"Hosting",p:"The website is hosted on GitHub Pages (GitHub, Inc., USA) and delivered through Cloudflare (Cloudflare, Inc., USA), which acts as a network and security layer in front of it. Like any web host, GitHub and Cloudflare may log technical data such as IP addresses to deliver the site and keep it secure (legitimate interest, Art. 6(1)(f) GDPR). This data may be processed in the United States. They handle it under their own privacy policies:",links:[{href:"https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",label:"GitHub Privacy Statement"},{href:"https://www.cloudflare.com/privacypolicy/",label:"Cloudflare Privacy Policy"}]},
       {h:"Optional feedback links",p:"The feedback form (Google Forms) and the \"Open an issue\" link (GitHub) are external sites you only visit if you choose to. If you use them, I receive what you write there, and Google or GitHub process it under their own privacy policies. Please don't include financial data."},
-      {h:"Your rights and questions",p:"Under the GDPR you can ask for access to, correction or deletion of your personal data, object to its processing, and complain to a data protection authority (in Spain, the AEPD — aepd.es). Since Moneda never receives your financial data, there is usually nothing for me to hand over or delete. You can contact me with any privacy question at inesvillarino128@gmail.com."},
+      {h:"Your rights and questions",p:"Under the GDPR you can ask for access to, correction or deletion of your personal data, object to its processing, and complain to a data protection authority (in Spain, the AEPD — aepd.es). Since Moneda never receives your financial data, there is usually nothing for me to hand over or delete. You can contact me with any privacy question at nesu.glitch@gmail.com."},
     ],
     welcomeTitle:"Welcome to Moneda",pickWorld:"Pick your world",enterWorld:"Enter this world →",
     quickStart:"⚡ Quick start — skip the intro",selected:"✓ Selected",
@@ -199,13 +200,13 @@ export const T = {
     pickLang:"Elige tu idioma",
     privacyLink:"Privacidad",privacyNoticeTitle:"Aviso de privacidad",privacyClose:"Cerrar",privacyUpdated:"Última actualización: 10 de noviembre de 2026",
     privacySections:[
-      {h:"Quién gestiona Moneda",p:"Moneda la gestiona Ines Villarino de Funes, responsable de este aviso. Contacto: inesvillarino128@gmail.com"},
+      {h:"Quién gestiona Moneda",p:"Moneda la gestiona Ines Villarino de Funes, responsable de este aviso. Contacto: nesu.glitch@gmail.com"},
       {h:"Tus datos financieros",p:"Tus archivos bancarios y datos financieros se procesan solo en tu navegador. Nunca se envían a ningún servidor y yo nunca los veo. No recojo, recibo ni guardo ninguno de tus datos personales."},
       {h:"Sin cookies ni rastreo",p:"Moneda no usa cookies, ni analítica, ni rastreadores, y no guarda ninguno de tus datos en tu navegador. Tus datos desaparecen al cerrar la pestaña, salvo que los exportes. Para que la app funcione sin conexión, tu navegador guarda una copia de los archivos de la propia app (código, iconos, fuentes), nunca tus datos."},
       {h:"Archivos exportados",p:"Los archivos .xlsx exportados se quedan en tu dispositivo. Mantenerlos seguros es tu responsabilidad."},
       {h:"Alojamiento",p:"La web está alojada en GitHub Pages (GitHub, Inc., EE. UU.) y se sirve a través de Cloudflare (Cloudflare, Inc., EE. UU.), que actúa como capa de red y seguridad por delante. Como cualquier servicio de alojamiento, GitHub y Cloudflare pueden registrar datos técnicos como direcciones IP para servir la web y mantenerla segura (interés legítimo, art. 6.1.f RGPD). Estos datos pueden tratarse en Estados Unidos. Ambos los tratan según sus propias políticas de privacidad:",links:[{href:"https://docs.github.com/es/site-policy/privacy-policies/github-general-privacy-statement",label:"Declaración de privacidad de GitHub"},{href:"https://www.cloudflare.com/privacypolicy/",label:"Política de privacidad de Cloudflare"}]},
       {h:"Enlaces opcionales de opinión",p:"El formulario de opinión (Google Forms) y el enlace \"Abrir issue\" (GitHub) son sitios externos que solo visitas si quieres. Si los usas, recibo lo que escribas allí, y Google o GitHub lo tratan según sus propias políticas de privacidad. Por favor, no incluyas datos financieros."},
-      {h:"Tus derechos y preguntas",p:"Según el RGPD puedes pedir acceso, rectificación o supresión de tus datos personales, oponerte a su tratamiento y reclamar ante una autoridad de protección de datos (en España, la AEPD — aepd.es). Como Moneda nunca recibe tus datos financieros, normalmente no hay nada que entregar ni borrar. Puedes escribirme con cualquier pregunta sobre privacidad a inesvillarino128@gmail.com."},
+      {h:"Tus derechos y preguntas",p:"Según el RGPD puedes pedir acceso, rectificación o supresión de tus datos personales, oponerte a su tratamiento y reclamar ante una autoridad de protección de datos (en España, la AEPD — aepd.es). Como Moneda nunca recibe tus datos financieros, normalmente no hay nada que entregar ni borrar. Puedes escribirme con cualquier pregunta sobre privacidad a nesu.glitch@gmail.com."},
     ],
     welcomeTitle:"Bienvenido a Moneda",pickWorld:"Elige tu mundo",enterWorld:"Entrar en este mundo →",
     quickStart:"⚡ Inicio rápido — saltar la intro",selected:"✓ Seleccionado",
@@ -240,3 +241,13 @@ export const THEME_W_ES = {
 };
 
 export const CC = {Groceries:"#4caf50",Restaurants:"#ff9800",Transport:"#2196f3",Shopping:"#e91e63",Subscriptions:"#9c27b0",Health:"#f44336",Housing:"#795548",Income:"#00bcd4","ATM / Cash":"#607d8b",Transfers:"#ff5722",Entertainment:"#3f51b5",Utilities:"#009688",Education:"#8bc34a",Other:"#9e9e9e"};
+
+// ── Catalan, Basque, Galician: merged over Spanish so any missing key still shows Spanish ──
+export const THEME_W = { es: THEME_W_ES };
+for (const [id, L] of Object.entries(EXTRA_LANGS)) {
+  T[id] = { ...T.es, ...L.T };
+  CAT_LABELS[id] = { ...CAT_LABELS.es, ...L.CAT_LABELS };
+  GOALS_TR[id] = { ...GOALS_TR.es, ...L.GOALS_TR };
+  for (const theme of Object.keys(THEMES_TR)) THEMES_TR[theme][id] = { ...THEMES_TR[theme].es, ...L.THEMES_TR?.[theme] };
+  THEME_W[id] = { ...THEME_W_ES, ...L.THEME_W };
+}

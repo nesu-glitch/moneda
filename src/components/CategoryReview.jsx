@@ -1,3 +1,4 @@
+import { say } from "../utils/i18n.js";
 import { useState } from "react";
 import { T, CAT_LABELS, CC } from "../utils/constants.js";
 import { ALL_CATS } from "../utils/allCats.js";
@@ -60,7 +61,7 @@ export function CategoryReview({theme,unknowns,customCats,steps,stepIndex,onDone
 
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
         <div style={{fontSize:"20px",fontWeight:800,color:c.text,fontFamily:f}}>🤔 {tr.classifyTitle}</div>
-        <div style={{fontSize:"12px",color:c.muted,fontWeight:600}}>{progress}/{groups.length} done</div>
+        <div style={{fontSize:"12px",color:c.muted,fontWeight:600}}>{say(lang,"{a}/{b} hechos","{a}/{b} done",{a:progress,b:groups.length})}</div>
       </div>
       <div style={{height:"7px",borderRadius:"7px",background:c.pl,marginBottom:14,overflow:"hidden"}}>
         <div style={{height:"100%",width:`${groups.length?progress/groups.length*100:0}%`,borderRadius:"7px",background:c.p,transition:"width 0.4s"}}/>
